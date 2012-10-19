@@ -10,7 +10,7 @@
     <div id="epicenter">
       {% if user.is_anonymous %}
         Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
-        or <a href="#">Register</a>
+        or <a href="{% url 'spiff.local.views.register' %}">Register</a>
       {% else %}
         Welcome, {{user.member.fullName}}!
       {% endif %}
@@ -24,6 +24,13 @@
         <li><a href="{% url 'admin:index' %}">Admin</a></li>
         {% endif %}
         <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
+      </ul>
+    </div>
+    <div id="messages">
+      <ul>
+        {% for message in messages %}
+        <li class="message {{message.tags}}">{{message}}</li>
+        {% endfor %}
       </ul>
     </div>
     <br style="clear:both;"/>

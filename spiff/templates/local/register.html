@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block sectiontitle %}Register{% endblock %}
+
+{% block content %}
+<form method="POST" action="{%url spiff.local.views.register%}">
+  {{userForm.as_p}}
+  {{memberForm.as_p}}
+  {% csrf_token %}
+  <input type="submit" value="Register"/>
+</form>
+{% endblock %}

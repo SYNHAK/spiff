@@ -5,7 +5,6 @@ from django.db.models.signals import post_save
 class Member(models.Model):
   firstName = models.CharField(max_length=100, null=False)
   lastName = models.CharField(max_length=100, null=False)
-  birthday = models.DateField()
   tagline = models.CharField(max_length=255)
   profession = models.CharField(max_length=255)
   user = models.OneToOneField(User)
