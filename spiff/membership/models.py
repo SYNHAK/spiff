@@ -5,11 +5,14 @@ from django.db.models.signals import post_save
 class Member(models.Model):
   firstName = models.CharField(max_length=100, null=False)
   lastName = models.CharField(max_length=100, null=False)
+  birthday = models.DateField()
   tagline = models.CharField(max_length=255)
   profession = models.CharField(max_length=255)
   user = models.OneToOneField(User)
   created = models.DateTimeField(editable=False, auto_now_add=True)
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
+  fields = models.ManyToManyField('Field', through='FieldValue')
+  birthday = models.DateField(blank=True, null=True)
 
   @property
   def fullName(self):
@@ -33,6 +36,23 @@ class Rank(models.Model):
 
   def __unicode__(self):
     return self.group.name
+
+class Field(models.Model):
+  name = models.CharField(max_length=100)
+  description = models.TextField(blank=True)
+  multiple = models.BooleanField(default=False)
+  required = models.BooleanField(default=False)
+
+  def __unicode__(self):
+    return self.name
+
+class FieldValue(models.Model):
+  field = models.ForeignKey(Field)
+  member = models.ForeignKey(Member)
+  value = models.TextField()
+
+  def __unicode__(self):
+    return "%s: %s = %s"%(self.member.fullName, self.field.name, self.value)
 
 def create_member(sender, instance, created, **kwargs):
   if created:
