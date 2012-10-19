@@ -1,0 +1,31 @@
+{% load url from future %}
+<html>
+<head>
+  <title>{% block title %}Spiff{% endblock %} - Spiff</title>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/main.css"/>
+</head>
+<body>
+  <div id="header">
+    <h1>{% block sectiontitle %}Spiff{% endblock %}</h1>
+    <div id="epicenter">
+      Welcome, {{user.member.fullName}}!
+    </div>
+    <div id="navbar">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Members</a></li>
+        <li><a href="#">Resources</a></li>
+        {% if user.is_superuser %}
+        <li><a href="{% url 'admin:index' %}">Admin</a></li>
+        {% endif %}
+        <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
+      </ul>
+    </div>
+    <br style="clear:both;"/>
+  </div>
+  <div id="content">
+    {% block content %}
+    {% endblock %}
+  </div>
+</body>
+</html>

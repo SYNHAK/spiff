@@ -5,6 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^$', 'spiff.local.views.index', name='home'),
     # Examples:
     # url(r'^$', 'spiff.views.home', name='home'),
     # url(r'^spiff/', include('spiff.foo.urls')),

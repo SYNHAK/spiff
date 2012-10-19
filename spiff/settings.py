@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'south',
     'spiff.membership',
     'spiff.inventory',
+    'spiff.local',
 )
 
 # A sample logging configuration. The only tangible logging
