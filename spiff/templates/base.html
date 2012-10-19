@@ -8,7 +8,12 @@
   <div id="header">
     <h1>{% block sectiontitle %}Spiff{% endblock %}</h1>
     <div id="epicenter">
-      Welcome, {{user.member.fullName}}!
+      {% if user.is_anonymous %}
+        Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
+        or <a href="#">Register</a>
+      {% else %}
+        Welcome, {{user.member.fullName}}!
+      {% endif %}
     </div>
     <div id="navbar">
       <ul>

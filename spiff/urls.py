@@ -6,6 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'spiff.local.views.index', name='home'),
+    url(r'^accounts/profile/$', 'spiff.local.views.index', name='home'),
     # Examples:
     # url(r'^$', 'spiff.views.home', name='home'),
     # url(r'^spiff/', include('spiff.foo.urls')),
@@ -15,4 +16,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^logout', 'django.contrib.auth.views.logout'),
+    url(r'^login', 'django.contrib.auth.views.login'),
 )

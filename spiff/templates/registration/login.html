@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Login{% endblock %}
+{% block sectiontitle %}Login{% endblock %}
+
+{% block content %}
+
+<form method="POST" action="{% url 'django.contrib.auth.views.login' %}">
+{{form.as_p}}
+{% csrf_token %}
+<input type="submit" value="Login"/>
+</form>
+
+{% endblock %}
