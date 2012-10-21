@@ -16,13 +16,15 @@
 
 #navbar li {
   float: left;
+  padding: 3px;
+  background-color:#333;
 }
 
 #navbar li a {
   display:block;
-  width: 64px;
-  height: 64px;
-  border: 1px solid black;
+  padding: 3px;
+  background-color:#aaa;
+  color: #fff;
 }
 
 #content {
