@@ -10,7 +10,6 @@ class Member(models.Model):
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
   fields = models.ManyToManyField('Field', through='FieldValue')
   birthday = models.DateField(blank=True, null=True)
-  active = models.BooleanField()
 
   @models.permalink
   def get_absolute_url(self):

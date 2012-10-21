@@ -4,7 +4,8 @@ from spiff.membership.models import Member
 class Resource(models.Model):
   name = models.TextField()
   trainable = models.BooleanField(default=True)
-  users = models.ManyToManyField(Member, through='TrainingLevel')
+  users = models.ManyToManyField(Member, through='TrainingLevel',
+      limit_choices_to={'is_active': True})
 
   @models.permalink
   def get_absolute_url(self):

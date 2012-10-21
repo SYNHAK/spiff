@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 import models
 
 def index(request):
-  users = User.objects.all()
+  users = User.objects.filter(is_active=True)
   return render_to_response('membership/index.html',
       {'users': users},
       context_instance=RequestContext(request))
