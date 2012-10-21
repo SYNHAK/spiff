@@ -136,6 +136,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
   "django.core.context_processors.tz",
   "django.contrib.messages.context_processors.messages",
   'spiff.local.context.space_info',
+  'spiff.local.context.search_form',
 )
 
 # A sample logging configuration. The only tangible logging

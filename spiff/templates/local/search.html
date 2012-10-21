@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Search{% endblock %}
+{% block sectiontitle %}Search Results{% endblock %}
+
+{% block content %}
+
+<form method="GET" 
+<form method="GET" action="{% url spiff.local.views.search %}">
+  {{searchForm.as_p}}
+  <input type="submit" value="Search"/>
+</form>
+
+<h2>Resources</h2>
+<ul>
+{% for resource in resources %}
+<li><a href="{{ resource.get_absolute_url }}">{{resource.name}}</a></li>
+{% endfor %}
+</ul>
+
+<h2>Members</h2>
+<ul>
+  {% for member in members %}
+  <li><a href="{{member.get_absolute_url}}">{{member.fullName}}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

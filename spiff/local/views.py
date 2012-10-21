@@ -2,7 +2,8 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.forms.models import modelformset_factory
 import forms
-from spiff.membership.models import FieldValue, Field
+from spiff.membership.models import FieldValue, Field, Member
+from spiff.inventory.models import Resource
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
@@ -53,4 +54,17 @@ def register(request):
   return render_to_response('local/register.html',
       {'userForm': userForm, 'memberForm': memberForm, 'profileForm':
         profileForm},
+      context_instance=RequestContext(request))
+
+def search(request):
+  if "query" in request.GET:
+    searchForm = forms.SearchForm(request.GET)
+  else:
+    searchForm = forms.SearchForm()
+  if searchForm.is_valid():
+    resources = Resource.objects.filter(name__iregex='.*%s.*'%(searchForm.cleaned_data['query']))
+    print searchForm.cleaned_data['query']
+    members = Member.objects.filter(user__username__iregex='%s'%(searchForm.cleaned_data['query']))
+  return render_to_response('local/search.html',
+      {'resources': resources, 'members': members},
       context_instance=RequestContext(request))

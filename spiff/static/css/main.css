@@ -83,3 +83,9 @@ table tr.odd td {
 table tr:hover td {
   background-color: #fff !important;
 }
+
+#search form input {
+  display:inline;
+  width:auto;
+  margin:0;
+}

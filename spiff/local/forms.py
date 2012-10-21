@@ -23,3 +23,6 @@ class ProfileForm(forms.Form):
 
   def fieldValue(self, field):
     return self.cleaned_data['profile_%s'%field.id]
+
+class SearchForm(forms.Form):
+  query = forms.CharField(label='')

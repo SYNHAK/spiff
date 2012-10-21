@@ -19,20 +19,26 @@
         or <a href="{% url 'spiff.local.views.register' %}">Register</a>
       {% else %}
         {% gravatar user %}
-        Welcome, {{user.member.fullName}}!
+        <p>Welcome, {{user.member.fullName}}!</p>
+        <p><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></p>
       {% endif %}
     </div>
     <br class="clear"/>
-    <div id="navbar" class="grid_12">
+    <div id="navbar" class="grid_9">
       <ul>
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
         <li><a href="{% url 'spiff.inventory.views.index' %}">Resources</a></li>
-        {% if user.is_superuser %}
+        {% if user.is_staff %}
         <li><a href="{% url 'admin:index' %}">Admin</a></li>
         {% endif %}
-        <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
       </ul>
+    </div>
+    <div id="search" class="grid_3">
+      <form method="GET" action="{% url 'spiff.local.views.search' %}">
+        {{searchForm.as_p}}
+        <input type="submit" value="Search"/>
+      </form>
     </div>
     <br class="clear"/>
     <div id="messages" class="grid_12">
@@ -60,15 +66,14 @@
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
         <li><a href="{% url 'spiff.inventory.views.index' %}">Resources</a></li>
-        {% if user.is_superuser %}
+        {% if user.is_staff %}
         <li><a href="{% url 'admin:index' %}">Admin</a></li>
         {% endif %}
-        <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
       </ul>
     </div>
     <div class="grid_9">
       <div id="copyright">
-        Powered by Spaceman Spiff
+        Powered by <a href="https://github.com/synhak/spiff">Spaceman Spiff</a>
       <br style="clear:both;"/>
       </div>
     </div>
