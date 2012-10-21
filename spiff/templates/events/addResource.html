@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Events{% endblock %}
+{% block sectiontitle %}Add Resources to {{event.name}}{% endblock %}
+
+{% block content %}
+<form method="POST" action="{% url spiff.events.views.addResource id=event.id %}">
+  {{resourceForm}}
+  {% csrf_token %}
+  <input type="submit" value="Add Resources"/>
+</form>
+{% endblock %}
+

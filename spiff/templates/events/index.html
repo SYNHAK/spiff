@@ -10,5 +10,8 @@
     <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td>
       <td>{{event.start}}</td><td>{{event.end}}</td></tr>
   {% endfor %}
+  {% if perms.events.can_create_events %}
+  <tr><td colspan="3"><a href="{% url spiff.events.views.create %}">Create an event</a></td></tr>
+  {% endif %}
 </table>
 {% endblock %}

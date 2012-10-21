@@ -9,7 +9,12 @@ class Event(models.Model):
   description = models.TextField()
   attendees = models.ManyToManyField(Member, related_name='events')
   creator = models.ForeignKey(Member, related_name='owned_events')
-  resources = models.ManyToManyField(Resource, related_name='events')
+  resources = models.ManyToManyField(Resource, related_name='events', blank=True)
+
+  class Meta:
+    permissions = (
+      ('can_reserve_resource', 'Can attach resources to events')
+    )
 
   @models.permalink
   def get_absolute_url(self):
