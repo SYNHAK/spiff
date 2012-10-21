@@ -31,6 +31,9 @@
   {% else %}
     <tr><td colspan="2">Nobody!</td></tr>
   {% endif %}
+  {% if perms.inventory.can_train %}
+  <tr><td colspan="2"><a href="{% url spiff.inventory.views.train id=item.id %}">Update your training</a></td></tr>
+  {% endif %}
 </table>
 <div class="barcode">
 <img src="{% url spiff.inventory.views.qrCode id=item.id %}"/>

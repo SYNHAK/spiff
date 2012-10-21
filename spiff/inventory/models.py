@@ -35,5 +35,10 @@ class TrainingLevel(models.Model):
   rank = models.IntegerField()
   comments = models.TextField(blank=True)
 
+  class Meta:
+    permissions = (
+      ('can_train', 'Can update own training on resources'),
+    )
+
   def __unicode__(self):
     return "%s: level %d %s user"%(self.member.fullName, self.rank, self.resource.name)
