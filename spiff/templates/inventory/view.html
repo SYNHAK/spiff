@@ -9,7 +9,18 @@
   <tr><th>Name</th><th>Value</th></tr>
   {% if item.metadata.all %}
     {% for prop in item.metadata.all %}
-    <tr><td>{{prop.name}}</td><td>{{prop.value}}</td>
+    <tr><td>{{prop.name}}</td>
+      <td>
+        {% if prop.type == 0 %}
+        {{prop.value}}
+        {% endif %}
+        {% if prop.type == 1 %}
+        <a href="{{prop.value}}">{{prop.value}}</a>
+        {% endif %}
+        {% if prop.type == 2 %}
+        <img src="{{prop.value}}"/>
+        {% endif %}
+      </td>
     {% endfor %}
   {% else %}
     <tr><td colspan="3">No metadata</td></tr>
