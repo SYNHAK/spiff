@@ -6,15 +6,18 @@
 {% block content %}
 <h2>Metadata</h2>
 <table>
+  <tr><th>Name</th><th>Value</th></tr>
   {% if item.metadata.all %}
     {% for prop in item.metadata.all %}
-    <tr><td>{{prop.type}}</td><td>{{prop.name}}</td><td>{{prop.value}}</td>
+    <tr><td>{{prop.name}}</td><td>{{prop.value}}</td>
     {% endfor %}
   {% else %}
     <tr><td colspan="3">No metadata</td></tr>
   {% endif %}
+  {% if perms.inventory.can_add_metadata %}
   <tr><td colspan="3"><a href="{% url spiff.inventory.views.addMeta id=item.id%}">Add
         metadata</a></td></tr>
+  {% endif %}
 </table>
 {% if item.trainable %}
 <h2>Trained Users</h2>
