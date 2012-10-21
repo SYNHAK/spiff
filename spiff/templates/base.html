@@ -1,4 +1,5 @@
 {% load url from future %}
+{% load gravatar %}
 <html>
 <head>
   <title>{% block title %}Spiff{% endblock %} - Spiff</title>
@@ -12,14 +13,15 @@
         Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
         or <a href="{% url 'spiff.local.views.register' %}">Register</a>
       {% else %}
+        {% gravatar user %}
         Welcome, {{user.member.fullName}}!
       {% endif %}
     </div>
     <div id="navbar">
       <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Members</a></li>
-        <li><a href="#">Resources</a></li>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
+        <li><a href="{% url 'spiff.inventory.views.index' %}">Resources</a></li>
         {% if user.is_superuser %}
         <li><a href="{% url 'admin:index' %}">Admin</a></li>
         {% endif %}
