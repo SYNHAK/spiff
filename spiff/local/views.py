@@ -2,6 +2,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.forms.models import modelformset_factory
 import forms
+from spiff.membership.forms import ProfileForm
 from spiff.membership.models import FieldValue, Field, Member
 from spiff.inventory.models import Resource
 from django.contrib import messages
@@ -22,14 +23,12 @@ def index(request):
 def register(request):
   fields = Field.objects.filter(required=True)
   if request.method == 'POST':
-    userForm = forms.UserForm(request.POST, prefix='user')
-    memberForm = forms.MemberForm(request.POST, prefix='member')
-    profileForm = forms.ProfileForm(request.POST, fields=fields, prefix='profile')
+    userForm = forms.RegistrationForm(request.POST, prefix='user')
+    profileForm = ProfileForm(request.POST, fields=fields, prefix='profile')
   else:
-    userForm = forms.UserForm(prefix='user')
-    memberForm = forms.MemberForm(prefix='member')
-    profileForm = forms.ProfileForm(fields=fields, prefix='profile')
-  if userForm.is_valid() and memberForm.is_valid() and profileForm.is_valid():
+    userForm = forms.RegistrationForm(prefix='user')
+    profileForm = ProfileForm(fields=fields, prefix='profile')
+  if userForm.is_valid() and profileForm.is_valid():
     oldUser = None
     try:
       oldUser = User.objects.get(username__exact=userForm.cleaned_data['username'])
@@ -38,11 +37,12 @@ def register(request):
     if not oldUser:
       user = User.objects.create_user(userForm.cleaned_data['username'],
           userForm.cleaned_data['email'], userForm.cleaned_data['password'])
-      user.first_name = memberForm.cleaned_data['firstName']
-      user.last_name = memberForm.cleaned_data['lastName']
+      user.first_name = userForm.cleaned_data['firstName']
+      user.last_name = userForm.cleaned_data['lastName']
       user.save()
       member = user.member
-      member.birthday = memberForm.cleaned_data['birthday']
+      member.birthday = userForm.cleaned_data['birthday']
+      member.profession = userForm.cleaned_data['profession']
       member.save()
       user = authenticate(username=userForm.cleaned_data['username'], password=userForm.cleaned_data['password'])
       login(request, user)
@@ -52,7 +52,7 @@ def register(request):
             value=profileForm.fieldValue(field), member=member)
       return HttpResponseRedirect(reverse('home'))
   return render_to_response('local/register.html',
-      {'userForm': userForm, 'memberForm': memberForm, 'profileForm':
+      {'userForm': userForm, 'profileForm':
         profileForm},
       context_instance=RequestContext(request))
 
@@ -63,7 +63,6 @@ def search(request):
     searchForm = forms.SearchForm()
   if searchForm.is_valid():
     resources = Resource.objects.filter(name__iregex='.*%s.*'%(searchForm.cleaned_data['query']))
-    print searchForm.cleaned_data['query']
     members = Member.objects.filter(user__username__iregex='%s'%(searchForm.cleaned_data['query']))
   return render_to_response('local/search.html',
       {'resources': resources, 'members': members},

@@ -1,0 +1,45 @@
+from django import forms
+from django.contrib.auth.models import User
+import models
+
+class UserForm(forms.Form):
+  email = forms.EmailField()
+  firstName = forms.CharField()
+  lastName = forms.CharField()
+  birthday = forms.DateField()
+  profession = forms.CharField()
+
+  def __init__(self, *args, **kwargs):
+    instance = kwargs.pop('instance', 0)
+    super(UserForm, self).__init__(*args, **kwargs)
+    if instance:
+      self.fields['email'].initial = instance.email
+      self.fields['firstName'].initial = instance.first_name
+      self.fields['lastName'].initial = instance.last_name
+      self.fields['birthday'].initial = instance.member.birthday
+      self.fields['profession'].initial = instance.member.profession
+
+class ProfileForm(forms.Form):
+  def __init__(self, *args, **kwargs):
+    fields = kwargs.pop('fields', 0)
+    values = kwargs.pop('values', 0)
+    super(ProfileForm, self).__init__(*args, **kwargs)
+    if fields:
+      for field in fields:
+        v = None
+        if values:
+          for value in values:
+            if value.field.id == field.id:
+              v = value
+              break
+        if v:
+          self.fields['profile_%s'%field.id] = forms.CharField(label=field.name,
+              help_text=field.description, initial=v.value,
+              required=field.required)
+        else:
+          self.fields['profile_%s'%field.id] = forms.CharField(label=field.name,
+              help_text=field.description, required=field.required)
+
+  def fieldValue(self, field):
+    return self.cleaned_data['profile_%s'%field.id]
+

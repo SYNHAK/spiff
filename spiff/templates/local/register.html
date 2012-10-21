@@ -5,7 +5,6 @@
 {% block content %}
 <form method="POST" action="{%url spiff.local.views.register%}">
   {{userForm.as_p}}
-  {{memberForm.as_p}}
   {{profileForm.as_p}}
   {% csrf_token %}
   <input type="submit" value="Register"/>
