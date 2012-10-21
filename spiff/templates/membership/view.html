@@ -1,9 +1,13 @@
 {% extends "base.html" %}
+{% load gravatar %}
 
 {% block title %}{{viewUser.member.fullName}}{% endblock %}
 {% block sectiontitle %}{{viewUser.member.fullName}}{% endblock %}
 
 {% block content %}
+<div style="float:right">
+  {% gravatar viewUser %}
+</div>
 <h1>{{viewUser.member.firstName}} {{viewUser.member.lastName}}</h1>
 
 <h2>Profile {% if user == viewUser %}<sup><a href="{% url spiff.membership.views.edit %}">Edit</a></sup>{% endif %}</h2>
@@ -15,10 +19,14 @@
 
 <h2>Trained Resources</h2>
 <table>
-  <tr><th>Name</th><th>Rank</th></tr>
-  {% for training in viewUser.member.trainings.all %}
-  <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url spiff.inventory.views.view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
-  {% endfor %}
+  <tr><th>Name</th><th>Level</th></tr>
+  {% if viewUser.member.trainings.all %}
+    {% for training in viewUser.member.trainings.all %}
+    <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url spiff.inventory.views.view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
+    {% endfor %}
+  {% else %}
+    <tr><td colspan="2">None :(</td></tr>
+  {% endif %}
 </table>
 {% endblock %}
 
