@@ -1,6 +1,8 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.forms.models import modelformset_factory
 import forms
+from spiff.membership.models import FieldValue, Field
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
@@ -17,13 +19,16 @@ def index(request):
         context_instance=RequestContext(request))
 
 def register(request):
+  fields = Field.objects.filter(required=True)
   if request.method == 'POST':
     userForm = forms.UserForm(request.POST, prefix='user')
-    memberForm = forms.MemberForm(request.POST, prefix='profile')
+    memberForm = forms.MemberForm(request.POST, prefix='member')
+    profileForm = forms.ProfileForm(request.POST, fields=fields, prefix='profile')
   else:
     userForm = forms.UserForm(prefix='user')
-    memberForm = forms.MemberForm(prefix='profile')
-  if userForm.is_valid() and memberForm.is_valid():
+    memberForm = forms.MemberForm(prefix='member')
+    profileForm = forms.ProfileForm(fields=fields, prefix='profile')
+  if userForm.is_valid() and memberForm.is_valid() and profileForm.is_valid():
     oldUser = None
     try:
       oldUser = User.objects.get(username__exact=userForm.cleaned_data['username'])
@@ -41,7 +46,11 @@ def register(request):
       user = authenticate(username=userForm.cleaned_data['username'], password=userForm.cleaned_data['password'])
       login(request, user)
       messages.info(request, "Welcome!")
+      for field in fields:
+        value = FieldValue.objects.create(field=field,
+            value=profileForm.fieldValue(field), member=member)
       return HttpResponseRedirect(reverse('home'))
   return render_to_response('local/register.html',
-      {'userForm': userForm, 'memberForm': memberForm},
+      {'userForm': userForm, 'memberForm': memberForm, 'profileForm':
+        profileForm},
       context_instance=RequestContext(request))
