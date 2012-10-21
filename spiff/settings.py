@@ -156,6 +156,4 @@ LOGGING = {
     }
 }
 
-SPIFF_REGISTRATION_METHOD = 0
-
 from local_settings import *
