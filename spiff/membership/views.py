@@ -8,3 +8,9 @@ def index(request):
   return render_to_response('membership/index.html',
       {'users': users},
       context_instance=RequestContext(request))
+
+def view(request, username):
+  user = User.objects.get(username=username)
+  return render_to_response('membership/view.html',
+      {'user': user},
+      context_instance=RequestContext(request))

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{user.member.fullName}}{% endblock %}
+{% block sectiontitle %}{{user.member.fullName}}{% endblock %}
+
+{% block content %}
+<h1>{{user.member.firstName}} {{user.member.lastName}}</h1>
+
+<h2>Profile</h2>
+<table>
+  {% for field in user.member.attributes.all %}
+    <tr><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Trained Resources</h2>
+<table>
+  <tr><th>Name</th><th>Rank</th></tr>
+  {% for training in user.member.trainings.all %}
+  <tr><td>{{training.resource.name}}</td><td>{{training.rank}}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
+
+

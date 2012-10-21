@@ -10,6 +10,11 @@ class Member(models.Model):
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
   fields = models.ManyToManyField('Field', through='FieldValue')
   birthday = models.DateField(blank=True, null=True)
+  active = models.BooleanField()
+
+  @models.permalink
+  def get_absolute_url(self):
+    return ('spiff.membership.views.view', [], {'username': self.user.username})
 
   @property
   def fullName(self):
@@ -22,6 +27,7 @@ class DuePayment(models.Model):
   member = models.ForeignKey(Member, related_name='payments')
   value = models.FloatField()
   created = models.DateTimeField(auto_now_add=True)
+  rank = models.ForeignKey('Rank', related_name='payments')
 
   def __unicode__(self):
     return "%s from %s"%(self.value, self.member.fullName)
@@ -39,13 +45,14 @@ class Field(models.Model):
   description = models.TextField(blank=True)
   multiple = models.BooleanField(default=False)
   required = models.BooleanField(default=False)
+  public = models.BooleanField(default=False)
 
   def __unicode__(self):
     return self.name
 
 class FieldValue(models.Model):
   field = models.ForeignKey(Field)
-  member = models.ForeignKey(Member)
+  member = models.ForeignKey(Member, related_name='attributes')
   value = models.TextField()
 
   def __unicode__(self):
