@@ -41,12 +41,16 @@
       </form>
     </div>
     <br class="clear"/>
-    <div id="messages" class="grid_12">
-      <ul>
-        {% for message in messages %}
-        <li class="message {{message.tags}}">{{message}}</li>
-        {% endfor %}
-      </ul>
+    <div class="grid_12">
+      {% if messages %}
+      <div class="messages">
+        <ul>
+          {% for message in messages %}
+          <li class="message {{message.tags}}">{{message}}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
     </div>
     <br class="clear"/>
   </div>

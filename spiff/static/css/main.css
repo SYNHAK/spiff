@@ -89,3 +89,15 @@ table tr:hover td {
   width:auto;
   margin:0;
 }
+
+div.messages {
+  text-align: center;
+  font-size: large;
+  background-color: #ffc;
+  color: #000;
+  border: 3px solid #ffdca8;
+}
+
+div.messages li {
+  list-style: none;
+}

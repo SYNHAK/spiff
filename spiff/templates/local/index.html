@@ -16,6 +16,17 @@
 </ul>
 
 <h2>Recent Payments</h2>
+<div class="messages">
+{% if user.member.paidForMonth %}
+You are paid up for the month.
+{% else %}
+  {% if user.member.overdue %}
+    You are overdue!
+  {% else %}
+    You have not paid this month's dues.
+  {% endif %}
+{% endif %}
+</div>
 <table>
   <tr><th>Date</th><th>Value</th><th>Membership Level</th></tr>
   {% for payment in user.member.payments.all %}

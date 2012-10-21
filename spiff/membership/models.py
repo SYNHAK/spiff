@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
+import datetime
 
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
@@ -19,13 +20,26 @@ class Member(models.Model):
   def fullName(self):
     return "%s %s"%(self.user.first_name, self.user.last_name)
 
+  def paidForMonth(self):
+    now = datetime.date.today()
+    firstOfMonth = datetime.date(now.year, now.month, 1)
+    payments = self.payments.filter(created__gt=firstOfMonth)
+    return len(payments) > 0
+
+  def overdue(self):
+    now = datetime.date.today()
+    firstOfMonth = datetime.date(now.year, now.month, 1)
+    lateDate = firstOfMonth+datetime.timedelta(days=30)
+    payments = self.payments.filter(created__lt=lateDate)
+    return len(payments) == 0
+
   def __unicode__(self):
     return "%s, %s"%(self.user.last_name, self.user.first_name)
 
 class DuePayment(models.Model):
   member = models.ForeignKey(Member, related_name='payments')
   value = models.FloatField()
-  created = models.DateTimeField(auto_now_add=True)
+  created = models.DateTimeField(editable=True, auto_now_add=True)
   rank = models.ForeignKey('Rank', related_name='payments')
 
   def __unicode__(self):
