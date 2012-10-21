@@ -40,3 +40,46 @@
   color:#000;
   padding: 5px;
 }
+
+form label {
+  display:block;
+}
+
+form input {
+  margin-left: 3em;
+  width: 100%;
+}
+
+form .helptext {
+  display:block;
+  margin-left: 3em;
+  font-size:small;
+}
+
+table {
+  width: 100%;
+}
+
+table th {
+  font-weight: bold;
+  font-size:large;
+  border-bottom: 3px solid black;
+}
+
+table tr {
+  border-bottom: 1px solid black;
+}
+
+table tr td {
+  padding: 3px;
+  background-color: #ccc;
+}
+
+table tr.odd td {
+  padding: 3px;
+  background-color: #eee;
+}
+
+table tr:hover td {
+  background-color: #fff !important;
+}
