@@ -9,7 +9,7 @@
 <h2>Profile</h2>
 <table>
   {% for field in viewUser.member.attributes.all %}
-    <tr><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
+  <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
   {% endfor %}
 </table>
 
@@ -17,7 +17,7 @@
 <table>
   <tr><th>Name</th><th>Rank</th></tr>
   {% for training in viewUser.member.trainings.all %}
-  <tr><td>{{training.resource.name}}</td><td>{{training.rank}}</td></tr>
+  <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url spiff.inventory.views.view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
   {% endfor %}
 </table>
 {% endblock %}

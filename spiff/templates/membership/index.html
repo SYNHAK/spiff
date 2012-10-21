@@ -5,11 +5,10 @@
 {% block sectiontitle %}Members{% endblock %}
 
 {% block content %}
-<h1>Members</h1>
 <table>
   <tr><th>Name</th><th>Member Since</th></tr>
   {% for user in users %}
-  <tr><td><a href="{% url spiff.membership.views.view username=user.username %}">{% gravatar user %} {{user.member.fullName}}</a></td><td>{{user.member.created}}</td></tr>
+  <tr class="{% cycle 'odd' 'even' %}"><td><a href="{% url spiff.membership.views.view username=user.username %}">{% gravatar user %} {{user.member.fullName}}</a></td><td>{{user.member.created}}</td></tr>
   {% endfor %}
 </table>
 {% endblock %}
