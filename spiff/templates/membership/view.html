@@ -6,7 +6,7 @@
 {% block content %}
 <h1>{{viewUser.member.firstName}} {{viewUser.member.lastName}}</h1>
 
-<h2>Profile</h2>
+<h2>Profile {% if user == viewUser %}<sup><a href="{% url spiff.membership.views.edit %}">Edit</a></sup>{% endif %}</h2>
 <table>
   {% for field in viewUser.member.attributes.all %}
   <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
