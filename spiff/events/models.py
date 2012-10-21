@@ -13,7 +13,7 @@ class Event(models.Model):
 
   class Meta:
     permissions = (
-      ('can_reserve_resource', 'Can attach resources to events')
+      ('can_reserve_resource', 'Can attach resources to events'),
     )
 
   @models.permalink
