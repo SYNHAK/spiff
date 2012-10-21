@@ -17,5 +17,11 @@
 {% endif %}
 </ul>
 
-Hello, World!
+<h2>Recent Payments</h2>
+<table>
+  <tr><th>Date</th><th>Value</th><th>Membership Level</th></tr>
+  {% for payment in user.member.payments.all %}
+    <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.rank.group.name}}</td></tr>
+  {% endfor %}
+</table>
 {% endblock %}
