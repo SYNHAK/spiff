@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Resources{% endblock %}
+{% block sectiontitle %}Resources{% endblock %}
+
+{% block content %}
+<h1>{{item.name}}</h1>
+<h2>Metadata</h2>
+<table>
+  {% if item.metadata.all %}
+    {% for prop in item.metadata.all %}
+    <tr><td>{{prop.type}}</td><td>{{prop.name}}</td><td>{{prop.value}}</td>
+    {% endfor %}
+  {% else %}
+    <tr><td colspan="3">No metadata</td></tr>
+  {% endif %}
+  <tr><td colspan="3"><a href="{% url spiff.inventory.views.addMeta id=item.id%}">Add
+        metadata</a></td></tr>
+</table>
+{% if item.trainable %}
+<h2>Trained Users</h2>
+<table>
+  <tr><th>Name</th><th>Level</th></tr>
+  {% if item.users.all %}
+    {% for training in item.trainings.all %}
+    <tr><td><a
+          href="{{training.member.get_absolute_url}}">{{training.member}}</a></td><td>{{training.rank}}</td></tr>
+    {% endfor %}
+  {% else %}
+    <tr><td colspan="2">Nobody!</td></tr>
+  {% endif %}
+</table>
+{% endif %}
+{% endblock %}
+

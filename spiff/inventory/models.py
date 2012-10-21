@@ -5,6 +5,10 @@ class Resource(models.Model):
   name = models.TextField()
   trainable = models.BooleanField(default=True)
   users = models.ManyToManyField(Member, through='TrainingLevel')
+
+  @models.permalink
+  def get_absolute_url(self):
+    return ('spiff.inventory.views.view', [], {'id':self.id})
   
   def __unicode__(self):
     return self.name
@@ -19,14 +23,14 @@ class Metadata(models.Model):
   name = models.TextField()
   type = models.IntegerField(choices=META_TYPES)
   value = models.TextField()
-  resource = models.ForeignKey(Resource)
+  resource = models.ForeignKey(Resource, related_name='metadata')
 
   def __unicode__(self):
     return self.value
 
 class TrainingLevel(models.Model):
-  member = models.ForeignKey(Member)
-  resource = models.ForeignKey(Resource)
+  member = models.ForeignKey(Member, related_name='trainings')
+  resource = models.ForeignKey(Resource, related_name='trainings')
   rank = models.IntegerField()
   comments = models.TextField(blank=True)
 
