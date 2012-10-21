@@ -3,8 +3,6 @@ from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 
 class Member(models.Model):
-  firstName = models.CharField(max_length=100, null=False)
-  lastName = models.CharField(max_length=100, null=False)
   tagline = models.CharField(max_length=255)
   profession = models.CharField(max_length=255)
   user = models.OneToOneField(User)
@@ -15,10 +13,10 @@ class Member(models.Model):
 
   @property
   def fullName(self):
-    return "%s %s"%(self.firstName, self.lastName)
+    return "%s %s"%(self.user.first_name, self.user.last_name)
 
   def __unicode__(self):
-    return "%s, %s"%(self.lastName, self.firstName)
+    return "%s, %s"%(self.user.last_name, self.user.first_name)
 
 class DuePayment(models.Model):
   member = models.ForeignKey(Member, related_name='payments')

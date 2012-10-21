@@ -30,11 +30,12 @@ def register(request):
     except ObjectDoesNotExist, e:
       pass
     if not oldUser:
-      user = User.objects.create_user(userForm.cleaned_data['username'], userForm.cleaned_data['email'], userForm.cleaned_data['password'])
+      user = User.objects.create_user(userForm.cleaned_data['username'],
+          userForm.cleaned_data['email'], userForm.cleaned_data['password'])
+      user.first_name = memberForm.cleaned_data['firstName']
+      user.last_name = memberForm.cleaned_data['lastName']
       user.save()
       member = user.member
-      member.firstName = memberForm.cleaned_data['firstName']
-      member.lastName= memberForm.cleaned_data['lastName']
       member.birthday = memberForm.cleaned_data['birthday']
       member.save()
       user = authenticate(username=userForm.cleaned_data['username'], password=userForm.cleaned_data['password'])
