@@ -12,5 +12,5 @@ def index(request):
 def view(request, username):
   user = User.objects.get(username=username)
   return render_to_response('membership/view.html',
-      {'user': user},
+      {'viewUser': user},
       context_instance=RequestContext(request))
