@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^$', 'spiff.local.views.index', name='home'),
     url(r'^members/', include('spiff.membership.urls')),
     url(r'^resources/', include('spiff.inventory.urls')),
+    url(r'^events/', include('spiff.events.urls')),
     url(r'^accounts/profile/$', 'spiff.local.views.index', name='home'),
     # Examples:
     # url(r'^$', 'spiff.views.home', name='home'),

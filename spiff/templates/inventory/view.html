@@ -46,9 +46,16 @@
   <tr><td colspan="2"><a href="{% url spiff.inventory.views.train id=item.id %}">Update your training</a></td></tr>
   {% endif %}
 </table>
+{% endif %}
+<h2>Related Events</h2>
+<table>
+  <tr><th>Name</th></tr>
+  {% for event in item.events.all %}
+  <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td></tr>
+  {% endfor %}
+</table>
 <div class="barcode">
 <img src="{% url spiff.inventory.views.qrCode id=item.id %}"/>
 </div>
-{% endif %}
 {% endblock %}
 

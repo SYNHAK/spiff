@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Events{% endblock %}
+{% block sectiontitle %}All Events{% endblock %}
+
+{% block content %}
+<table>
+  <tr><th>Name</th><th>Start</th><th>End</th></tr>
+  {% for event in events %}
+    <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td>
+      <td>{{event.start}}</td><td>{{event.end}}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

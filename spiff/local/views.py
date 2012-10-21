@@ -4,6 +4,7 @@ from django.forms.models import modelformset_factory
 import forms
 from spiff.membership.forms import ProfileForm
 from spiff.membership.models import FieldValue, Field, Member
+from spiff.events.models import Event
 from spiff.inventory.models import Resource
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -11,13 +12,18 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+import datetime
 
 def index(request):
+  now = datetime.datetime.now()
+  events = Event.objects.filter(end__gt=now)
   if request.user.is_anonymous():
     return render_to_response('local/index_anonymous.html',
+        {'events': events},
         context_instance=RequestContext(request))
   else:
     return render_to_response('local/index.html',
+        {'events': events},
         context_instance=RequestContext(request))
 
 def register(request):

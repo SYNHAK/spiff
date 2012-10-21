@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load markup %}
+
+{% block title %}{{event.name}}{% endblock %}
+{% block sectiontitle %}{{event.name}}{% endblock %}
+
+{% block content %}
+{{event.description|markdown}}
+
+<h2>Attendees</h2>
+<table>
+{% for member in event.attendees.all %}
+  <tr><td><a
+        href="{{member.get_absolute_url}}">{{member.fullName}}</a></td></tr>
+{% endfor %}
+</table>
+
+<h2>Used Resources</h2>
+<table>
+  {% for resource in event.resources.all %}
+    <tr><td><a
+          href="{{resource.get_absolute_url}}">{{resource.name}}</a></td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

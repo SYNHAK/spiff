@@ -33,4 +33,14 @@ You are paid up for the month.
     <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.rank.group.name}}</td></tr>
   {% endfor %}
 </table>
+
+<h2>Upcoming Events</h2>
+<table>
+  <tr><th>Name</th><th>Start</th><th>End</th></tr>
+  {% for event in events %}
+    <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td>
+      <td>{{event.start}}</td>
+      <td>{{event.end}}</td>
+  {% endfor %}
+</table>
 {% endblock %}

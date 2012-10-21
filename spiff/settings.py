@@ -122,9 +122,11 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'south',
     'gravatar',
+    'django.contrib.markup',
     'spiff.membership',
     'spiff.inventory',
     'spiff.local',
+    'spiff.events',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
