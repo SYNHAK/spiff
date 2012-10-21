@@ -18,8 +18,9 @@
         Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
         or <a href="{% url 'spiff.local.views.register' %}">Register</a>
       {% else %}
-        {% gravatar user %}
-        <p>Welcome, {{user.member.fullName}}!</p>
+      <a href="{{user.member.get_absolute_url}}">
+        {% gravatar user %}</a>
+      <p>Welcome, <a href="{{user.member.get_absolute_url}}">{{user.member.fullName}}!</a></p>
         <p><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></p>
       {% endif %}
     </div>
