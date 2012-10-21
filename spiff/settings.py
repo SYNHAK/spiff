@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'south',
+    'gravatar',
     'spiff.membership',
     'spiff.inventory',
     'spiff.local',
