@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
 {% block title %}Home{% endblock %}
-{% block sectiontitle %}Home{% endblock %}
+{% block sectiontitle %}Your Membership{% endblock %}
 
 {% block content %}
-<h1>Your Membership</h1>
-
 <h2>Groups</h2>
 <ul>
 {% if user.groups.all %}
