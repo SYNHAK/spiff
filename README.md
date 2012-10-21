@@ -6,6 +6,7 @@ Spiff is a Django application that helps you manage a hackerspace.
 
 * Django 1.4
 * south
+* django-gravatar
 
 ## Features
 
