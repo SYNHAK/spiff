@@ -32,6 +32,9 @@
     <tr><td colspan="2">Nobody!</td></tr>
   {% endif %}
 </table>
+<div class="barcode">
+<img src="{% url spiff.inventory.views.qrCode id=item.id %}"/>
+</div>
 {% endif %}
 {% endblock %}
 
