@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 
 {% block title %}Resources{% endblock %}
-{% block sectiontitle %}Resources{% endblock %}
+{% block sectiontitle %}{{item.name}}{% endblock %}
 
 {% block content %}
-<h1>{{item.name}}</h1>
 <h2>Metadata</h2>
 <table>
   {% if item.metadata.all %}

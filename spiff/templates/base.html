@@ -3,12 +3,17 @@
 <html>
 <head>
   <title>{% block title %}Spiff{% endblock %} - Spiff</title>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/reset.css"/>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/text.css"/>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/960.css"/>
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/main.css"/>
 </head>
 <body>
-  <div id="header">
-    <h1>{% block sectiontitle %}Spiff{% endblock %}</h1>
-    <div id="epicenter">
+  <div id="header" class="container_12">
+    <div id="title" class="grid_7">
+      <h1>{{site_name}}</h1>
+    </div>
+    <div id="epicenter" class="grid_3">
       {% if user.is_anonymous %}
         Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
         or <a href="{% url 'spiff.local.views.register' %}">Register</a>
@@ -17,7 +22,8 @@
         Welcome, {{user.member.fullName}}!
       {% endif %}
     </div>
-    <div id="navbar">
+    <br class="clear"/>
+    <div id="navbar" class="grid_12">
       <ul>
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
@@ -28,18 +34,45 @@
         <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
       </ul>
     </div>
-    <div id="messages">
+    <br class="clear"/>
+    <div id="messages" class="grid_12">
       <ul>
         {% for message in messages %}
         <li class="message {{message.tags}}">{{message}}</li>
         {% endfor %}
       </ul>
     </div>
-    <br style="clear:both;"/>
+    <br class="clear"/>
   </div>
-  <div id="content">
-    {% block content %}
-    {% endblock %}
+  <div id="content" class="container_12">
+    <div class="grid_12">
+      <h1>{% block sectiontitle %}Spiff{% endblock %}</h1>
+    </div>
+    <br class="clear"/>
+    <div class="grid_12">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </div>
+  <div id="footer" class="container_12">
+    <div class="grid_3">
+      <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
+        <li><a href="{% url 'spiff.inventory.views.index' %}">Resources</a></li>
+        {% if user.is_superuser %}
+        <li><a href="{% url 'admin:index' %}">Admin</a></li>
+        {% endif %}
+        <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
+      </ul>
+    </div>
+    <div class="grid_9">
+      <div id="copyright">
+        Powered by Spaceman Spiff
+      <br style="clear:both;"/>
+      </div>
+    </div>
+    <br class="clear"/>
   </div>
 </body>
 </html>
