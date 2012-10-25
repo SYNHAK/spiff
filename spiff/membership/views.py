@@ -1,4 +1,5 @@
 from django.template import RequestContext
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
@@ -20,8 +21,10 @@ def view(request, username):
 def edit(request, username=None):
   if username is None:
     user = request.user
-  else:
+  elif request.user.has_perm('auth.can_change_user'):
     user = User.objects.get(username=username)
+  else:
+    raise PermissionDenied()
   fields = models.Field.objects.filter()
   values = user.member.attributes.all()
   if request.method == "POST":

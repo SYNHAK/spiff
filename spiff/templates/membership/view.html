@@ -10,10 +10,13 @@
 </div>
 <h1>{{viewUser.member.firstName}} {{viewUser.member.lastName}}</h1>
 
-<h2>Profile {% if user == viewUser %}<sup><a href="{% url spiff.membership.views.edit %}">Edit</a></sup>{% endif %}</h2>
+<h2>Profile {% if user == viewUser or perms.auth.can_change_user %}<sup><a
+      href="{% url spiff.membership.views.edit username=viewUser.username %}">Edit</a></sup>{% endif %}</h2>
 <table>
   {% for field in viewUser.member.attributes.all %}
-  <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
+  {% if field.field.public or viewUser == user or perms.membership.can_view_private_fields %}
+    <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
+  {% endif %}
   {% endfor %}
 </table>
 

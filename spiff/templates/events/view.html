@@ -24,8 +24,10 @@
     <tr><td><a
           href="{{resource.get_absolute_url}}">{{resource.name}}</a></td></tr>
   {% endfor %}
-  {% if perms.events.can_reserve_resource and user == event.creator.user %}
-  <tr><td><a href="{% url spiff.events.views.addResource id=event.id %}">Add a resource</a></td>
+  {% if perms.events.can_reserve_resource %}
+    {% if user == event.creator.user or perms.can_change_event %}
+      <tr><td><a href="{% url spiff.events.views.addResource id=event.id %}">Add a resource</a></td>
+    {% endif %}
   {% endif %}
 </table>
 {% endblock %}

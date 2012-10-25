@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.template import RequestContext
@@ -27,6 +28,7 @@ def attend(request, id):
   return HttpResponseRedirect(reverse('spiff.events.views.view', kwargs={'id':
     event.id}))
 
+@permission_required('events.can_reserve_resource')
 def addResource(request, id):
   event = models.Event.objects.get(id=id)
   resources = Resource.objects.all()
@@ -46,6 +48,7 @@ def addResource(request, id):
       {'resourceForm': picker, 'event': event},
       context_instance=RequestContext(request))
 
+@permission_required('events.can_add_event')
 def create(request):
   if request.method == "POST":
     form = forms.EventForm(request.POST)

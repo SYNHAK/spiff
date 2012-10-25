@@ -28,7 +28,7 @@ def view(request, id):
   return render_to_response('inventory/view.html', {'item':resource, 'myTraining': training},
       context_instance=RequestContext(request))
 
-@permission_required('inventory.can_add_metadata')
+@permission_required('inventory.can_change_metadata')
 def addMeta(request, id):
   resource = models.Resource.objects.get(pk=id)
   if request.method == 'POST':
@@ -57,6 +57,7 @@ def addMeta(request, id):
     'metaForm': form},
       context_instance=RequestContext(request))
 
+@permission_required('inventory.can_train')
 def promoteTraining(request, id):
   training = models.TrainingLevel.objects.get(id=id)
   resource = training.resource
@@ -73,6 +74,7 @@ def promoteTraining(request, id):
   return HttpResponseRedirect(reverse('spiff.inventory.views.view',
     kwargs={'id': resource.id}))
 
+@permission_required('inventory.can_train')
 def train(request, id):
   resource = models.Resource.objects.get(pk=id)
   training = None
@@ -93,7 +95,7 @@ def train(request, id):
 def qrCode(request, id):
   site = get_current_site(request)
   base = "%s://%s"%(request.META['wsgi.url_scheme'], site.domain)
-  if request.META['SERVER_PORT']:
+  if request.META['SERVER_PORT'] != '80':
     base = "%s:%s"%(base, request.META['SERVER_PORT'])
   img = qrcode.make("%s%s"%(base,
     reverse('spiff.inventory.views.view', kwargs={'id': id})))

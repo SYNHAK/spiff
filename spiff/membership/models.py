@@ -56,9 +56,15 @@ class Rank(models.Model):
 class Field(models.Model):
   name = models.CharField(max_length=100)
   description = models.TextField(blank=True)
-  multiple = models.BooleanField(default=False)
   required = models.BooleanField(default=False)
   public = models.BooleanField(default=False)
+  protected = models.BooleanField(default=False)
+
+  class Meta:
+    permissions = (
+      ('can_view_private_fields', 'Can view private fields'),
+      ('can_edit_protected_fields', 'Can edit protected fields'),
+    )
 
   def __unicode__(self):
     return self.name
