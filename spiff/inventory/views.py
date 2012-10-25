@@ -1,4 +1,5 @@
 from django.template import RequestContext
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.sites.models import get_current_site
 from django.core.urlresolvers import reverse
@@ -62,6 +63,8 @@ def promoteTraining(request, id):
   training = models.TrainingLevel.objects.get(id=id)
   resource = training.resource
   myTraining = request.user.member.trainings.get(resource=resource)
+  if myTraining == training:
+    raise PermissionDenied()
   oldValue = training.rank
   training.rank = myTraining.rank + 1
   training.save()
