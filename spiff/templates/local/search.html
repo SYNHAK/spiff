@@ -18,6 +18,18 @@
 {% endfor %}
 </ul>
 
+<h2>Resource Metadata</h2>
+<table>
+  <tr><th>Resource</th><th>Key</th><th>Value</th></tr>
+  {% for meta in metadata %}
+  <tr><td><a
+        href="{{meta.resource.get_absolute_url}}">{{meta.resource.name}}</a></td>
+    <td>{{meta.name}}</td>
+    <td>{{meta.value}}</td>
+  </tr>
+  {% endfor %}
+</table>
+
 <h2>Members</h2>
 <ul>
   {% for member in members %}
