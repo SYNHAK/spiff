@@ -33,17 +33,24 @@
 {% if item.trainable %}
 <h2>Trained Users</h2>
 <table>
-  <tr><th>Name</th><th>Level</th></tr>
+  <tr><th>Name</th><th></th></tr>
   {% if item.users.all %}
     {% for training in item.trainings.all %}
     <tr><td><a
-          href="{{training.member.get_absolute_url}}">{{training.member}}</a></td><td>{{training.rank}}</td></tr>
+          href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
+      <td>
+        {% if training.rank <= myTraining.rank and training != myTraining %}
+        <a href="{% url spiff.inventory.views.promoteTraining id=training.id %}">They are
+          better than me</a>
+        {% endif %}
+      </td>
+    </tr>
     {% endfor %}
   {% else %}
     <tr><td colspan="2">Nobody!</td></tr>
   {% endif %}
-  {% if perms.inventory.can_train %}
-  <tr><td colspan="2"><a href="{% url spiff.inventory.views.train id=item.id %}">Update your training</a></td></tr>
+  {% if not myTraining %}
+  <tr><td colspan="2"><a href="{% url spiff.inventory.views.train id=item.id %}">I have used this!</a></td></tr>
   {% endif %}
 </table>
 {% endif %}
@@ -52,6 +59,37 @@
   <tr><th>Name</th></tr>
   {% for event in item.events.all %}
   <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td></tr>
+  {% endfor %}
+</table>
+<h2>Changelog</h2>
+<table>
+  <tr><th>Date</th><th>Who</th><th>What</th></tr>
+  {% for event in item.changelog.all %}
+    <tr>
+      <td>{{event.stamp}}</td>
+      <td>{{event.member}}</td>
+      <td>
+        {% if event.property %}
+          {% if event.old %}
+            {% if event.new %}
+              Changed {{event.property}} from {{event.old}} to {{event.new}}
+            {% else %}
+              Deleted {{event.property}} (was {{event.old}}
+            {% endif %}
+          {% else %}
+            {% if event.new %}
+            Added {{event.property}}: {{event.new}}
+            {% else %}
+              Did some property wizardry that spiff can't understand.
+            {% endif %}
+          {% endif %}
+        {% elif event.trained_member %}
+          Promoted {{event.trained_member}} from Level {{event.old}} to Level {{event.new}}
+        {% else %}
+          Did some wizardry that spiff can't understand.
+        {% endif %}
+      </td>
+    </tr>
   {% endfor %}
 </table>
 <div class="barcode">

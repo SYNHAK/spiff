@@ -20,7 +20,12 @@ def index(request):
 
 def view(request, id):
   resource = models.Resource.objects.get(pk=id)
-  return render_to_response('inventory/view.html', {'item':resource},
+  training = None
+  try:
+    training = request.user.member.trainings.get(resource=resource)
+  except models.TrainingLevel.DoesNotExist:
+    pass
+  return render_to_response('inventory/view.html', {'item':resource, 'myTraining': training},
       context_instance=RequestContext(request))
 
 @permission_required('inventory.can_add_metadata')
@@ -33,42 +38,56 @@ def addMeta(request, id):
   if form.is_valid():
     meta,created = models.Metadata.objects.get_or_create(resource=resource,
         name=form.cleaned_data['name'], type=form.cleaned_data['type'])
+    if created:
+      oldValue = None
+    else:
+      oldValue = meta.value
     meta.value = form.cleaned_data['value']
     meta.save()
     messages.info(request, "Metadata saved.")
+    resource.logChange(
+        member=request.user.member,
+        old=oldValue,
+        new=meta.value,
+        property=meta.name)
+
     return HttpResponseRedirect(reverse('spiff.inventory.views.view',
       kwargs={'id': resource.id}))
   return render_to_response('inventory/addMeta.html', {'item':resource,
     'metaForm': form},
       context_instance=RequestContext(request))
 
-@permission_required('inventory.can_train')
+def promoteTraining(request, id):
+  training = models.TrainingLevel.objects.get(id=id)
+  resource = training.resource
+  myTraining = request.user.member.trainings.get(resource=resource)
+  oldValue = training.rank
+  training.rank = myTraining.rank + 1
+  training.save()
+  messages.info(request, "Promoted!")
+  resource.logChange(
+      member=request.user.member,
+      old=oldValue,
+      new=training.rank,
+      trained_member=training.member)
+  return HttpResponseRedirect(reverse('spiff.inventory.views.view',
+    kwargs={'id': resource.id}))
+
 def train(request, id):
   resource = models.Resource.objects.get(pk=id)
   training = None
   try:
     training = request.user.member.trainings.get(resource__id=id)
   except models.TrainingLevel.DoesNotExist:
-    pass
-  if request.method == 'POST':
-    form = forms.TrainingForm(request.POST, instance=training)
-  else:
-    form = forms.TrainingForm(instance=training)
-  if form.is_valid():
-    if not training:
-      training = models.TrainingLevel.objects.create(rank=form.cleaned_data['rank'],
-          comments=form.cleaned_data['comments'], member=request.user.member,
-          resource=resource)
-    else:
-      training.comments = form.cleaned_data['comments']
-      training.rank = form.cleaned_data['rank']
-      training.save()
-      messages.info(request, "Training Updated")
-      return HttpResponseRedirect(reverse('spiff.inventory.views.view',
-        kwargs={'id': resource.id}))
-  return render_to_response('inventory/train.html', {'item':resource,
-    'trainingForm': form},
-      context_instance=RequestContext(request))
+    training = models.TrainingLevel.objects.create(member=request.user.member,
+        resource=resource, rank=0)
+    resource.logChange(
+        member=request.user.member,
+        new=training.rank,
+        trained_member=training.member)
+  messages.info(request, "Duly Noted.")
+  return HttpResponseRedirect(reverse('spiff.inventory.views.view',
+    kwargs={'id': resource.id}))
 
 @cache_control(public=True, private=False, no_cache=False, no_transform=False, must_revalidate=False, proxy_revalidate=False, max_age=86400)
 def qrCode(request, id):

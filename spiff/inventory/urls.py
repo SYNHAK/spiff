@@ -6,4 +6,5 @@ urlpatterns = patterns('spiff.inventory',
   url(r'^(?P<id>[0-9]+)/qr$', 'views.qrCode'),
   url(r'^(?P<id>[0-9]+)/add$', 'views.addMeta'),
   url(r'^(?P<id>[0-9]+)/train$', 'views.train'),
+  url(r'^(?P<id>[0-9]+)/promote$', 'views.promoteTraining'),
 )
