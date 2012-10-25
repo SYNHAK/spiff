@@ -1,4 +1,5 @@
 from django.template import RequestContext
+from django.db.models import Q
 from django.shortcuts import render_to_response
 from django.forms.models import modelformset_factory
 import forms
@@ -68,8 +69,16 @@ def search(request):
   else:
     searchForm = forms.SearchForm()
   if searchForm.is_valid():
-    resources = Resource.objects.filter(name__iregex='.*%s.*'%(searchForm.cleaned_data['query']))
-    members = Member.objects.filter(user__username__iregex='%s'%(searchForm.cleaned_data['query']))
+    resources = Resource.objects.filter(
+      Q(name__iregex='.*%s.*'%(searchForm.cleaned_data['query'])) |
+      Q(metadata__value__iregex='.*%s.*'%(searchForm.cleaned_data['query']))
+    )
+    members = Member.objects.filter(
+      Q(user__username__iregex='.*%s.*'%(searchForm.cleaned_data['query'])) |
+      Q(user__first_name__iregex='.*%s.*'%(searchForm.cleaned_data['query'])) |
+      Q(user__last_name__iregex='.*%s.*'%(searchForm.cleaned_data['query'])) |
+      Q(attributes__value__iregex='.*%s.*'%(searchForm.cleaned_data['query']))
+    )
   return render_to_response('local/search.html',
       {'resources': resources, 'members': members},
       context_instance=RequestContext(request))
