@@ -72,9 +72,9 @@
         {% if event.property %}
           {% if event.old %}
             {% if event.new %}
-              Changed {{event.property}} from {{event.old}} to {{event.new}}
+              Changed {{event.property}} from {{event.old}} to {{event.new}}.
             {% else %}
-              Deleted {{event.property}} (was {{event.old}}
+              Deleted {{event.property}} (was {{event.old}}).
             {% endif %}
           {% else %}
             {% if event.new %}
@@ -84,7 +84,12 @@
             {% endif %}
           {% endif %}
         {% elif event.trained_member %}
-          Promoted {{event.trained_member}} from Level {{event.old}} to Level {{event.new}}
+          {% if event.old %}
+            Promoted {{event.trained_member}} from Level {{event.old}} to Level
+            {{event.new}}.
+          {% else %}
+            Used it for the first time.
+          {% endif %}
         {% else %}
           Did some wizardry that spiff can't understand.
         {% endif %}
