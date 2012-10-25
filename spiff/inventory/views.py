@@ -22,10 +22,11 @@ def index(request):
 def view(request, id):
   resource = models.Resource.objects.get(pk=id)
   training = None
-  try:
-    training = request.user.member.trainings.get(resource=resource)
-  except models.TrainingLevel.DoesNotExist:
-    pass
+  if not request.user.is_anonymous():
+    try:
+      training = request.user.member.trainings.get(resource=resource)
+    except models.TrainingLevel.DoesNotExist:
+      pass
   return render_to_response('inventory/view.html', {'item':resource, 'myTraining': training},
       context_instance=RequestContext(request))
 
