@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+{{eventForm.media}}
+{% endblock %}
+
 {% block title %}Events{% endblock %}
 {% block sectiontitle %}Create an Event{% endblock %}
 

@@ -118,3 +118,8 @@ ul.errorlist li {
 select[multiple] {
   height: 15em;
 }
+
+.timepicker {
+  width: 2em;
+  margin: 0;
+}

@@ -56,7 +56,7 @@ def create(request):
     form = forms.EventForm()
   if form.is_valid():
     event = models.Event.objects.create(
-        start=form.cleaned_data['start'],
+        start = form.cleaned_data['start'],
         end = form.cleaned_data['end'],
         description = form.cleaned_data['description'],
         name = form.cleaned_data['name'],

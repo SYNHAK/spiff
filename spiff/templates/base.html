@@ -6,7 +6,12 @@
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/reset.css"/>
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/text.css"/>
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/960.css"/>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/jquery-ui.css"/>
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/main.css"/>
+  <script type="text/javascript" src="{{STATIC_URL}}/js/jquery.js"></script>
+  <script type="text/javascript" src="{{STATIC_URL}}/js/jquery-ui.js"></script>
+  {% block extrahead %}
+  {% endblock %}
 </head>
 <body>
   <div id="header" class="container_12">

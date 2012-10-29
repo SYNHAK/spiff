@@ -1,10 +1,12 @@
 from django import forms
 import models
+import fields
 
-class EventForm(forms.ModelForm):
-  class Meta:
-    model = models.Event
-    fields = ('start', 'end', 'name', 'description')
+class EventForm(forms.Form):
+  start = fields.JqSplitDateTimeField()
+  end = fields.JqSplitDateTimeField()
+  name = forms.CharField()
+  description = forms.CharField(widget=forms.Textarea)
 
 class ReserveResourceForm(forms.Form):
   def __init__(self, *args, **kwargs):
