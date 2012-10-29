@@ -1,4 +1,5 @@
 from django.template import RequestContext
+from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -7,7 +8,8 @@ import models
 import forms
 
 def index(request):
-  users = User.objects.filter(is_active=True)
+  users = User.objects.filter(Q(is_active=True) |
+      Q(groups__rank__isActiveMembership=True))
   return render_to_response('membership/index.html',
       {'users': users},
       context_instance=RequestContext(request))

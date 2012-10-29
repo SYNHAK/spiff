@@ -10,6 +10,12 @@
 </div>
 <h1>{{viewUser.member.firstName}} {{viewUser.member.lastName}}</h1>
 
+{% if not viewUser.member.activeMember %}
+<div class="messages">
+  Not an Active Member
+</div>
+{% endif %}
+
 <h2>Profile {% if user == viewUser or perms.auth.can_change_user %}<sup><a
       href="{% url spiff.membership.views.edit username=viewUser.username %}">Edit</a></sup>{% endif %}</h2>
 <table>

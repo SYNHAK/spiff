@@ -33,6 +33,10 @@ class Member(models.Model):
     payments = self.payments.filter(created__lt=lateDate)
     return len(payments) == 0
 
+  def activeMember(self):
+    groups = self.user.groups.filter(rank__isActiveMembership=True)
+    return len(groups) > 0
+
   def __unicode__(self):
     return "%s, %s"%(self.user.last_name, self.user.first_name)
 
@@ -49,6 +53,7 @@ class Rank(models.Model):
   description = models.TextField(blank=True)
   monthlyDues = models.FloatField(default=0)
   group = models.OneToOneField(Group)
+  isActiveMembership = models.BooleanField()
 
   def __unicode__(self):
     return self.group.name
