@@ -21,9 +21,9 @@ def view(request, username):
 def edit(request, username=None):
   if username is None:
     user = request.user
-  elif request.user.has_perm('auth.can_change_user'):
-    user = User.objects.get(username=username)
   else:
+    user = User.objects.get(username=username)
+  if user != request.user and not request.user.has_perm('auth.can_change_user'):
     raise PermissionDenied()
   fields = models.Field.objects.filter()
   values = user.member.attributes.all()
