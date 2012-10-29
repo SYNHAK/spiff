@@ -34,6 +34,8 @@ class Member(models.Model):
     return len(payments) == 0
 
   def activeMember(self):
+    if not self.user.is_active:
+      return False
     groups = self.user.groups.filter(rank__isActiveMembership=True)
     return len(groups) > 0
 

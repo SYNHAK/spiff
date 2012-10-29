@@ -10,7 +10,8 @@
 </div>
 <h1>{{viewUser.member.firstName}} {{viewUser.member.lastName}}</h1>
 
-{% if not viewUser.member.activeMember %}
+{% if viewUser.member.activeMember %}
+{% else %}
 <div class="messages">
   Not an Active Member
 </div>
