@@ -36,6 +36,7 @@ def edit(request, username=None):
   if userForm.is_valid() and profileForm.is_valid():
     user.first_name = userForm.cleaned_data['firstName']
     user.last_name = userForm.cleaned_data['lastName']
+    user.email = userForm.cleaned_data['email']
     user.save()
     member = user.member
     member.birthday = userForm.cleaned_data['birthday']
