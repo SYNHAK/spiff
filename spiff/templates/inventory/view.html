@@ -26,7 +26,7 @@
     <tr><td colspan="3">No metadata</td></tr>
   {% endif %}
   {% if perms.inventory.can_change_metadata %}
-  <tr><td colspan="3"><a href="{% url spiff.inventory.views.addMeta id=item.id%}">Add/modify
+  <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url spiff.inventory.views.addMeta id=item.id%}">Add/modify
         metadata</a></td></tr>
   {% endif %}
 </table>
@@ -36,7 +36,7 @@
   <tr><th>Name</th><th></th></tr>
   {% if item.users.all %}
     {% for training in item.trainings.all %}
-    <tr><td><a
+    <tr class="{% cycle 'even' 'odd' %}"><td><a
           href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
       <td>
         {% if training.rank <= myTraining.rank and training != myTraining %}
@@ -65,7 +65,7 @@
 <table>
   <tr><th>Date</th><th>Who</th><th>What</th></tr>
   {% for event in item.changelog.all %}
-    <tr>
+  <tr class="{% cycle 'even' 'odd' %}">
       <td>{{event.stamp}}</td>
       <td>{{event.member}}</td>
       <td>

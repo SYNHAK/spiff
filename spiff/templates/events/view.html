@@ -5,6 +5,7 @@
 {% block sectiontitle %}{{event.name}}{% endblock %}
 
 {% block content %}
+<p>From {{event.start}} to {{event.end}}</p>
 <p>Organized by <a href="{{event.creator.get_absolute_url}}">{{event.creator.fullName}}</a></p>
 {{event.description|markdown}}
 
@@ -15,7 +16,7 @@
   <tr><td><a
         href="{{member.get_absolute_url}}">{{member.fullName}}</a></td></tr>
 {% endfor %}
-<tr><td><a href="{% url spiff.events.views.attend id=event.id %}">I'm attending!</a></td></tr>
+<tr class="actionbar"><td><a class="action-add-attendee" href="{% url spiff.events.views.attend id=event.id %}">I'm attending!</a></td></tr>
 </table>
 
 <h2>Used Resources</h2>
@@ -26,7 +27,7 @@
   {% endfor %}
   {% if perms.events.can_reserve_resource %}
     {% if user == event.creator.user or perms.can_change_event %}
-      <tr><td><a href="{% url spiff.events.views.addResource id=event.id %}">Add a resource</a></td>
+      <tr class="actionbar"><td><a class="action-add-resource" href="{% url spiff.events.views.addResource id=event.id %}">Add a resource</a></td>
     {% endif %}
   {% endif %}
 </table>

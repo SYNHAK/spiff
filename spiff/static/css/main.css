@@ -123,3 +123,22 @@ select[multiple] {
   width: 2em;
   margin: 0;
 }
+
+.actionbar td {
+  font-weight: bold;
+  font-size: large;
+  background-color: #fff;
+}
+
+a[class|="action"] {
+  padding-left: 16px;
+  background: no-repeat center left;
+}
+
+a[class|="action-add"] {
+  background-image: url('icons/add.png');
+}
+
+a[class|="action-add-attendee"] {
+  background-image: url('icons/tick.png');
+}
