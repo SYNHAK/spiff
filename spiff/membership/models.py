@@ -39,7 +39,7 @@ class Member(models.Model):
 class DuePayment(models.Model):
   member = models.ForeignKey(Member, related_name='payments')
   value = models.FloatField()
-  created = models.DateTimeField(editable=True, auto_now_add=True)
+  created = models.DateTimeField(editable=True)
   rank = models.ForeignKey('Rank', related_name='payments')
 
   def __unicode__(self):
