@@ -1,4 +1,11 @@
 {% extends "base.html" %}
+{% block extrahead %}
+<script type="text/javascript">
+$(function() {
+  $('#id_name').focus();
+});
+</script>
+{% endblock %}
 
 {% block title %}Resource Metadata{% endblock %}
 {% block sectiontitle %}Add metadata for {{item.name}}{% endblock %}
