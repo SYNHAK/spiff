@@ -23,7 +23,7 @@ Spiff is a Django application that helps you manage a hackerspace.
 1. Create a local_settings.py that contains any values you want to override from
 settings.py.
 
-2.  $ ./manage.py syncdb
+2.  $ ./manage.py syncdb --migrate
 
 3. Go nuts.
 
