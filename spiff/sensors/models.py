@@ -5,6 +5,7 @@ SENSOR_TYPES = (
   (1, 'string'),
   (2, 'binary'),
   (3, 'json'),
+  (4, 'temp'),
 )
 
 class Sensor(models.Model):

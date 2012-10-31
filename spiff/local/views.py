@@ -1,4 +1,7 @@
 from django.template import RequestContext
+from spiff.sensors.models import SENSOR_TYPES, Sensor
+import json
+from django.contrib.sites.models import get_current_site
 from django.db.models import Q
 from django.shortcuts import render_to_response
 from django.forms.models import modelformset_factory
@@ -11,7 +14,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 import datetime
 
@@ -83,3 +86,24 @@ def search(request):
   return render_to_response('local/search.html',
       {'resources': resources, 'members': members, 'metadata': metadata},
       context_instance=RequestContext(request))
+
+def spaceapi(request):
+  meta = {}
+  meta['api'] = '0.12'
+  meta['space'] = get_current_site(request).name
+  meta['logo'] = '/logo.png'
+  meta['icon'] = {'open': '/open.png', 'closed': '/closed.png'}
+  meta['url'] = 'http://'+get_current_site(request).domain
+  meta['open'] = True
+
+  sensors = {}
+  for t in SENSOR_TYPES:
+    sensors[t[1]] = []
+    for s in Sensor.objects.filter(type=t[0]):
+      sensors[t[1]].append({s.name: s.value().value})
+  meta['sensors'] = sensors
+
+  data = json.dumps(meta, indent=True)
+  resp = HttpResponse(data)
+  resp['Content-Type'] = 'text/plain'
+  return resp

@@ -23,4 +23,5 @@ urlpatterns = patterns('',
     url(r'^login$', 'django.contrib.auth.views.login'),
     url(r'^register$', 'spiff.local.views.register'),
     url(r'^search$', 'spiff.local.views.search'),
+    url(r'^status.json$', 'spiff.local.views.spaceapi'),
 )

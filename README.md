@@ -148,16 +148,18 @@ resources to events that they don't own.
 Spiff is intended to be the central brain of a hackerspace. As such, it includes
 functionality for tracking various sensors in the space.
 
-There are four basic types of sensors:
+There are five basic types of sensors:
 
 * number
 * string
 * binary
 * json
+* temp
 
 The type of sensor is just a hint to tell API users how to display the data if
 the exact purpose of the sensor is unknown. For example, the spiff web UI will
-show a history graph for number sensors.
+show a history graph for number sensors. The sensor types adhere to the SpaceAPI
+standard: http://hackerspaces.nl/spaceapi/
 
 To update a sensor, send a POST request to the sensor's page (i.e. /sensors/1)
 with a single 'data' parameter containing the new sensor data:
