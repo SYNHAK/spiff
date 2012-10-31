@@ -7,8 +7,8 @@
 <h2>Metadata</h2>
 <table>
   <tr><th>Name</th><th>Value</th></tr>
-  {% if item.metadata.all %}
-    {% for prop in item.metadata.all %}
+  {% if instance.metadata.all %}
+    {% for prop in instance.metadata.all %}
     <tr><td>{{prop.name}}</td>
       <td>
         {% if prop.type == 0 %}
@@ -26,21 +26,21 @@
     <tr><td colspan="3">No metadata</td></tr>
   {% endif %}
   {% if perms.inventory.can_change_metadata %}
-  <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url spiff.inventory.views.addMeta id=item.id%}">Add/modify
+  <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url inventory:meta id=instance.id%}">Add/modify
         metadata</a></td></tr>
   {% endif %}
 </table>
-{% if item.trainable %}
+{% if instance.trainable %}
 <h2>Trained Users</h2>
 <table>
   <tr><th>Name</th><th></th></tr>
-  {% if item.users.all %}
-    {% for training in item.trainings.all %}
+  {% if instance.users.all %}
+    {% for training in instance.trainings.all %}
     <tr class="{% cycle 'even' 'odd' %}"><td><a
           href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
       <td>
         {% if training.rank <= myTraining.rank and training != myTraining %}
-        <a href="{% url spiff.inventory.views.promoteTraining id=training.id %}">They are
+        <a href="{% url inventory:promote id=training.id %}">They are
           better than me</a>
         {% endif %}
       </td>
@@ -50,21 +50,21 @@
     <tr><td colspan="2">Nobody!</td></tr>
   {% endif %}
   {% if not myTraining and perms.inventory.can_train %}
-  <tr><td colspan="2"><a href="{% url spiff.inventory.views.train id=item.id %}">I have used this!</a></td></tr>
+  <tr><td colspan="2"><a href="{% url inventory:train id=instance.id %}">I have used this!</a></td></tr>
   {% endif %}
 </table>
 {% endif %}
 <h2>Related Events</h2>
 <table>
   <tr><th>Name</th></tr>
-  {% for event in item.events.all %}
+  {% for event in instance.events.all %}
   <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td></tr>
   {% endfor %}
 </table>
 <h2>Changelog</h2>
 <table>
   <tr><th>Date</th><th>Who</th><th>What</th></tr>
-  {% for event in item.changelog.all %}
+  {% for event in instance.changelog.all %}
   <tr class="{% cycle 'even' 'odd' %}">
       <td>{{event.stamp}}</td>
       <td>{{event.member}}</td>
@@ -98,7 +98,7 @@
   {% endfor %}
 </table>
 <div class="barcode">
-<img src="{% url spiff.inventory.views.qrCode id=item.id %}"/>
+<img src="{% url inventory:qr id=instance.id %}"/>
 </div>
 {% endblock %}
 

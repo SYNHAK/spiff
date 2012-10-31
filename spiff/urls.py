@@ -7,8 +7,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'spiff.local.views.index', name='home'),
     url(r'^members/', include('spiff.membership.urls')),
-    url(r'^sensors/', include('spiff.sensors.urls')),
-    url(r'^resources/', include('spiff.inventory.urls')),
+    url(r'^sensors/', include('spiff.sensors.urls', namespace='sensors')),
+    url(r'^resources/', include('spiff.inventory.urls', namespace='inventory')),
     url(r'^events/', include('spiff.events.urls')),
     url(r'^accounts/profile/$', 'spiff.local.views.index', name='home'),
     # Examples:

@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
+import views
 
 urlpatterns = patterns('spiff.sensors',
-    url(r'^$', 'views.index'),
-    url(r'^(?P<id>[0-9]+)$', 'views.view'),
 )
+
+urlpatterns += views.SensorView.as_url()

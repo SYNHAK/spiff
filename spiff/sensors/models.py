@@ -20,7 +20,7 @@ class Sensor(models.Model):
 
   @models.permalink
   def get_absolute_url(self):
-    return ('spiff.sensors.view.view', [], {'id': self.id})
+    return ('sensors:view', [], {'id': self.id})
 
   def __unicode__(self):
     return self.name

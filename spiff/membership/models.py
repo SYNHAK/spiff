@@ -12,6 +12,17 @@ class Member(models.Model):
   fields = models.ManyToManyField('Field', through='FieldValue')
   birthday = models.DateField(blank=True, null=True)
 
+  def serialize(self):
+    return {
+      'profession': self.profession,
+      'firstName': self.user.first_name,
+      'lastName': self.user.last_name,
+      'created': self.created,
+      'lastSeen': self.lastSeen,
+      'fields': self.fields.filter(public=True),
+      'id': self.id,
+    }
+
   @models.permalink
   def get_absolute_url(self):
     return ('spiff.membership.views.view', [], {'username': self.user.username})

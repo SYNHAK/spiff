@@ -9,7 +9,17 @@ class Resource(models.Model):
 
   @models.permalink
   def get_absolute_url(self):
-    return ('spiff.inventory.views.view', [], {'id':self.id})
+    return ('inventory:view', [], {'id':self.id})
+
+  def serialize(self):
+    return {
+      'name': self.name,
+      'trainable': self.trainable,
+      'trainings': self.trainings,
+      'metadata': self.metadata,
+      'changelog': self.changelog,
+      'id': self.id,
+    }
   
   def __unicode__(self):
     return self.name
@@ -34,6 +44,13 @@ class Metadata(models.Model):
   type = models.IntegerField(choices=META_TYPES)
   value = models.TextField()
   resource = models.ForeignKey(Resource, related_name='metadata')
+
+  def serialize(self):
+    return {
+      'name': self.name,
+      'type': self.type,
+      'value': self.value,
+    }
 
   def __unicode__(self):
     return self.value

@@ -11,7 +11,7 @@ $(function() {
 {% block sectiontitle %}Add metadata for {{item.name}}{% endblock %}
 
 {% block content %}
-<form method="POST" action="{%url spiff.inventory.views.addMeta id=item.id%}">
+<form method="POST" action="{%url inventory:meta id=item.id%}">
   {{metaForm.as_p}}
   {% csrf_token %}
   <input type="submit" value="Save"/>

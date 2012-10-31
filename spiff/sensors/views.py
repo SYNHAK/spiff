@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.views.decorators.csrf import csrf_exempt
+from spiff.views import ObjectView
 import models
 
 def index(request):
@@ -9,12 +9,13 @@ def index(request):
       {'sensors': sensors},
       context_instance=RequestContext(request))
 
-@csrf_exempt
-def view(request, id):
-  sensor = models.Sensor.objects.get(pk=id)
-  if request.POST:
-    models.SensorValue.objects.create(sensor=sensor,
+class SensorView(ObjectView):
+  model = models.Sensor
+  template_name = 'sensors/view.html'
+  index_template_name = 'sensors/index.html'
+
+  def post(self, request, instance, *args, **kwargs):
+    models.SensorValue.objects.create(
+        sensor=instance,
         value=request.POST['data'])
-  return render_to_response('sensors/view.html',
-      {'sensor': sensor},
-      context_instance=RequestContext(request))
+    return super(SensorView, self).post(request, instance, *args, **kwargs)

@@ -6,7 +6,7 @@
 {% block content %}
 <table>
   <tr><th>Name</th><th>Latest Value</th><th>Last Updated</th>
-  {% for sensor in sensors %}
+  {% for sensor in instances %}
   <tr><td><a href="{{ sensor.get_absolute_url }}">{{sensor.name}}</a></td>
     {% if sensor.value %}
     <td>{{sensor.value.value}}</td>

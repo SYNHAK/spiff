@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% load markup %}
 
-{% block title %}{{sensor.name}}{% endblock %}
-{% block sectiontitle %}{{sensor.name}}{% endblock %}
+{% block title %}{{instance.name}}{% endblock %}
+{% block sectiontitle %}{{instance.name}}{% endblock %}
 
 {% block content %}
-Current value: {{sensor.value.value}}
+Current value: {{instance.value.value}}
 
 <h2>Sensor Log</h2>
 <table>
   <tr><th>Value</th><th>Stamp</th></tr>
-{% for v in sensor.values.all %}
+{% for v in instance.values.all %}
 <tr>
   <td>{{v.value}}</td>
   <td>{{v.stamp}}</td>
