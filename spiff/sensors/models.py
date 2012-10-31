@@ -13,6 +13,14 @@ class Sensor(models.Model):
   description = models.TextField()
   type = models.IntegerField(choices=SENSOR_TYPES)
 
+  def serialize(self):
+    return {
+      'value': self.value(),
+      'name': self.name,
+      'id': self.id,
+      'description': self.description
+    }
+
   def value(self):
     v = self.values.all()
     if len(v):
