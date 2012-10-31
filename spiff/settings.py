@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'spiff.inventory',
     'spiff.local',
     'spiff.events',
+    'spiff.sensors',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

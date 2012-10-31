@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Sensors{% endblock %}
+{% block sectiontitle %}All Sensors{% endblock %}
+
+{% block content %}
+<table>
+  <tr><th>Name</th><th>Latest Value</th><th>Last Updated</th>
+  {% for sensor in sensors %}
+  <tr><td><a href="{{ sensor.get_absolute_url }}">{{sensor.name}}</a></td>
+    {% if sensor.value %}
+    <td>{{sensor.value.value}}</td>
+    <td>{{sensor.value.stamp}}</td>
+    {% else %}
+    <td><em>None</em></td>
+    <td><em>Never</em></td>
+    {% endif %}
+  {% endfor %} 
+</table>
+{% endblock %}

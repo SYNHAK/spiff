@@ -36,6 +36,7 @@
         <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
         <li><a href="{% url 'spiff.inventory.views.index' %}">Resources</a></li>
         <li><a href="{% url 'spiff.events.views.index' %}">Events</a></li>
+        <li><a href="{% url 'spiff.sensors.views.index' %}">Sensors</a></li>
         {% if user.is_staff %}
         <li><a href="{% url 'admin:index' %}">Admin</a></li>
         {% endif %}

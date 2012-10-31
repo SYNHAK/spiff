@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load markup %}
+
+{% block title %}{{sensor.name}}{% endblock %}
+{% block sectiontitle %}{{sensor.name}}{% endblock %}
+
+{% block content %}
+Current value: {{sensor.value.value}}
+
+<h2>Sensor Log</h2>
+<table>
+  <tr><th>Value</th><th>Stamp</th></tr>
+{% for v in sensor.values.all %}
+<tr>
+  <td>{{v.value}}</td>
+  <td>{{v.stamp}}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
