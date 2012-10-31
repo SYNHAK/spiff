@@ -17,6 +17,7 @@ Spiff is a Django application that helps you manage a hackerspace.
 * Create arbitrary membership fields with visibility settings such as "Door Keycode"
   (editing/viewing limited to officers), "Enjoys Smooth Jazz" (viewing
   limited to members only), or "Nobel Prizes Earned" (public to the internet).
+* A simple REST api to access everything
 
 # Installation
 
@@ -155,6 +156,7 @@ There are five basic types of sensors:
 * binary
 * json
 * temp
+* boolean
 
 The type of sensor is just a hint to tell API users how to display the data if
 the exact purpose of the sensor is unknown. For example, the spiff web UI will
@@ -182,3 +184,35 @@ To use pamela's ARP scanner with Spiff:
   $ ./pamela/scanner/pamela-scanner.sh -i "eth0" -o "http://example.com/sensors/1"  -t mac.csv -d "/var/lib/dhcpd/dhcpd.leases"
 
 Please see Pamela's documentation for more details.
+
+# REST API
+
+Just about everything in Spiff is accessible through REST. It is as easy as
+adding .json to the end of your URLs:
+
+  $ http://example.com/sensors/1.json
+  curl http://localhost:8000/sensors/1.json
+  {
+   "description": "A list of devices in the space", 
+   "name": "pamela", 
+   "value": {
+    "stamp": "2012-10-31T15:28:53.901053+00:00", 
+    "sensor": "#Sensor#1", 
+    "id": 6, 
+    "value": "{'test': true}"
+   }, 
+   "id": 1
+
+Due to the cyclic nature of the database, some values are references to other objects. This is indicated by the syntax
+"#Type#ID", such as "#Sensor#1".
+
+Other serialization formats may be added later if there is enough demand.
+
+# SpaceAPI
+
+Spiff currently implements version 0.12 of the SpaceAPI. You can read more about
+it at http://hackerspaces.nl/spaceapi/
+
+You may access the SpaceAPI through /status.json, as per the standard.
+
+Future versions of Spiff will permit more customization of the data in the API.

@@ -6,6 +6,7 @@ SENSOR_TYPES = (
   (2, 'binary'),
   (3, 'json'),
   (4, 'temp'),
+  (5, 'boolean'),
 )
 
 class Sensor(models.Model):
@@ -18,7 +19,8 @@ class Sensor(models.Model):
       'value': self.value(),
       'name': self.name,
       'id': self.id,
-      'description': self.description
+      'description': self.description,
+      'type': SENSOR_TYPES[self.type],
     }
 
   def value(self):
