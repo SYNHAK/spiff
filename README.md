@@ -142,3 +142,41 @@ The user can attach resources to their own events.
 
 The user can edit other user's events. This is required for being able to attach
 resources to events that they don't own.
+
+## Sensors
+
+Spiff is intended to be the central brain of a hackerspace. As such, it includes
+functionality for tracking various sensors in the space.
+
+There are four basic types of sensors:
+
+* number
+* string
+* binary
+* json
+
+The type of sensor is just a hint to tell API users how to display the data if
+the exact purpose of the sensor is unknown. For example, the spiff web UI will
+show a history graph for number sensors.
+
+To update a sensor, send a POST request to the sensor's page (i.e. /sensors/1)
+with a single 'data' parameter containing the new sensor data:
+
+  $ curl --data "data={'test': true}" http://example.com/sensors/1
+
+The data can be anything: an image, a number, a basic string that says "Hello!", more strutured JSON data,
+or whatever else you want to put in there. Spiff doesn't care, it just stores
+the data until someone else wants it.
+
+### Pamela
+
+Pamela is described as a "very cool way to visualize any kind of data". You can
+find it at http://www.hackerspace.be/Pamela
+
+Spiff is totally 100% compatible with Pamela's basic API.
+
+To use pamela's ARP scanner with Spiff:
+
+  $ ./pamela/scanner/pamela-scanner.sh -i "eth0" -o "http://example.com/sensors/1"  -t mac.csv -d "/var/lib/dhcpd/dhcpd.leases"
+
+Please see Pamela's documentation for more details.
