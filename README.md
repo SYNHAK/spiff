@@ -28,6 +28,9 @@ settings.py.
 
 3. Go nuts.
 
+The default settings use sqlite3 as the database, with
+/path/to/spiff/spiff.sqlite3 as the file.
+
 ## Apache
 
 This section is included as an example to get Spiff and Apache to work together
