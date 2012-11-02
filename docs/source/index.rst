@@ -32,17 +32,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   intro
    installation
    usage
    permissions
    sensors
    api
-
-.. automodule:: spiff
-   :members:
-   :undoc-members:
-
 
 Indices and tables
 ==================
