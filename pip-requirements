@@ -1,6 +1,11 @@
 Django==1.4.2
-Markdown==2.2.0
-South==0.7.6
-django-gravatar==0.1.0
-django-piston==0.2.3
-qrcode==2.4.2
+Markdown
+South
+django-gravatar
+qrcode
+python-openid
+django-openid-auth
+django-openid-provider
+django-webfinger
+python-xrd
+django-wellknown

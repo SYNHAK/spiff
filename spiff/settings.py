@@ -127,15 +127,19 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'south',
     'gravatar',
+    'webfinger',
     'django.contrib.markup',
     'django_openid_auth',
     'openid_provider',
+    'wellknown',
     'spiff.membership',
     'spiff.inventory',
     'spiff.local',
     'spiff.events',
     'spiff.sensors',
 )
+
+WEBFINGER_HANDLER = 'spiff.local.webfinger.handle'
 
 OPENID_PROVIDER_STORE = 'django_openid_auth.store.DjangoOpenIDStore'
 
