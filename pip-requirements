@@ -7,5 +7,5 @@ python-openid
 django-openid-auth
 django-openid-provider
 django-webfinger
-python-xrd
-django-wellknown
+wellknown
+xrd
