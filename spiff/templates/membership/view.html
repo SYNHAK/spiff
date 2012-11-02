@@ -32,7 +32,7 @@
   <tr><th>Name</th><th>Level</th></tr>
   {% if viewUser.member.trainings.all %}
     {% for training in viewUser.member.trainings.all %}
-    <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url spiff.inventory.views.view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
+    <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url inventory:view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
     {% endfor %}
   {% else %}
     <tr><td colspan="2">None :(</td></tr>
