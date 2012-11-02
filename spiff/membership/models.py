@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
+from openid_provider.models import OpenID
 import datetime
 
 class Member(models.Model):
@@ -98,6 +99,7 @@ class FieldValue(models.Model):
 def create_member(sender, instance, created, **kwargs):
   if created:
     Member.objects.get_or_create(user=instance)
+    OpenID.objects.get_or_create(user=instance, default=True)
 
 post_save.connect(create_member, sender=User)
 

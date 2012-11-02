@@ -47,4 +47,18 @@
       <td>{{event.end}}</td>
   {% endfor %}
 </table>
+
+<h2>Your OpenIDs</h2>
+<p>You may use these OpenIDs to login to Spiff</p>
+<ul>
+  {% for id in user.useropenid_set.all %}
+    <li>{{id.display_id}}</li>
+  {% endfor %}
+</ul>
+
+<p>These domains may use your Spiff account to login</p>
+<ul>
+
+</ul>
+
 {% endblock %}

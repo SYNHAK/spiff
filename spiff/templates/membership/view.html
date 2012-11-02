@@ -4,6 +4,10 @@
 {% block title %}{{viewUser.member.fullName}}{% endblock %}
 {% block sectiontitle %}{{viewUser.member.fullName}}{% endblock %}
 
+{% block extrahead %}
+<link rel="openid2.local_id" href="{% url openid-provider-identity id=openid.openid %}"/>
+{% endblock %}
+
 {% block content %}
 <div style="float:right">
   {% gravatar viewUser %}

@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
+from openid_provider.models import OpenID
 import models
 import forms
 
@@ -16,8 +17,9 @@ def index(request):
 
 def view(request, username):
   user = User.objects.get(username=username)
+  openid,created = OpenID.objects.get_or_create(default=True, user=user)
   return render_to_response('membership/view.html',
-      {'viewUser': user},
+      {'viewUser': user, 'openid': openid},
       context_instance=RequestContext(request))
 
 def edit(request, username=None):

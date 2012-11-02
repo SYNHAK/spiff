@@ -128,12 +128,27 @@ INSTALLED_APPS = (
     'south',
     'gravatar',
     'django.contrib.markup',
+    'django_openid_auth',
+    'openid_provider',
     'spiff.membership',
     'spiff.inventory',
     'spiff.local',
     'spiff.events',
     'spiff.sensors',
 )
+
+OPENID_PROVIDER_STORE = 'django_openid_auth.store.DjangoOpenIDStore'
+
+OPENID_USE_EMAIL_FOR_USERNAME = True
+
+AUTHENTICATION_BACKENDS = (
+    'django_openid_auth.auth.OpenIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+OPENID_CREATE_USERS = True
+
+OPENID_UPDATE_DETAILS_FROM_SREG = True
 
 TEMPLATE_CONTEXT_PROCESSORS = (
   "django.contrib.auth.context_processors.auth",
