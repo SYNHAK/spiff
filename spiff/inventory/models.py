@@ -33,6 +33,7 @@ class Resource(models.Model):
         property=property,
         trained_member=trained_member)
 
+#: Available metadata types, given as hints to clients.
 META_TYPES = (
   (0, 'string'),
   (1, 'url'),

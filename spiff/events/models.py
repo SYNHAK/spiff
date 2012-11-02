@@ -3,6 +3,17 @@ from spiff.membership.models import Member
 from spiff.inventory.models import Resource
 
 class Event(models.Model):
+  """Represents an event at the space.
+
+  Events can have:
+  * start
+  * end
+  * name
+  * description
+  * list of attendees
+  * list of attached resources
+
+  """
   start = models.DateTimeField()
   end = models.DateTimeField()
   name = models.TextField()

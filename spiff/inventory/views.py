@@ -44,6 +44,9 @@ class InventoryView(ObjectView):
 
 @permission_required('inventory.can_change_metadata')
 def addMeta(request, id):
+  """
+  Allows you to add/modify metadata on a resource.
+  """
   resource = models.Resource.objects.get(pk=id)
   if request.method == 'POST':
     form = forms.MetadataForm(request.POST)
@@ -73,6 +76,9 @@ def addMeta(request, id):
 
 @permission_required('inventory.can_train')
 def promoteTraining(request, id):
+  """
+  Promotes another user in the training system.
+  """
   training = models.TrainingLevel.objects.get(id=id)
   resource = training.resource
   myTraining = request.user.member.trainings.get(resource=resource)
@@ -92,6 +98,9 @@ def promoteTraining(request, id):
 
 @permission_required('inventory.can_train')
 def train(request, id):
+  """
+  Adds the current user to the training list for a resource.
+  """
   resource = models.Resource.objects.get(pk=id)
   training = None
   try:

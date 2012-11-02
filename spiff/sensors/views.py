@@ -15,6 +15,9 @@ class SensorView(ObjectView):
   index_template_name = 'sensors/index.html'
 
   def post(self, request, instance, *args, **kwargs):
+    """
+    Updates the sensor's value.
+    """
     models.SensorValue.objects.create(
         sensor=instance,
         value=request.POST['data'])

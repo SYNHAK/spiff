@@ -21,6 +21,11 @@ other objects. This is indicated by the syntax "#Type#ID", such as
 Other serialization formats may be added later if there is enough
 demand.
 
+.. toctree::
+  
+   api/resources
+   api/sensors
+
 SpaceAPI
 --------
 
