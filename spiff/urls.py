@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^events/', include('spiff.events.urls')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^openid_provider/', include('openid_provider.urls')),
+    url(r'^openid/untrust/(?P<id>.*)', 'spiff.local.views.untrust_openid_root'),
+    url(r'^openid/unassociate/(?P<id>.*)', 'spiff.local.views.unassociate_openid'),
     url(r'^openid/', include('django_openid_auth.urls')),
     # Examples:
     # url(r'^$', 'spiff.views.home', name='home'),

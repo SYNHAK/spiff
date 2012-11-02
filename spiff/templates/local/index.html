@@ -51,14 +51,27 @@
 <h2>Your OpenIDs</h2>
 <p>You may use these OpenIDs to login to Spiff</p>
 <ul>
-  {% for id in user.useropenid_set.all %}
-    <li>{{id.display_id}}</li>
-  {% endfor %}
+  {% if user.useropenid_set.all %}
+    {% for id in user.useropenid_set.all %}
+      <li>{{id.display_id}} <a href="{% url spiff.local.views.unassociate_openid id=id.id %}">Remove</a></li>
+    {% endfor %}
+  {% else %}
+    <li><em>None</em></li>
+  {% endif %}
+  {# TODO: an add one link #}
 </ul>
 
 <p>These domains may use your Spiff account to login</p>
 <ul>
-
+  {% if user.openid_set.all %}
+    {% for id in user.openid_set.all %}
+      {% for domain in id.trustedroot_set.all %}
+        <li>{{domain.trust_root}}<a href="{% url spiff.local.views.untrust_openid_root id=domain.id %}">Remove</a></li>
+      {% endfor %}
+    {% endfor %}
+  {% else %}
+    <li><em>None</em></li>
+  {% endif %}
 </ul>
 
 {% endblock %}

@@ -1,4 +1,8 @@
 from django.template import RequestContext
+from django_openid_auth.models import UserOpenID
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
+from openid_provider.models import TrustedRoot
 from spiff.sensors.models import SENSOR_TYPES, Sensor
 import json
 from django.contrib.sites.models import get_current_site
@@ -107,3 +111,23 @@ def spaceapi(request):
   resp = HttpResponse(data)
   resp['Content-Type'] = 'text/plain'
   return resp
+
+@login_required
+def untrust_openid_root(request, id):
+  root = TrustedRoot.objects.get(id=id)
+  if root.openid.user == request.user:
+    messages.info(request, "%s was deleted."%(root.trust_root))
+    root.delete()
+    return HttpResponseRedirect(reverse('home'))
+  else:
+    raise PermissionDenied()
+
+@login_required
+def unassociate_openid(request, id):
+  id = UserOpenID.objects.get(id=id)
+  if id.user == request.user:
+    messages.info(request, "%s was removed."%(id.display_id))
+    id.delete()
+    return HttpResponseRedirect(reverse('home'))
+  else:
+    raise PermissionDenied()
