@@ -7,9 +7,9 @@ made available to the public under the AGPL.
 Dependencies
 ============
 
--  Django 1.4
--  south
--  django-gravatar
+.. include:: ../pip-requirements
+   :literal:
+   :code:
 
 Features
 --------
