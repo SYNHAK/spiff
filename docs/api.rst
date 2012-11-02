@@ -1,5 +1,9 @@
+API Documentation
+========================
+
 REST API
-========
+--------
+
 
 Just about everything in Spiff is accessible through REST. It is as easy
 as adding .json to the end of your URLs:
@@ -18,7 +22,7 @@ Other serialization formats may be added later if there is enough
 demand.
 
 SpaceAPI
-========
+--------
 
 Spiff currently implements version 0.12 of the SpaceAPI. You can read
 more about it at http://hackerspaces.nl/spaceapi/
@@ -27,4 +31,3 @@ You may access the SpaceAPI through /status.json, as per the standard.
 
 Future versions of Spiff will permit more customization of the data in
 the API.
-

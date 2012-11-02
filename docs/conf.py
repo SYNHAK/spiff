@@ -13,7 +13,9 @@
 
 import sys, os
 
-sys.path.append('/'.join(__file__.split('/')[0:-3]))
+from os.path import abspath, dirname, join
+
+sys.path.insert(1, abspath(dirname(dirname(__file__))))
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "spiff.settings")
 
