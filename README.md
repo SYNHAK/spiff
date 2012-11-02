@@ -25,9 +25,13 @@ available to the public under the AGPL.
 1. Create a local_settings.py that contains any values you want to override from
 settings.py.
 
-2.  $ ./manage.py syncdb --migrate
+2. Install your dependencies:
 
-3. Go nuts.
+    $ pip install -r pip-requirements
+
+3.  $ ./manage.py syncdb --migrate
+
+4. Go nuts.
 
 The default settings use sqlite3 as the database, with
 /path/to/spiff/spiff.sqlite3 as the file.
