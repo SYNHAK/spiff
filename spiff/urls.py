@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^register$', 'spiff.local.views.register'),
     url(r'^search$', 'spiff.local.views.search'),
     url(r'^status.json$', 'spiff.local.views.spaceapi'),
-    url(r'^webfinger/', include('webfinger.urls')),
+    #url(r'^webfinger/', include('webfinger.urls')),
 
     url(r'^', include('wellknown.urls')),
 )
