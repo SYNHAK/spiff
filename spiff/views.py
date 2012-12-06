@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.core import serializers
 from django.db.models import Model, Manager
 from django.db.models.query import QuerySet
+from django.db.models.fields import FieldDoesNotExist
 import datetime
 
 class ModelEncoder(json.JSONEncoder):
@@ -27,7 +28,14 @@ class ModelEncoder(json.JSONEncoder):
       for f in o._meta.get_all_field_names():
         try:
           data[f] = getattr(o, f)
-        except AttributeError:
+          if len(o._meta.get_field(f)._choices):
+            choices = {}
+            for c in o._meta.get_field(f)._choices:
+              choices[c[0]] = c[1]
+            data["_%s_choices"%(f)] = choices
+        except AttributeError, e:
+          pass
+        except FieldDoesNotExist:
           pass
       return data
     if isinstance(o, QuerySet):
@@ -74,11 +82,11 @@ class ObjectView(TemplateView):
     instances = None
     instance = None
     if isIndex:
-      instances = self.instances(**kwargs)
+      instances = self.instances(request, **kwargs)
       template = self.index_template_name
       data = instances
     else:
-      instance = self.instance(**kwargs)
+      instance = self.instance(request, **kwargs)
       template = self.template_name
       data = instance
     kwargs['instance'] = instance
