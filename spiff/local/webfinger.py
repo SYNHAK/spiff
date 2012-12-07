@@ -11,5 +11,5 @@ def handle(request, acct, xrd):
     base = "%s:%s"%(base, request.META['SERVER_PORT'])
   user = User.objects.get(username=acct.userinfo)
   xrd.expires = datetime.datetime.utcnow() + datetime.timedelta(0, 10)
-  xrd.aliases.append("%s%s"%(base, reverse('spiff.membership.views.view',
+  xrd.aliases.append("%s%s"%(base, reverse('membership:view',
     kwargs={'username':user.username})))

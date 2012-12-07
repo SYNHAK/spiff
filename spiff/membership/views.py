@@ -5,22 +5,31 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
 from openid_provider.models import OpenID
+from spiff.views import ObjectView
 import models
 import forms
 
-def index(request):
-  users = User.objects.filter(Q(is_active=True) |
-      Q(groups__rank__isActiveMembership=True)).distinct()
-  return render_to_response('membership/index.html',
-      {'users': users},
-      context_instance=RequestContext(request))
+class MemberView(ObjectView):
+  model = User
+  template_name = 'membership/view.html'
+  index_template_name = 'membership/index.html'
+  slug_field = 'username'
 
-def view(request, username):
-  user = User.objects.get(username=username)
-  openid,created = OpenID.objects.get_or_create(default=True, user=user)
-  return render_to_response('membership/view.html',
-      {'viewUser': user, 'openid': openid},
-      context_instance=RequestContext(request))
+  def instances(self, request, *args, **kwargs):
+    return User.objects.filter(
+      Q(is_active=True) |
+      Q(groups__rank__isActiveMembership=True)).distinct()
+
+  def get_context_data(self, request, instance, instances, **kwargs):
+    cxt = super(MemberView, self).get_context_data(
+      request,
+      instance,
+      instances,
+      **kwargs)
+    if instance:
+      openid,created = OpenID.objects.get_or_create(default=True, user=instance)
+      cxt['openid'] = openid
+    return cxt
 
 def edit(request, username=None):
   if username is None:

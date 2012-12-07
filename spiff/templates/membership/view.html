@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load gravatar %}
 
-{% block title %}{{viewUser.member.fullName}}{% endblock %}
-{% block sectiontitle %}{{viewUser.member.fullName}}{% endblock %}
+{% block title %}{{instance.member.fullName}}{% endblock %}
+{% block sectiontitle %}{{instance.member.fullName}}{% endblock %}
 
 {% block extrahead %}
 <link rel="openid2.local_id" href="{% url openid-provider-identity id=openid.openid %}"/>
@@ -10,22 +10,22 @@
 
 {% block content %}
 <div style="float:right">
-  {% gravatar viewUser %}
+  {% gravatar instance %}
 </div>
-<h1>{{viewUser.member.firstName}} {{viewUser.member.lastName}}</h1>
+<h1>{{instance.member.firstName}} {{instance.member.lastName}}</h1>
 
-{% if viewUser.member.activeMember %}
+{% if instance.member.activeMember %}
 {% else %}
 <div class="messages">
   Not an Active Member
 </div>
 {% endif %}
 
-<h2>Profile {% if user == viewUser or perms.auth.can_change_user %}<sup><a
-      href="{% url spiff.membership.views.edit username=viewUser.username %}">Edit</a></sup>{% endif %}</h2>
+<h2>Profile {% if user == instance or perms.auth.can_change_user %}<sup><a
+      href="{% url membership:edit username=instance.username %}">Edit</a></sup>{% endif %}</h2>
 <table>
-  {% for field in viewUser.member.attributes.all %}
-  {% if field.field.public or viewUser == user or perms.membership.can_view_private_fields %}
+  {% for field in instance.member.attributes.all %}
+  {% if field.field.public or instance == user or perms.membership.can_view_private_fields %}
     <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
   {% endif %}
   {% endfor %}
@@ -34,8 +34,8 @@
 <h2>Trained Resources</h2>
 <table>
   <tr><th>Name</th><th>Level</th></tr>
-  {% if viewUser.member.trainings.all %}
-    {% for training in viewUser.member.trainings.all %}
+  {% if instance.member.trainings.all %}
+    {% for training in instance.member.trainings.all %}
     <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url inventory:view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
     {% endfor %}
   {% else %}

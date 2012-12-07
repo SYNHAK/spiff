@@ -37,7 +37,7 @@
     <div id="navbar" class="grid_9">
       <ul>
         <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
+        <li><a href="{% url 'membership:index' %}">Members</a></li>
         <li><a href="{% url 'inventory:index' %}">Resources</a></li>
         <li><a href="{% url 'events:index' %}">Events</a></li>
         <li><a href="{% url 'sensors:index' %}">Sensors</a></li>
@@ -80,7 +80,7 @@
     <div class="grid_3">
       <ul>
         <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'spiff.membership.views.index' %}">Members</a></li>
+        <li><a href="{% url 'membership:index' %}">Members</a></li>
         <li><a href="{% url 'inventory:index' %}">Resources</a></li>
         {% if user.is_staff %}
         <li><a href="{% url 'admin:index' %}">Admin</a></li>
