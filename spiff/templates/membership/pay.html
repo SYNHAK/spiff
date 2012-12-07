@@ -5,8 +5,8 @@
 {% block sectiontitle %}Pay Dues{% endblock %}
 
 {% block content %}
-This will create a one-time payment of {{user.highestRank.monthlyDues}} towards
-{{user.highestRank}} membership dues.
+This will create a one-time payment of ${{user.member.outstandingDues}} towards
+{{user.member.highestRank}} membership dues.
 
 <form method="POST">
 {{form.as_p}}

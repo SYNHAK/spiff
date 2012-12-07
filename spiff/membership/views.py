@@ -77,7 +77,8 @@ def pay(request):
   rank = request.user.member.highestRank
   balance = request.user.member.outstandingDues
   if balance < 0.5:
-    messages.error(request, "Your current rank of %s costs less than $0.50, which is too small for Stripe to process."%(rank))
+    messages.error(request, "Your outstanding balance of $%d costs less than "
+        "$0.50, which is too small for Stripe to process."%(balance))
     return render_to_response('membership/pay.html',
       {'form': form},
       context_instance=RequestContext(request))
@@ -102,7 +103,8 @@ def pay(request):
         value = balance,
         status = models.DuePayment.STATUS_PAID,
         transactionID = charge.id,
-        rank = rank
+        rank = rank,
+        method = models.DuePayment.METHOD_STRIPE
       )
       messages.info(request, "Your payment has been processed. Thanks!")
       return HttpResponseRedirect(reverse('home'))

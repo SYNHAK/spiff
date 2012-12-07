@@ -3,6 +3,10 @@ from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from openid_provider.models import OpenID
 import datetime
+import stripe
+from django.conf import settings
+
+stripe.api_key = settings.STRIPE_KEY
 
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
@@ -12,6 +16,19 @@ class Member(models.Model):
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
   fields = models.ManyToManyField('Field', through='FieldValue')
   birthday = models.DateField(blank=True, null=True)
+  stripeID = models.TextField()
+
+  def stripeCustomer(self):
+    try:
+      customer = stripe.Customer.retrieve(self.stripeID)
+    except stripe.InvalidRequestError:
+      customer = stripe.Customer.create(
+        description = self.fullName,
+        email = self.user.email
+      )
+      self.stripeID = customer.id
+      self.save()
+    return customer
 
   def serialize(self):
     return {
@@ -22,6 +39,7 @@ class Member(models.Model):
       'lastSeen': self.lastSeen,
       'fields': self.fields.filter(public=True),
       'id': self.id,
+      'active': self.activeMember(),
     }
 
   @property
@@ -68,6 +86,16 @@ class Member(models.Model):
     return "%s, %s"%(self.user.last_name, self.user.first_name)
 
 class DuePayment(models.Model):
+  METHOD_CASH = 0
+  METHOD_CHECK = 1
+  METHOD_STRIPE = 2
+  METHOD_OTHER = 3
+  METHODS = (
+    (METHOD_CASH, 'Cash'),
+    (METHOD_CHECK, 'Check'),
+    (METHOD_STRIPE, 'Stripe'),
+    (METHOD_OTHER, 'Other'),
+  )
   STATUS_PENDING = 0
   STATUS_PAID = 1
   STATUS = (
@@ -77,10 +105,16 @@ class DuePayment(models.Model):
   member = models.ForeignKey(Member, related_name='payments')
   user = models.ForeignKey(User)
   value = models.FloatField()
-  created = models.DateTimeField(editable=True, auto_now_add=True)
+  created = models.DateTimeField()
   rank = models.ForeignKey('Rank', related_name='payments')
   status = models.IntegerField(default=STATUS_PENDING, choices=STATUS)
   transactionID = models.TextField(blank=True, null=True)
+  method = models.IntegerField(choices=METHODS)
+
+  def save(self, *args, **kwargs):
+    if not self.id:
+      self.created = datetime.datetime.today()
+    super(DuePayment, self).save(*args, **kwargs)
 
   def __unicode__(self):
     return "%s from %s"%(self.value, self.member.fullName)
