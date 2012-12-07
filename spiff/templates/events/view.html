@@ -1,33 +1,33 @@
 {% extends "base.html" %}
 {% load markup %}
 
-{% block title %}{{event.name}}{% endblock %}
-{% block sectiontitle %}{{event.name}}{% endblock %}
+{% block title %}{{instance.name}}{% endblock %}
+{% block sectiontitle %}{{instance.name}}{% endblock %}
 
 {% block content %}
-<p>From {{event.start}} to {{event.end}}</p>
-<p>Organized by <a href="{{event.creator.get_absolute_url}}">{{event.creator.fullName}}</a></p>
-{{event.description|markdown}}
+<p>From {{instance.start}} to {{instance.end}}</p>
+<p>Organized by <a href="{{instance.creator.get_absolute_url}}">{{instance.creator.fullName}}</a></p>
+{{instance.description|markdown}}
 
 
 <h2>Attendees</h2>
 <table>
-{% for member in event.attendees.all %}
+{% for member in instance.attendees.all %}
   <tr><td><a
         href="{{member.get_absolute_url}}">{{member.fullName}}</a></td></tr>
 {% endfor %}
-<tr class="actionbar"><td><a class="action-add-attendee" href="{% url spiff.events.views.attend id=event.id %}">I'm attending!</a></td></tr>
+<tr class="actionbar"><td><a class="action-add-attendee" href="{% url events:attend id=instance.id %}">I'm attending!</a></td></tr>
 </table>
 
 <h2>Used Resources</h2>
 <table>
-  {% for resource in event.resources.all %}
+  {% for resource in instance.resources.all %}
     <tr><td><a
           href="{{resource.get_absolute_url}}">{{resource.name}}</a></td></tr>
   {% endfor %}
   {% if perms.events.can_reserve_resource %}
-    {% if user == event.creator.user or perms.can_change_event %}
-      <tr class="actionbar"><td><a class="action-add-resource" href="{% url spiff.events.views.addResource id=event.id %}">Add a resource</a></td>
+    {% if user == instance.creator.user or perms.can_change_event %}
+      <tr class="actionbar"><td><a class="action-add-resource" href="{% url events:addResource id=instance.id %}">Add a resource</a></td>
     {% endif %}
   {% endif %}
 </table>

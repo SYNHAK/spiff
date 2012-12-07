@@ -11,7 +11,7 @@ $(function() {
 {% block sectiontitle %}Create an Event{% endblock %}
 
 {% block content %}
-<form method="POST" action="{% url spiff.events.views.create %}">
+<form method="POST" action="{% url events:create %}">
   {{eventForm.as_p}}
   {% csrf_token %}
   <input type="submit" value="Create"/>

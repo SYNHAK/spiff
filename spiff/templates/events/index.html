@@ -6,12 +6,12 @@
 {% block content %}
 <table>
   <tr><th>Name</th><th>Start</th><th>End</th></tr>
-  {% for event in events %}
+  {% for event in instances %}
     <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td>
       <td>{{event.start}}</td><td>{{event.end}}</td></tr>
   {% endfor %}
   {% if perms.events.can_add_events %}
-  <tr class="actionbar"><td colspan="3"><a class="action-add-event"href="{% url spiff.events.views.create %}">Create an event</a></td></tr>
+  <tr class="actionbar"><td colspan="3"><a class="action-add-event"href="{% url events:create %}">Create an event</a></td></tr>
   {% endif %}
 </table>
 {% endblock %}

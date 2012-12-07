@@ -29,7 +29,7 @@ class Event(models.Model):
 
   @models.permalink
   def get_absolute_url(self):
-    return ('spiff.events.views.view', [], {'id': self.id})
+    return ('events:view', [], {'id': self.id})
 
   def __unicode__(self):
     return self.name

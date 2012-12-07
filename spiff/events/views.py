@@ -5,27 +5,21 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.template import RequestContext
 from spiff.inventory.models import Resource
+from spiff.views import ObjectView
 import models
 import forms
 
-def index(request):
-  events = models.Event.objects.all()
-  return render_to_response('events/index.html',
-      {'events': events},
-      context_instance=RequestContext(request))
-
-def view(request, id):
-  event = models.Event.objects.get(id=id)
-  return render_to_response('events/view.html',
-      {'event': event},
-      context_instance=RequestContext(request))
+class EventView(ObjectView):
+  model = models.Event
+  template_name = 'events/view.html'
+  index_template_name = 'events/index.html'
 
 def attend(request, id):
   event = models.Event.objects.get(id=id)
   event.attendees.add(request.user.member)
   event.save()
   messages.info(request, "Your planned attendence is duly noted.")
-  return HttpResponseRedirect(reverse('spiff.events.views.view', kwargs={'id':
+  return HttpResponseRedirect(reverse('events:view', kwargs={'id':
     event.id}))
 
 @permission_required('events.can_reserve_resource')
@@ -42,7 +36,7 @@ def addResource(request, id):
         event.resources.add(resource)
     event.save()
     messages.info(request, "Resources reserved.")
-    return HttpResponseRedirect(reverse('spiff.events.views.view', kwargs={'id':
+    return HttpResponseRedirect(reverse('events:view', kwargs={'id':
       event.id}))
   return render_to_response('events/addResource.html',
       {'resourceForm': picker, 'event': event},
@@ -64,7 +58,7 @@ def create(request):
     event.attendees.add(request.user.member)
     event.save()
     messages.info(request, "Event created.")
-    return HttpResponseRedirect(reverse('spiff.events.views.view', kwargs={'id':
+    return HttpResponseRedirect(reverse('events:view', kwargs={'id':
       event.id}))
   return render_to_response('events/create.html',
       {'eventForm': form},
