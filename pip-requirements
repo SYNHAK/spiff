@@ -10,3 +10,4 @@ django-webfinger
 wellknown
 xrd
 stripe
+PIL
