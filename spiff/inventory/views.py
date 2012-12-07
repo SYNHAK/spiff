@@ -43,18 +43,45 @@ class InventoryView(ObjectView):
     return cxt
 
 @permission_required('inventory.can_change_metadata')
-def addMeta(request, id):
+def deleteMeta(request, id):
+  meta = models.Metadata.objects.get(pk=id)
+  resource = meta.resource
+  oldValue = meta.value
+  resource.logChange(
+      member=request.user.member,
+      old=meta.value,
+      new=None,
+      property=meta.name)
+  meta.delete()
+  messages.info(request, "Metadata removed.")
+  return HttpResponseRedirect(reverse('inventory:view',
+    kwargs={'id': resource.id}))
+
+@permission_required('inventory.can_change_metadata')
+def addMeta(request, id, name=None):
   """
   Allows you to add/modify metadata on a resource.
   """
   resource = models.Resource.objects.get(pk=id)
   if request.method == 'POST':
-    form = forms.MetadataForm(request.POST)
+    form = forms.MetadataForm(request.POST, initial={'name': name})
   else:
-    form = forms.MetadataForm()
+    try:
+      oldMeta = models.Metadata.objects.get(resource=resource, name=name)
+      form = forms.MetadataForm(instance=oldMeta)
+    except models.Metadata.DoesNotExist:
+      form = forms.MetadataForm(initial={'name': name})
   if form.is_valid():
-    meta,created = models.Metadata.objects.get_or_create(resource=resource,
-        name=form.cleaned_data['name'], type=form.cleaned_data['type'])
+    try:
+      meta = models.Metadata.objects.get(
+        resource=resource,
+        name = form.cleaned_data['name']
+      )
+      created = False
+    except models.Metadata.DoesNotExist:
+      meta = models.Metadata.objects.create(resource=resource,
+          name=form.cleaned_data['name'], type=form.cleaned_data['type'])
+      created = True
     if created:
       oldValue = None
     else:

@@ -9,7 +9,15 @@
   <tr><th>Name</th><th>Value</th></tr>
   {% if instance.metadata.all %}
     {% for prop in instance.metadata.all %}
-    <tr><td>{{prop.name}}</td>
+    <tr>
+      <td>
+        {% if perms.inventory.can_change_metadata %}
+          <a href="{% url inventory:deleteMeta id=prop.id %}">[X]</a>
+          <a href="{% url inventory:meta id=instance.id name=prop.name%}">{{prop.name}}</a>
+        {% else %}
+          {{prop.name}}
+        {% endif %}
+      </td>
       <td>
         {% if prop.type == 0 %}
         {{prop.value}}

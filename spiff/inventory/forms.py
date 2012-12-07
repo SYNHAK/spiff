@@ -12,7 +12,7 @@ class TrainingForm(forms.Form):
       self.fields['rank'].initial = instance.rank
       self.fields['comments'].initial = instance.comments
 
-class MetadataForm(forms.Form):
-  name = forms.CharField()
-  value = forms.CharField()
-  type = forms.ChoiceField(choices=models.META_TYPES)
+class MetadataForm(forms.ModelForm):
+  class Meta:
+    model = models.Metadata
+    fields = ['name', 'value', 'type']
