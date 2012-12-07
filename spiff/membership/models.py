@@ -24,6 +24,13 @@ class Member(models.Model):
       'id': self.id,
     }
 
+  @property
+  def highestRank(self):
+    groups = self.user.groups.extra(order_by=['-rank__monthlyDues'])
+    if len(groups) > 0:
+      return groups[0].rank
+    return None
+
   @models.permalink
   def get_absolute_url(self):
     return ('membership:view', [], {'username': self.user.username})
@@ -32,12 +39,18 @@ class Member(models.Model):
   def fullName(self):
     return "%s %s"%(self.user.first_name, self.user.last_name)
 
+  @property
   def paidForMonth(self):
+    return self.outstandingDues <= 0
+
+  @property
+  def outstandingDues(self):
     now = datetime.date.today()
     firstOfMonth = datetime.date(now.year, now.month, 1)
     payments = self.payments.filter(created__gt=firstOfMonth)
-    return len(payments) > 0
+    return self.highestRank.monthlyDues-sum(map(lambda x:x.value, payments))
 
+  @property
   def overdue(self):
     now = datetime.date.today()
     firstOfMonth = datetime.date(now.year, now.month, 1)
@@ -55,10 +68,19 @@ class Member(models.Model):
     return "%s, %s"%(self.user.last_name, self.user.first_name)
 
 class DuePayment(models.Model):
+  STATUS_PENDING = 0
+  STATUS_PAID = 1
+  STATUS = (
+    (STATUS_PENDING, 'Pending'),
+    (STATUS_PAID, 'Paid'),
+  )
   member = models.ForeignKey(Member, related_name='payments')
+  user = models.ForeignKey(User)
   value = models.FloatField()
-  created = models.DateTimeField(editable=True)
+  created = models.DateTimeField(editable=True, auto_now_add=True)
   rank = models.ForeignKey('Rank', related_name='payments')
+  status = models.IntegerField(default=STATUS_PENDING, choices=STATUS)
+  transactionID = models.TextField(blank=True, null=True)
 
   def __unicode__(self):
     return "%s from %s"%(self.value, self.member.fullName)

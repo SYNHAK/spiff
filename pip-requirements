@@ -9,3 +9,4 @@ django-openid-provider
 django-webfinger
 wellknown
 xrd
+stripe
