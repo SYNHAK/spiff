@@ -5,7 +5,8 @@
 {% block sectiontitle %}{{instance.name}}{% endblock %}
 
 {% block content %}
-Current value: {{instance.value.value}}
+<h2>Current Value</h2>
+<pre>{{instance.value.value}}</pre>
 
 <h2>Sensor Log</h2>
 <table>

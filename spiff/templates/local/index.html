@@ -4,79 +4,91 @@
 {% block sectiontitle %}Your Membership{% endblock %}
 
 {% block content %}
-<h2>Groups</h2>
-<ul>
-{% if user.groups.all %}
-  {% for g in user.groups.all %}
-  <li>{{g}}</li>
-  {% endfor %}
-{% else %}
-  <li><em>None</em></li>
-{% endif %}
-</ul>
-
-<h2>Recent Payments</h2>
-<div class="messages">
-{% if user.member.activeMember %}
-  {% if user.member.paidForMonth %}
-  You are paid up for the month.
+<div class="grid_2 alpha">
+  <h2>Groups</h2>
+  <ul>
+  {% if user.groups.all %}
+    {% for g in user.groups.all %}
+    <li>{{g}}</li>
+    {% endfor %}
   {% else %}
-    {% if user.member.overdue %}
-      You are overdue!
-    {% else %}
-    You have not paid this month's dues. You owe ${{user.member.outstandingDues}}.
-    {% endif %}
+    <li><em>None</em></li>
   {% endif %}
-{% else %}
-  You are not an active member.
-{% endif %}
+  </ul>
 </div>
-<table>
-  <tr><th>Date</th><th>Value</th><th>Membership Level</th></tr>
-  <tr class="actionbar">
-    <td colspan="3">
-      <a href="{%url membership:pay %}">Make a payment</a>
-    </td>
-  </tr>
-  {% for payment in user.member.payments.all %}
-    <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.rank.group.name}}</td></tr>
-  {% endfor %}
-</table>
 
-<h2>Upcoming Events</h2>
-<table>
-  <tr><th>Name</th><th>Start</th><th>End</th></tr>
-  {% for event in events %}
-    <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td>
-      <td>{{event.start}}</td>
-      <td>{{event.end}}</td>
-  {% endfor %}
-</table>
-
-<h2>Your OpenIDs</h2>
-<p>You may use these OpenIDs to login to Spiff</p>
-<ul>
-  {% if user.useropenid_set.all %}
-    {% for id in user.useropenid_set.all %}
-      <li>{{id.display_id}} <a href="{% url spiff.local.views.unassociate_openid id=id.id %}">Remove</a></li>
-    {% endfor %}
+<div class="grid_10 omega">
+  <h2>Recent Payments</h2>
+  <div class="messages">
+  {% if user.member.activeMember %}
+    {% if user.member.paidForMonth %}
+    You are paid up for the month.
+    {% else %}
+      {% if user.member.overdue %}
+        You are overdue!
+      {% else %}
+      You have not paid this month's dues. You owe ${{user.member.outstandingDues}}.
+      {% endif %}
+    {% endif %}
   {% else %}
-    <li><em>None</em></li>
+    You are not an active member.
   {% endif %}
-  {# TODO: an add one link #}
-</ul>
-
-<p>These domains may use your Spiff account to login</p>
-<ul>
-  {% if user.openid_set.all %}
-    {% for id in user.openid_set.all %}
-      {% for domain in id.trustedroot_set.all %}
-        <li>{{domain.trust_root}}<a href="{% url spiff.local.views.untrust_openid_root id=domain.id %}">Remove</a></li>
-      {% endfor %}
+  </div>
+  <table>
+    <tr><th>Date</th><th>Value</th><th>Method</th><th>Membership Level</th></tr>
+    <tr class="actionbar">
+      <td colspan="4">
+        <a href="{%url membership:pay %}">Make a payment</a>
+      </td>
+    </tr>
+    {% for payment in user.member.payments.all %}
+    <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td>{{payment.rank.group.name}}</td></tr>
     {% endfor %}
-  {% else %}
-    <li><em>None</em></li>
-  {% endif %}
-</ul>
+  </table>
+</div>
+
+<div class="grid_8 alpha">
+  <h2>Upcoming Events</h2>
+  <table>
+    <tr><th>Name</th><th>Start</th><th>End</th></tr>
+    {% for event in events %}
+      <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td>
+        <td>{{event.start}}</td>
+        <td>{{event.end}}</td>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="grid_4 omega">
+  <h2>Your OpenIDs</h2>
+  <div class="grid_2 alpha">
+    <p>You may use these OpenIDs to login to Spiff</p>
+    <ul>
+      {% if user.useropenid_set.all %}
+        {% for id in user.useropenid_set.all %}
+          <li>{{id.display_id}} <a href="{% url spiff.local.views.unassociate_openid id=id.id %}">Remove</a></li>
+        {% endfor %}
+      {% else %}
+        <li><em>None</em></li>
+      {% endif %}
+      {# TODO: an add one link #}
+    </ul>
+  </div>
+
+  <div class="grid_2 omega">
+    <p>These domains may use your Spiff account to login</p>
+    <ul>
+      {% if user.openid_set.all %}
+        {% for id in user.openid_set.all %}
+          {% for domain in id.trustedroot_set.all %}
+            <li>{{domain.trust_root}}<a href="{% url spiff.local.views.untrust_openid_root id=domain.id %}">Remove</a></li>
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+        <li><em>None</em></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
 
 {% endblock %}

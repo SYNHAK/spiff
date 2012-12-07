@@ -58,6 +58,7 @@ def edit(request, username=None):
     member = user.member
     member.birthday = userForm.cleaned_data['birthday']
     member.profession = userForm.cleaned_data['profession']
+    member.tagline = userForm.cleaned_data['tagline']
     member.save()
     for f in fields:
       value,created = models.FieldValue.objects.get_or_create(member=member, field=f)

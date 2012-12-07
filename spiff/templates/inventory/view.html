@@ -4,109 +4,124 @@
 {% block sectiontitle %}{{item.name}}{% endblock %}
 
 {% block content %}
-<h2>Metadata</h2>
-<table>
-  <tr><th>Name</th><th>Value</th></tr>
-  {% if instance.metadata.all %}
-    {% for prop in instance.metadata.all %}
-    <tr>
-      <td>
-        {% if perms.inventory.can_change_metadata %}
-          <a href="{% url inventory:deleteMeta id=prop.id %}">[X]</a>
-          <a href="{% url inventory:meta id=instance.id name=prop.name%}">{{prop.name}}</a>
-        {% else %}
-          {{prop.name}}
-        {% endif %}
-      </td>
-      <td>
-        {% if prop.type == 0 %}
-        {{prop.value}}
-        {% endif %}
-        {% if prop.type == 1 %}
-        <a href="{{prop.value}}">{{prop.value}}</a>
-        {% endif %}
-        {% if prop.type == 2 %}
-        <img src="{{prop.value}}"/>
-        {% endif %}
-      </td>
-    {% endfor %}
+<div class="grid_8 alpha">
+  <h2>Metadata</h2>
+  <table>
+    <tr><th>Name</th><th>Value</th></tr>
+    {% if instance.metadata.all %}
+      {% for prop in instance.metadata.all %}
+      <tr>
+        <td>
+          {% if perms.inventory.can_change_metadata %}
+            <a href="{% url inventory:deleteMeta id=prop.id %}">[X]</a>
+            <a href="{% url inventory:meta id=instance.id name=prop.name%}">{{prop.name}}</a>
+          {% else %}
+            {{prop.name}}
+          {% endif %}
+        </td>
+        <td>
+          {% if prop.type == 0 %}
+          {{prop.value}}
+          {% endif %}
+          {% if prop.type == 1 %}
+          <a href="{{prop.value}}">{{prop.value}}</a>
+          {% endif %}
+          {% if prop.type == 2 %}
+          <img src="{{prop.value}}"/>
+          {% endif %}
+        </td>
+      {% endfor %}
+    {% else %}
+      <tr class="infobar"><td colspan="3">No metadata</td></tr>
+    {% endif %}
+    {% if perms.inventory.can_change_metadata %}
+    <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url inventory:meta id=instance.id%}">Add/modify
+          metadata</a></td></tr>
+    {% endif %}
+  </table>
+</div>
+<div class="grid_4 omega barcode">
+  <h2>QR Code</h2>
+  <a href="{% url inventory:qr id=instance.id size=10 %}"><img src="{% url inventory:qr id=instance.id size=5 %}"/></a>
+</div>
+<div class="grid_8 alpha">
+  {% if instance.trainable %}
+  <h2>Trained Users</h2>
+  <table>
+    <tr><th>Name</th><th></th></tr>
+    {% if instance.users.all %}
+      {% for training in instance.trainings.all %}
+      <tr class="{% cycle 'even' 'odd' %}"><td><a
+            href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
+        <td>
+          {% if training.rank <= myTraining.rank and training != myTraining %}
+          <a href="{% url inventory:promote id=training.id %}">They are
+            better than me</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr><td colspan="2">Nobody!</td></tr>
+    {% endif %}
+    {% if not myTraining and perms.inventory.can_train %}
+    <tr><td colspan="2"><a href="{% url inventory:train id=instance.id %}">I have used this!</a></td></tr>
+    {% endif %}
+  </table>
   {% else %}
-    <tr><td colspan="3">No metadata</td></tr>
+  <p>You cannot train for this resource.</p>
   {% endif %}
-  {% if perms.inventory.can_change_metadata %}
-  <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url inventory:meta id=instance.id%}">Add/modify
-        metadata</a></td></tr>
-  {% endif %}
-</table>
-{% if instance.trainable %}
-<h2>Trained Users</h2>
-<table>
-  <tr><th>Name</th><th></th></tr>
-  {% if instance.users.all %}
-    {% for training in instance.trainings.all %}
-    <tr class="{% cycle 'even' 'odd' %}"><td><a
-          href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
-      <td>
-        {% if training.rank <= myTraining.rank and training != myTraining %}
-        <a href="{% url inventory:promote id=training.id %}">They are
-          better than me</a>
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  {% else %}
-    <tr><td colspan="2">Nobody!</td></tr>
-  {% endif %}
-  {% if not myTraining and perms.inventory.can_train %}
-  <tr><td colspan="2"><a href="{% url inventory:train id=instance.id %}">I have used this!</a></td></tr>
-  {% endif %}
-</table>
-{% endif %}
-<h2>Related Events</h2>
-<table>
-  <tr><th>Name</th></tr>
-  {% for event in instance.events.all %}
-  <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td></tr>
-  {% endfor %}
-</table>
-<h2>Changelog</h2>
-<table>
-  <tr><th>Date</th><th>Who</th><th>What</th></tr>
-  {% for event in instance.changelog.all %}
-  <tr class="{% cycle 'even' 'odd' %}">
-      <td>{{event.stamp}}</td>
-      <td>{{event.member}}</td>
-      <td>
-        {% if event.property %}
-          {% if event.old %}
-            {% if event.new %}
-              Changed {{event.property}} from {{event.old}} to {{event.new}}.
+</div>
+<div class="grid_4 omega">
+  <h2>Related Events</h2>
+  <table>
+    <!-- <tr><th>Name</th></tr> -->
+    {% if instance.events.all %}
+      {% for event in instance.events.all %}
+      <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td></tr>
+      {% endfor %}
+    {% else %}
+      <tr class="infobar"><td colspan="1">No events</td></tr>
+    {% endif %}
+  </table>
+</div>
+<div class="grid_12 alpha omega">
+  <h2>Changelog</h2>
+  <table>
+    <tr><th>Date</th><th>Who</th><th>What</th></tr>
+    {% for event in instance.changelog.all %}
+    <tr class="{% cycle 'even' 'odd' %}">
+        <td>{{event.stamp}}</td>
+        <td>{{event.member}}</td>
+        <td>
+          {% if event.property %}
+            {% if event.old %}
+              {% if event.new %}
+                Changed {{event.property}} from {{event.old}} to {{event.new}}.
+              {% else %}
+                Deleted {{event.property}} (was {{event.old}}).
+              {% endif %}
             {% else %}
-              Deleted {{event.property}} (was {{event.old}}).
+              {% if event.new %}
+              Added {{event.property}}: {{event.new}}
+              {% else %}
+                Did some property wizardry that spiff can't understand.
+              {% endif %}
+            {% endif %}
+          {% elif event.trained_member %}
+            {% if event.old %}
+              Promoted {{event.trained_member}} from Level {{event.old}} to Level
+              {{event.new}}.
+            {% else %}
+              Used it for the first time.
             {% endif %}
           {% else %}
-            {% if event.new %}
-            Added {{event.property}}: {{event.new}}
-            {% else %}
-              Did some property wizardry that spiff can't understand.
-            {% endif %}
+            Did some wizardry that spiff can't understand.
           {% endif %}
-        {% elif event.trained_member %}
-          {% if event.old %}
-            Promoted {{event.trained_member}} from Level {{event.old}} to Level
-            {{event.new}}.
-          {% else %}
-            Used it for the first time.
-          {% endif %}
-        {% else %}
-          Did some wizardry that spiff can't understand.
-        {% endif %}
-      </td>
-    </tr>
-  {% endfor %}
-</table>
-<div class="barcode">
-<img src="{% url inventory:qr id=instance.id %}"/>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
 </div>
 {% endblock %}
 

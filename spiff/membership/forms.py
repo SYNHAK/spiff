@@ -8,6 +8,7 @@ class UserForm(forms.Form):
   lastName = forms.CharField()
   birthday = forms.DateField()
   profession = forms.CharField()
+  tagline = forms.CharField()
 
   def __init__(self, *args, **kwargs):
     instance = kwargs.pop('instance', 0)
@@ -18,6 +19,7 @@ class UserForm(forms.Form):
       self.fields['lastName'].initial = instance.last_name
       self.fields['birthday'].initial = instance.member.birthday
       self.fields['profession'].initial = instance.member.profession
+      self.fields['tagline'].initial = instance.member.tagline
 
 class ProfileForm(forms.Form):
   def __init__(self, *args, **kwargs):

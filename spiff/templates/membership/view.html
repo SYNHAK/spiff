@@ -9,39 +9,49 @@
 {% endblock %}
 
 {% block content %}
-<div style="float:right">
-  {% gravatar instance.user %}
-</div>
-<h1>{{instance.firstName}} {{instance.lastName}}</h1>
-
-{% if instance.activeMember %}
-{% else %}
-<div class="messages">
-  Not an Active Member
-</div>
-{% endif %}
-
-<h2>Profile {% if user == instance.user or perms.auth.can_change_user %}<sup><a
-      href="{% url membership:edit username=instance.user.username %}">Edit</a></sup>{% endif %}</h2>
-<table>
-  {% for field in instance.attributes.all %}
-  {% if field.field.public or instance.user == user or perms.membership.can_view_private_fields %}
-    <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
+<div class="grid_4 alpha">
+<p>{% gravatar instance.user %}</p>
+<ul>
+  {% if instance.tagline %}
+  <li>"<em>{{instance.tagline}}</em>" &mdash;{{instance.fullName}}</li>
   {% endif %}
-  {% endfor %}
-</table>
+  <li>Profession: {{instance.profession}}</li>
+  <li>Joined: {{instance.created}}</li>
+  <li>Last Seen: {{instance.lastSeen}}</li>
+  <li>Birthday: {{instance.birthday}}</li>
+</ul>
+</div>
 
-<h2>Trained Resources</h2>
-<table>
-  <tr><th>Name</th><th>Level</th></tr>
-  {% if instance.trainings.all %}
-    {% for training in instance.trainings.all %}
-    <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url inventory:view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
-    {% endfor %}
+<div class="grid_8 omega">
+  {% if instance.activeMember %}
   {% else %}
-    <tr><td colspan="2">None :(</td></tr>
+  <div class="messages">
+    Not an Active Member
+  </div>
   {% endif %}
-</table>
+
+  <h2>Profile {% if user == instance.user or perms.auth.can_change_user %}<sup><a
+        href="{% url membership:edit username=instance.user.username %}">Edit</a></sup>{% endif %}</h2>
+  <table>
+    {% for field in instance.attributes.all %}
+    {% if field.field.public or instance.user == user or perms.membership.can_view_private_fields %}
+      <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
+    {% endif %}
+    {% endfor %}
+  </table>
+</div>
+
+<div class="grid_12 alpha omega">
+  <h2>Trained Resources</h2>
+  <table>
+    <tr><th>Name</th><th>Level</th></tr>
+    {% if instance.trainings.all %}
+      {% for training in instance.trainings.all %}
+      <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url inventory:view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
+      {% endfor %}
+    {% else %}
+      <tr><td colspan="2">None :(</td></tr>
+    {% endif %}
+  </table>
+</div>
 {% endblock %}
-
-

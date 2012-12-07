@@ -144,13 +144,16 @@ def train(request, id):
     kwargs={'id': resource.id}))
 
 @cache_control(public=True, private=False, no_cache=False, no_transform=False, must_revalidate=False, proxy_revalidate=False, max_age=86400)
-def qrCode(request, id):
+def qrCode(request, id, size=10):
   site = get_current_site(request)
   base = "%s://%s"%(request.META['wsgi.url_scheme'], site.domain)
   if request.META['SERVER_PORT'] != '80':
     base = "%s:%s"%(base, request.META['SERVER_PORT'])
   img = qrcode.make("%s%s"%(base,
-    reverse('inventory:view', kwargs={'id': id})))
+    reverse('inventory:view', kwargs={'id': id})),
+    box_size=size,
+    border=0
+  )
   buf = StringIO()
   img.save(buf, "PNG")
   return HttpResponse(buf.getvalue(), content_type="image/png")

@@ -1,3 +1,7 @@
+h2 {
+  border-bottom: 3px solid black;
+}
+
 #header {
   color: #000;
   border-bottom: 1px solid black;
@@ -63,7 +67,7 @@ table {
 table th {
   font-weight: bold;
   font-size:large;
-  border-bottom: 3px solid black;
+  border-bottom: 2px solid black;
 }
 
 table tr {
@@ -141,4 +145,23 @@ a[class|="action-add"] {
 
 a[class|="action-add-attendee"] {
   background-image: url('icons/tick.png');
+}
+
+tr.infobar td {
+  font-style: italic;
+  text-align: center;
+}
+
+.barcode {
+  text-align: center;
+}
+
+.barcode img {
+  border: 8px solid red;
+}
+
+pre {
+  background-color:#ddd;
+  border: 1px solid black;
+  padding: 3px;
 }
