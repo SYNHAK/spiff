@@ -55,6 +55,8 @@ class ModelEncoder(json.JSONEncoder):
     return super(ModelEncoder, self).default(o)
 
 class ObjectView(TemplateView):
+  slug_field = 'id'
+
   def get_context_data(self, request, instance, instances, **kwargs):
     context = super(ObjectView, self).get_context_data(**kwargs)
     context.update(kwargs)
@@ -63,7 +65,8 @@ class ObjectView(TemplateView):
     return context
 
   def instance(self, *args, **kwargs):
-    return self.model.objects.get(pk=kwargs['id'])
+    fields = {self.slug_field: kwargs[self.slug_field]}
+    return self.model.objects.get(**fields)
 
   def instances(self, *args, **kwargs):
     return self.model.objects.all()
@@ -115,7 +118,7 @@ class ObjectView(TemplateView):
     idxArgs = copy(kwargs)
     idxArgs['_index'] = True
     urls = (
-        url("^%s(?P<id>[0-9]+)(?:.(?P<format>.*))?$"%(prefix),
+        url("^%s(?P<%s>.+)(?:.(?P<format>.*))?$"%(prefix, cls.slug_field),
           csrf_exempt(cls.as_view()), kwargs, name=name),
         url("^%s(?:.(?P<format>.*))?$"%(prefix),
           cls.as_view(), idxArgs, name=indexName),
