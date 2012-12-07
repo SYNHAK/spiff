@@ -118,9 +118,9 @@ class ObjectView(TemplateView):
     idxArgs = copy(kwargs)
     idxArgs['_index'] = True
     urls = (
-        url("^%s(?P<%s>.+)(?:.(?P<format>.*))?$"%(prefix, cls.slug_field),
-          csrf_exempt(cls.as_view()), kwargs, name=name),
-        url("^%s(?:.(?P<format>.*))?$"%(prefix),
+        url("^%s(?:\.(?P<format>.*))?$"%(prefix),
           cls.as_view(), idxArgs, name=indexName),
+        url("^%s(?P<%s>\w+?)(?:\.(?P<format>.*))?$"%(prefix, cls.slug_field),
+          csrf_exempt(cls.as_view()), kwargs, name=name),
     )
     return urls

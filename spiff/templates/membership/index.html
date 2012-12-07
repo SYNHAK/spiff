@@ -8,7 +8,7 @@
 <table>
   <tr><th>Name</th><th>Member Since</th></tr>
   {% for user in instances %}
-  <tr class="{% cycle 'odd' 'even' %}"><td><a href="{% url membership:view username=user.username %}">{% gravatar user %} {{user.member.fullName}}</a></td><td>{{user.member.created}}</td></tr>
+  <tr class="{% cycle 'odd' 'even' %}"><td><a href="{% url membership:view user__username=user.username %}">{% gravatar user %} {{user.member.fullName}}</a></td><td>{{user.member.created}}</td></tr>
   {% endfor %}
 </table>
 {% endblock %}

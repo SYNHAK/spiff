@@ -7,4 +7,3 @@ urlpatterns = patterns('spiff.membership',
 )
 
 urlpatterns += views.MemberView.as_url()
-print views.MemberView.as_url()

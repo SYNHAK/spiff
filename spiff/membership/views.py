@@ -10,10 +10,10 @@ import models
 import forms
 
 class MemberView(ObjectView):
-  model = User
+  model = models.Member
   template_name = 'membership/view.html'
   index_template_name = 'membership/index.html'
-  slug_field = 'username'
+  slug_field = 'user__username'
 
   def instances(self, request, *args, **kwargs):
     return User.objects.filter(
