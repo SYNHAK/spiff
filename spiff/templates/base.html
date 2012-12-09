@@ -24,13 +24,16 @@
     </div>
     <div id="epicenter" class="grid_3">
       {% if user.is_anonymous %}
-        Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
-        or <a href="{% url 'spiff.local.views.register' %}">Register</a>
+      <p>Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
+      or <a href="{% url 'spiff.local.views.register' %}">Register</a></p>
+      <p><a href="{% url 'django.contrib.auth.views.password_reset' %}">Forgot
+        your password?</a></p>
       {% else %}
       <a href="{{user.member.get_absolute_url}}">
         {% gravatar user %}</a>
       <p>Welcome, <a href="{{user.member.get_absolute_url}}">{{user.member.fullName}}!</a></p>
         <p><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></p>
+        <p><a href="{% url 'django.contrib.auth.views.password_change' %}">Change your password</a></p>
       {% endif %}
     </div>
     <br class="clear"/>
