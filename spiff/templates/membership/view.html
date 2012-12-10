@@ -19,6 +19,11 @@
   <li>Joined: {{instance.created}}</li>
   <li>Last Seen: {{instance.lastSeen}}</li>
   <li>Birthday: {{instance.birthday}}</li>
+  {% if user.is_authenticated %}
+    <li>Email: {{instance.email}}</li>
+  {% else %}
+    <li>Email: <em>login to view email</em></li>
+  {% endif %}
 </ul>
 </div>
 
@@ -30,8 +35,8 @@
   </div>
   {% endif %}
 
-  <h2>Profile {% if user == instance.user or perms.auth.can_change_user %}<sup><a
-        href="{% url membership:edit username=instance.user.username %}">Edit</a></sup>{% endif %}</h2>
+  <h2>Profile {% if user == instance.user or perms.auth.change_user %}<sup><a
+        href="{% url membership:edit username=instance.user.username %}">Edit</a> <a href="https://en.gravatar.com/emails">Change Avatar</a></sup>{% endif %}</h2>
   <table>
     {% for field in instance.attributes.all %}
     {% if field.field.public or instance.user == user or perms.membership.can_view_private_fields %}
@@ -53,7 +58,7 @@
     {% endif %}
   </div>
   <div class="grid_6 omega">
-    {% if perms.membership.can_add_due_payment %}
+    {% if perms.membership.add_due_payment %}
     <h2>Due Payments</h2>
     <table>
       <tr><th>Date</th><th>Value</th><th>Method</th><th>Membership Level</th></tr>

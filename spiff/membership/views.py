@@ -87,7 +87,7 @@ def editRank(request, username):
       {'editUser': user, 'rankForm': rankForm},
       context_instance=RequestContext(request))
 
-@permission_required('membership.can_add_due_payment')
+@permission_required('membership.add_due_payment')
 def addPayment(request, username):
   user = User.objects.get(username=username)
   if request.method == 'POST':
