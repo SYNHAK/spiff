@@ -37,6 +37,7 @@ class Member(models.Model):
       'lastName': self.user.last_name,
       'created': self.created,
       'lastSeen': self.lastSeen,
+      'email': self.user.email,
       'fields': self.fields.filter(public=True),
       'id': self.id,
       'active': self.activeMember(),
