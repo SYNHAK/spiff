@@ -39,6 +39,35 @@
     {% endif %}
     {% endfor %}
   </table>
+  <div class="grid_2 alpha">
+    {% if perms.membership.can_view_member_rank %}
+    <h2>Groups</h2>
+    <ul>
+      {% for group in instance.user.groups.all %}
+        <li>{{group}}</li>
+      {% endfor %}
+      {% if perms.membership.can_change_member_rank %}
+        <li><a href="{% url membership:editRank username=instance.user.username %}">Change</a></li>
+      {% endif %}
+    </ul>
+    {% endif %}
+  </div>
+  <div class="grid_6 omega">
+    {% if perms.membership.can_add_due_payment %}
+    <h2>Due Payments</h2>
+    <table>
+      <tr><th>Date</th><th>Value</th><th>Method</th><th>Membership Level</th></tr>
+      {% for payment in instance.payments.all %}
+      <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td>{{payment.rank.group.name}}</td></tr>
+      {% endfor %}
+      <tr class="actionbar">
+        <td colspan="4">
+          <a class="action-add-payment" href="{%url membership:addPayment username=instance.user.username %}">Add a previous payment</a>
+        </td>
+      </tr>
+    </table>
+    {% endif %}
+  </div>
 </div>
 
 <div class="grid_12 alpha omega">

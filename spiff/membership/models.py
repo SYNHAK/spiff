@@ -125,6 +125,13 @@ class Rank(models.Model):
   group = models.OneToOneField(Group)
   isActiveMembership = models.BooleanField()
 
+  class Meta:
+    permissions = (
+      ('can_change_member_rank', 'Can change member ranks'),
+      ('can_view_member_rank', 'Can view member ranks'),
+      ('can_deactivate_user', 'Can deactivate a user account'),
+    )
+
   def __unicode__(self):
     return self.group.name
 

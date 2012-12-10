@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+{{eventForm.media}}
+<script type="text/javascript">
+$(function() {
+     $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+});
+</script>
+{% endblock %}
+
+{% block title %}Add due payment for {{editUser.member.fullName}}{% endblock %}
+{% block sectiontitle %}Adding due payment for {{editUser.member.fullName}}{% endblock %}
+
+{% block content %}
+<form method="POST" action="{% url membership:addPayment username=editUser.username%}">
+  {{dueForm.as_p}}
+  {% csrf_token %}
+  <input type="submit" value="Save"/>
+</form>
+{% endblock %}

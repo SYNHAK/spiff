@@ -1,4 +1,5 @@
 from django.template import RequestContext
+from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 import stripe
 from django.http import HttpResponseRedirect
@@ -7,7 +8,7 @@ from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from openid_provider.models import OpenID
 from spiff.views import ObjectView
 import models
@@ -68,6 +69,40 @@ def edit(request, username=None):
 
   return render_to_response('membership/edit.html',
       {'editUser': user, 'userForm':userForm, 'profileForm':profileForm},
+      context_instance=RequestContext(request))
+
+@permission_required('membership.can_change_member_rank')
+def editRank(request, username):
+  user = User.objects.get(username=username)
+  if request.method == 'POST':
+    rankForm = forms.RankForm(request.POST)
+  else:
+    rankForm = forms.RankForm(instance=user)
+  if rankForm.is_valid():
+    user.groups = rankForm.cleaned_data['groups']
+    user.save()
+    messages.info(request, "Ranks saved.")
+    return HttpResponseRedirect(reverse('membership:view', kwargs={'user__username': user.username}))
+  return render_to_response('membership/editRank.html',
+      {'editUser': user, 'rankForm': rankForm},
+      context_instance=RequestContext(request))
+
+@permission_required('membership.can_add_due_payment')
+def addPayment(request, username):
+  user = User.objects.get(username=username)
+  if request.method == 'POST':
+    dueForm = forms.DueForm(request.POST)
+  else:
+    dueForm = forms.DueForm()
+  if dueForm.is_valid():
+    args = dueForm.cleaned_data
+    args['user'] = request.user
+    args['member'] = user.member
+    payment = models.DuePayment.objects.create(**args)
+    messages.info(request, "Payment added.")
+    return HttpResponseRedirect(reverse('membership:view', kwargs={'user__username': user.username}))
+  return render_to_response('membership/addDues.html',
+      {'editUser': user, 'dueForm': dueForm},
       context_instance=RequestContext(request))
 
 def pay(request):

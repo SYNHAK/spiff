@@ -1,6 +1,18 @@
 from django import forms
 from django.contrib.auth.models import User
 import models
+from spiff.events.fields import JqSplitDateTimeField
+
+class RankForm(forms.ModelForm):
+  class Meta:
+    model = User
+    fields = ['groups']
+
+class DueForm(forms.ModelForm):
+  created = JqSplitDateTimeField()
+  class Meta:
+    model = models.DuePayment
+    fields = ['value', 'created', 'rank', 'method']
 
 class UserForm(forms.Form):
   email = forms.EmailField()
