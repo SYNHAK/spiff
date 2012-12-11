@@ -113,7 +113,7 @@ class DuePayment(models.Model):
   method = models.IntegerField(choices=METHODS)
 
   def save(self, *args, **kwargs):
-    if not self.id:
+    if not self.id and not self.created:
       self.created = datetime.datetime.today()
     super(DuePayment, self).save(*args, **kwargs)
 
