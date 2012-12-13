@@ -24,14 +24,14 @@ class MemberView(ObjectView):
     viewHidden = request.user.has_perm('membership.can_view_hidden_members')
     return User.objects.filter(
       Q(is_active=True) |
+      Q(groups__rank__isActiveMembership=True)).filter(
       Q(member__hidden=False) |
-      Q(member__hidden=viewHidden) | 
-      Q(groups__rank__isActiveMembership=True)).distinct()
+      Q(member__hidden=viewHidden)).distinct() 
 
   def instance(self, request, *args, **kwargs):
     viewHidden = request.user.has_perm('membership.can_view_hidden_members')
     return models.Member.objects.filter(
-      Q(user__username=kwargs['user__username']) |
+      Q(user__username=kwargs['user__username'])).filter(
       Q(hidden=False) |
       Q(hidden=viewHidden))[0]
 

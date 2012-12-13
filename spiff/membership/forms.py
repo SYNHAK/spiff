@@ -33,6 +33,7 @@ class UserForm(forms.Form):
       self.fields['birthday'].initial = instance.member.birthday
       self.fields['profession'].initial = instance.member.profession
       self.fields['tagline'].initial = instance.member.tagline
+      self.fields['hidden'].initial = instance.member.hidden
 
 class ProfileForm(forms.Form):
   def __init__(self, *args, **kwargs):
