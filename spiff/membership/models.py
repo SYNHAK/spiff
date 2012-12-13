@@ -17,6 +17,12 @@ class Member(models.Model):
   fields = models.ManyToManyField('Field', through='FieldValue')
   birthday = models.DateField(blank=True, null=True)
   stripeID = models.TextField()
+  hidden = models.BooleanField(default=False)
+
+  class Meta:
+    permissions = (
+      ('can_view_hidden_members', 'Can view hidden members'),
+    )
 
   def stripeCustomer(self):
     try:
@@ -56,7 +62,10 @@ class Member(models.Model):
 
   @property
   def fullName(self):
-    return "%s %s"%(self.user.first_name, self.user.last_name)
+    if self.hidden:
+      return "Anonymous"
+    else:
+      return "%s %s"%(self.user.first_name, self.user.last_name)
 
   @property
   def paidForMonth(self):
@@ -84,6 +93,8 @@ class Member(models.Model):
     return len(groups) > 0
 
   def __unicode__(self):
+    if self.hidden:
+      return "Anonymous"
     return "%s, %s"%(self.user.last_name, self.user.first_name)
 
 class DuePayment(models.Model):

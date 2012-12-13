@@ -21,9 +21,19 @@ class MemberView(ObjectView):
   slug_field = 'user__username'
 
   def instances(self, request, *args, **kwargs):
+    viewHidden = request.user.has_perm('membership.can_view_hidden_members')
     return User.objects.filter(
       Q(is_active=True) |
+      Q(member__hidden=False) |
+      Q(member__hidden=viewHidden) | 
       Q(groups__rank__isActiveMembership=True)).distinct()
+
+  def instance(self, request, *args, **kwargs):
+    viewHidden = request.user.has_perm('membership.can_view_hidden_members')
+    return models.Member.objects.filter(
+      Q(user__username=kwargs['user__username']) |
+      Q(hidden=False) |
+      Q(hidden=viewHidden))[0]
 
   def get_context_data(self, request, instance, instances, **kwargs):
     cxt = super(MemberView, self).get_context_data(
@@ -60,6 +70,7 @@ def edit(request, username=None):
     member.birthday = userForm.cleaned_data['birthday']
     member.profession = userForm.cleaned_data['profession']
     member.tagline = userForm.cleaned_data['tagline']
+    member.hidden = userForm.cleaned_data['hidden']
     member.save()
     for f in fields:
       value,created = models.FieldValue.objects.get_or_create(member=member, field=f)
