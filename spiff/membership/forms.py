@@ -21,7 +21,7 @@ class UserForm(forms.Form):
   birthday = forms.DateField()
   profession = forms.CharField()
   tagline = forms.CharField()
-  hidden = forms.BooleanField()
+  hidden = forms.BooleanField(required=False)
 
   def __init__(self, *args, **kwargs):
     instance = kwargs.pop('instance', 0)
