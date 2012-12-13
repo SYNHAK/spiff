@@ -20,7 +20,7 @@
   <li>Last Seen: {{instance.lastSeen}}</li>
   <li>Birthday: {{instance.birthday}}</li>
   {% if user.is_authenticated %}
-    <li>Email: {{instance.email}}</li>
+    <li>Email: {{instance.user.email}}</li>
   {% else %}
     <li>Email: <em>login to view email</em></li>
   {% endif %}
