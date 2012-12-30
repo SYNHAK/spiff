@@ -24,7 +24,7 @@ class ModelEncoder(json.JSONEncoder):
       self._seen.append(o)
       data = {}
       if hasattr(o, 'serialize'):
-        return o.serialize()
+        data = o.serialize()
       for f in o._meta.get_all_field_names():
         try:
           data[f] = getattr(o, f)
@@ -37,6 +37,7 @@ class ModelEncoder(json.JSONEncoder):
           pass
         except FieldDoesNotExist:
           pass
+      data['_type'] = o._meta.object_name
       return data
     if isinstance(o, QuerySet):
       ret = []
