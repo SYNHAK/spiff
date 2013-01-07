@@ -98,6 +98,8 @@ def spaceapi(request):
   meta['logo'] = '/logo.png'
   meta['icon'] = {'open': '/open.png', 'closed': '/closed.png'}
   meta['url'] = 'http://'+get_current_site(request).domain
+  meta['x-spiff-version'] = '0.1'
+  meta['x-spiff-url'] = 'http://'+get_current_site(request).domain+'/auth/'
   meta['open'] = True
 
   sensors = {}
