@@ -115,6 +115,8 @@
             {% else %}
               Used it for the first time.
             {% endif %}
+          {% elif not event.old and not event.new%}
+            Added it to spiff
           {% else %}
             Did some wizardry that spiff can't understand.
           {% endif %}

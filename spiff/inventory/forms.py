@@ -1,6 +1,11 @@
 from django import forms
 import models
 
+class AddResourceForm(forms.ModelForm):
+  class Meta:
+    model = models.Resource
+    fields = ['name', 'trainable']
+
 class TrainingForm(forms.Form):
   rank = forms.IntegerField()
   comments = forms.CharField()

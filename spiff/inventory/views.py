@@ -157,3 +157,33 @@ def qrCode(request, id, size=10):
   buf = StringIO()
   img.save(buf, "PNG")
   return HttpResponse(buf.getvalue(), content_type="image/png")
+
+
+@permission_required('inventory.add_resource')
+def addResource(request):
+  if request.method == 'POST':
+    form = forms.AddResourceForm(request.POST)
+  else:
+    form = forms.AddResourceForm()
+  if form.is_valid():
+    res = models.Resource.objects.create(
+      name=form.cleaned_data['name'],
+      trainable=form.cleaned_data['trainable']
+    )
+    res.logChange(
+      member = request.user.member,
+    )
+    messages.info(request, "Resource created.")
+    return HttpResponseRedirect(
+      reverse(
+        'inventory:view',
+        kwargs={'id': res.id}
+      )
+    )
+  return render_to_response(
+    'inventory/addResource.html', 
+    {
+      'form': form
+    },
+    context_instance=RequestContext(request)
+  )

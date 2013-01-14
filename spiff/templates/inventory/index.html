@@ -9,5 +9,8 @@
   <li><a href="{{item.get_absolute_url}}">{{item.name}}</a></li>
   {% endfor %}
 </ul>
+{% if perms.inventory.add_resource %}
+<a class="action-add-resource" href="{% url inventory:add %}">Add new resource</a>
+{% endif %}
 {% endblock %}
 
