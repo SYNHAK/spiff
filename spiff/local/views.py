@@ -11,8 +11,9 @@ from django.shortcuts import render_to_response
 from django.forms.models import modelformset_factory
 import forms
 from spiff.membership.forms import ProfileForm
-from spiff.membership.models import FieldValue, Field, Member
+from spiff.membership.models import FieldValue, Field, Member, Rank
 from spiff.events.models import Event
+from spiff.local.models import SpaceConfig, SpaceContact, SpaceFeed
 from spiff.inventory.models import Resource, Metadata
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -94,13 +95,40 @@ def search(request):
 def spaceapi(request):
   meta = {}
   meta['api'] = '0.12'
-  meta['space'] = get_current_site(request).name
-  meta['logo'] = '/logo.png'
-  meta['icon'] = {'open': '/open.png', 'closed': '/closed.png'}
-  meta['url'] = 'http://'+get_current_site(request).domain
   meta['x-spiff-version'] = '0.1'
   meta['x-spiff-url'] = 'http://'+get_current_site(request).domain+'/auth/'
-  meta['open'] = True
+
+  site = get_current_site(request)
+  spaceConfig = SpaceConfig.objects.get(site=site)
+
+  meta['space'] = site.name
+  meta['logo'] = spaceConfig.logo
+  meta['icon'] = {'open': spaceConfig.closedIcon, 'closed': spaceConfig.openIcon}
+  meta['url'] = site.domain
+  meta['open'] = spaceConfig.open
+
+  meta['address'] = spaceConfig.address
+  meta['lat'] = spaceConfig.lat
+  meta['lon'] = spaceConfig.lon
+  meta['status'] = spaceConfig.status
+  meta['lastchange'] = str(spaceConfig.lastChange)
+
+  contacts = {}
+  for c in SpaceContact.objects.filter(space=spaceConfig):
+    contacts[c.name] = c.value
+  meta['contact'] = contacts
+
+  keyholders = []
+  for r in Rank.objects.filter(isKeyholder=True):
+    for u in r.group.user_set.all():
+      keyholders.append(str(u.member))
+
+  meta['contact']['keymaster'] = keyholders
+
+  feeds = []
+  for f in SpaceFeed.objects.filter(space=spaceConfig):
+    feeds.append({'name': f.name, 'url': f.url})
+  meta['feeds'] = feeds
 
   sensors = {}
   for t in SENSOR_TYPES:
