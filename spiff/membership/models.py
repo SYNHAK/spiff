@@ -86,6 +86,12 @@ class Member(models.Model):
     payments = self.payments.filter(created__lt=lateDate)
     return len(payments) == 0
 
+  @property
+  def keyholder(self):
+    groups = self.user.groups.filter(rank__isKeyholder=True)
+    return len(groups) > 0
+    
+
   def activeMember(self):
     if not self.user.is_active:
       return False
@@ -136,6 +142,7 @@ class Rank(models.Model):
   monthlyDues = models.FloatField(default=0)
   group = models.OneToOneField(Group)
   isActiveMembership = models.BooleanField()
+  isKeyholder = models.BooleanField()
 
   class Meta:
     permissions = (
