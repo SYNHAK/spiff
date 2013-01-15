@@ -107,6 +107,9 @@ def spaceapi(request):
   meta['url'] = site.domain
   meta['open'] = spaceConfig.isOpen()
 
+  if spaceConfig.openSensor is not None:
+      meta['x-spiff-open-sensor'] = spaceConfig.openSensor.id
+
   meta['address'] = spaceConfig.address
   meta['lat'] = spaceConfig.lat
   meta['lon'] = spaceConfig.lon
