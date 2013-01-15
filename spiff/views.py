@@ -20,7 +20,7 @@ class ModelEncoder(json.JSONEncoder):
   def default(self, o):
     if isinstance(o, Model):
       if o in self._seen:
-        return "#%s#%s"%(o._meta.object_name, o.pk)
+        return "#%s#%s"%(o._meta.object_name.lower(), o.pk)
       self._seen.append(o)
       data = {}
       if hasattr(o, 'serialize'):
@@ -37,7 +37,11 @@ class ModelEncoder(json.JSONEncoder):
           pass
         except FieldDoesNotExist:
           pass
-      data['_type'] = o._meta.object_name
+      data['_type'] = o._meta.object_name.lower()
+      if hasattr(o._meta, 'plural_name'):
+        data['_plural_type'] = o._meta.plural_name
+      else:
+        data['_plural_type'] = o._meta.object_name.lower()+"s"
       return data
     if isinstance(o, QuerySet):
       ret = []
