@@ -43,7 +43,7 @@ class Sensor(models.Model):
           if lastVal.value.lower() == "false" or lastVal.value == "0" or len(lastVal.value) == 0:
             return False
           return True
-        return lastval.value
+        return lastVal.value
       return None
 
   @models.permalink
