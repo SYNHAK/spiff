@@ -96,9 +96,12 @@ def spaceapi(request):
   meta = {}
   meta['api'] = '0.12'
   meta['x-spiff-version'] = '0.1'
-  meta['x-spiff-url'] = 'http://'+get_current_site(request).domain+'/auth/'
-
   site = get_current_site(request)
+  base = "%s://%s"%(request.META['wsgi.url_scheme'], site.domain)
+  if (request.META['wsgi.url_scheme'] == 'http' and request.META['SERVER_PORT'] != '80') or (request.META['wsgi.url_scheme'] == 'https' and request.META['SERVER_PORT'] != '443'):
+    base = "%s:%s"%(base, request.META['SERVER_PORT'])
+  meta['x-spiff-url'] = "%s%s"%(base, reverse('home'))
+
   spaceConfig = SpaceConfig.objects.get(site=site)
 
   meta['space'] = site.name

@@ -147,7 +147,7 @@ def train(request, id):
 def qrCode(request, id, size=10):
   site = get_current_site(request)
   base = "%s://%s"%(request.META['wsgi.url_scheme'], site.domain)
-  if request.META['SERVER_PORT'] != '80':
+  if (request.META['wsgi.url_scheme'] == 'http' and request.META['SERVER_PORT'] != '80') or (request.META['wsgi.url_scheme'] == 'https' and request.META['SERVER_PORT'] != '443'):
     base = "%s:%s"%(base, request.META['SERVER_PORT'])
   img = qrcode.make("%s%s"%(base,
     reverse('inventory:view', kwargs={'id': id})),
