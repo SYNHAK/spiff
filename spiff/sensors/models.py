@@ -1,4 +1,9 @@
 from django.db import models
+from django.db.models.signals import post_save
+import stat
+import tempfile
+import socket
+import requests
 
 SENSOR_TYPE_BOOLEAN = 5 
 
@@ -58,3 +63,46 @@ class SensorValue(models.Model):
 
   def __unicode__(self):
     return "%s=%s"%(self.sensor.name, self.value)
+
+ACTION_HTTP = 0
+ACTION_EXEC = 1
+ACTION_PYTHON = 2
+ACTION_SCRIPT = 3
+
+ACTION_TYPES = (
+  (ACTION_HTTP, 'http'),
+  (ACTION_EXEC, 'exec'),
+  (ACTION_PYTHON, 'python'),
+  (ACTION_SCRIPT, 'script'),
+)
+
+class Action(models.Model):
+  sensor = models.ForeignKey(Sensor, related_name='actions')
+  name = models.CharField(max_length=255)
+  type = models.IntegerField(choices=ACTION_TYPES)
+  value = models.TextField()
+
+  def run(self):
+    if self.type == ACTION_HTTP:
+      requests.get(self.value)
+    if self.type == ACTION_EXEC:
+      subprocess.call(self.value.split(" "))
+    if self.type == ACTION_PYTHON:
+      exec(self.value, {'sensor': self.sensor})
+    if self.type == ACTION_SCRIPT:
+      (fh, tmp) = tempfile.mkstemp()
+      f = os.fdopen(fh)
+      f.write(self.value)
+      f.close()
+      os.chmod(tmp, stat.S_IXUSR | stat.S_IRUSR)
+      subprocess.call([tmp,])
+
+def exec_sensor_actions(sender, instance, created, **kwargs):
+  if created:
+    for action in instance.sensor.actions.all():
+      try:
+        action.run()
+      except Exception, e:
+        print e
+
+post_save.connect(exec_sensor_actions, sender=SensorValue)
