@@ -105,7 +105,7 @@ def spaceapi(request):
   meta['logo'] = spaceConfig.logo
   meta['icon'] = {'open': spaceConfig.closedIcon, 'closed': spaceConfig.openIcon}
   meta['url'] = site.domain
-  meta['open'] = spaceConfig.open
+  meta['open'] = spaceConfig.isOpen()
 
   meta['address'] = spaceConfig.address
   meta['lat'] = spaceConfig.lat
@@ -134,7 +134,8 @@ def spaceapi(request):
   for t in SENSOR_TYPES:
     sensors[t[1]] = []
     for s in Sensor.objects.filter(type=t[0]):
-      sensors[t[1]].append({s.name: s.value().value})
+      v = s.value()
+      sensors[t[1]].append({s.name: v})
   meta['sensors'] = sensors
 
   data = json.dumps(meta, indent=True)

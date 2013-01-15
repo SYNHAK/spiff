@@ -1,12 +1,14 @@
 from django.db import models
 
+SENSOR_TYPE_BOOLEAN = 5 
+
 SENSOR_TYPES = (
   (0, 'number'),
   (1, 'string'),
   (2, 'binary'),
   (3, 'json'),
   (4, 'temp'),
-  (5, 'boolean'),
+  (SENSOR_TYPE_BOOLEAN, 'boolean'),
 )
 
 class Sensor(models.Model):
@@ -23,11 +25,21 @@ class Sensor(models.Model):
       'type': SENSOR_TYPES[self.type],
     }
 
-  def value(self):
+  def valueObj(self):
     v = self.values.all()
     if len(v):
       return v[0]
     return None
+
+  def value(self):
+      lastVal = self.valueObj()
+      if lastVal:
+        if self.type == SENSOR_TYPE_BOOLEAN:
+          if lastVal.value.lower() == "false" or lastVal.value == "0" or len(lastVal.value) == 0:
+            return False
+          return True
+        return lastval.value
+      return None
 
   @models.permalink
   def get_absolute_url(self):

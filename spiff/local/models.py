@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.sites.models import Site
 from django.db.models.signals import post_save
+from spiff.sensors.models import Sensor, SENSOR_TYPE_BOOLEAN
 
 class SpaceConfig(models.Model):
     site = models.OneToOneField(Site)
@@ -14,6 +15,13 @@ class SpaceConfig(models.Model):
     address = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=100, null=True, blank=True)
     lastChange = models.DateTimeField(auto_now_add=True)
+    openSensor = models.ForeignKey(Sensor, null=True, blank=True)
+
+    def isOpen(self):
+        if self.openSensor:
+            if self.openSensor.type == SENSOR_TYPE_BOOLEAN:
+                return bool(self.openSensor.value())
+        return self.open
 
 class SpaceContact(models.Model):
     space = models.ForeignKey('SpaceConfig')
