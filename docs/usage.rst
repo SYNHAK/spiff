@@ -202,6 +202,10 @@ reserve the use of a resource by adding it to the event. This reservation system
 is purely an advisory one at the moment. Nothing will stop someone from
 reserving an already reserved item, or physically blocking you from using it.
 
+Events can have multiple organizers, who are able to edit an event's
+description and reserve resources. Organizers may only be added or removed by
+the event creator.
+
 Sensors
 -------
 

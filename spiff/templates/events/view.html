@@ -1,20 +1,30 @@
 {% extends "base.html" %}
 {% load markup %}
 
-{% block title %}{{instance.name}}{% endblock %}
-{% block sectiontitle %}{{instance.name}}{% endblock %}
+{% block title %}Event: {{instance.name}}{% endblock %}
+{% block sectiontitle %}Event: {{instance.name}}{% endblock %}
 
 {% block content %}
 <div class="grid_4 alpha">
   <ul>
     <li>Start: {{instance.start}}</li>
     <li>End: {{instance.end}}</li>
-    <li>Organizer:
-    <li>Organizer: <a href="{{instance.creator.get_absolute_url}}">{{instance.creator.fullName}}</a></li>
+    <li>Created by: <a href="{{instance.creator.get_absolute_url}}">{{instance.creator.fullName}}</a></li>
+    {% for organizer in instance.organizers.all %}
+    <li>Organized by: <a href="{{organizer.member.get_absolute_url}}">{{organizer.member.fullName}}</a> <a href="{% url events:removeOrganizer id=instance.id userID=organizer.id %}">[X]</a></li>
+    {% endfor %}
+    {% if perms.change_event or instance.creator == user %}
+    <li><a href="{% url events:edit id=instance.id %}">Edit Details</a></li>
+    <li><a href="{% url events:addOrganizer id=instance.id %}">Add organizer</a></li>
+    {% endif %}
   </ul>
 </div>
-
 <div class="grid_8 omega">
+    <h2>Description</h2>
+    {{instance.description|markdown}}
+</div>
+
+<div class="grid_8 alpha">
   <h2>Attendees</h2>
   <table>
   {% for member in instance.attendees.all %}
@@ -23,11 +33,6 @@
   {% endfor %}
   <tr class="actionbar"><td><a class="action-add-attendee" href="{% url events:attend id=instance.id %}">I'm attending!</a></td></tr>
   </table>
-</div>
-
-<div class="grid_8 omega">
-<h2>Description</h2>
-{{instance.description|markdown}}
 </div>
 
 <div class="grid_4 omega">

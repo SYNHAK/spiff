@@ -1,12 +1,18 @@
 from django import forms
+from django.contrib.auth.models import User
 import models
 import fields
 
-class EventForm(forms.Form):
+class EventForm(forms.ModelForm):
+  class Meta:
+    fields = ['start', 'end', 'name', 'description']
   start = fields.JqSplitDateTimeField()
   end = fields.JqSplitDateTimeField()
   name = forms.CharField()
   description = forms.CharField(widget=forms.Textarea)
+
+class AddOrganizerForm(forms.Form):
+  organizer = forms.ModelChoiceField(queryset=User.objects.all())
 
 class ReserveResourceForm(forms.Form):
   def __init__(self, *args, **kwargs):

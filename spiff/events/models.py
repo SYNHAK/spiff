@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from spiff.membership.models import Member
 from spiff.inventory.models import Resource
 
@@ -10,6 +11,7 @@ class Event(models.Model):
   * end
   * name
   * description
+  * list of organizers
   * list of attendees
   * list of attached resources
 
@@ -20,6 +22,7 @@ class Event(models.Model):
   description = models.TextField()
   attendees = models.ManyToManyField(Member, related_name='events')
   creator = models.ForeignKey(Member, related_name='owned_events')
+  organizers = models.ManyToManyField(User, related_name='organized_events')
   resources = models.ManyToManyField(Resource, related_name='events', blank=True)
 
   class Meta:

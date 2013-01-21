@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Events{% endblock %}
+{% block sectiontitle %}Add Organizer to {{event.name}}{% endblock %}
+
+{% block content %}
+<form method="POST" action="{% url events:addOrganizer id=event.id %}">
+  {{form}}
+  {% csrf_token %}
+  <input type="submit" value="Add Organizer"/>
+</form>
+{% endblock %}
+
+
