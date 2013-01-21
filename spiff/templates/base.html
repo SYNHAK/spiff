@@ -45,6 +45,7 @@
         <li><a href="{% url 'events:index' %}">Events</a></li>
         <li><a href="{% url 'sensors:index' %}">Sensors</a></li>
         {% if user.is_staff %}
+        <!-- <li><a href="{% url 'management:index' %}">Manage</a></li> -->
         <li><a href="{% url 'admin:index' %}">Admin</a></li>
         {% endif %}
       </ul>
