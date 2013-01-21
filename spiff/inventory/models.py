@@ -62,6 +62,9 @@ class TrainingLevel(models.Model):
   rank = models.IntegerField()
 
   class Meta:
+    permissions = (
+      ('can_train', 'Can update own training on resources'),
+    )
     ordering = ['-rank']
 
   def __unicode__(self):
