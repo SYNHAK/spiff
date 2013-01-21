@@ -216,4 +216,18 @@ Sensors
 
 See :doc:`sensors` for complete documentation.
 
+Management Commands
+-------------------
 
+There are a number of management commands available through manage.py.
+
+list_members
+    Lists the email addresses of active members. At SYNHAK, we pipe the output
+    of this through to mailman's sync_members script to subscribe active members
+    to the members only list.
+stripe_sync
+    Currently useless. Will soon be used to support automatic billing and
+    advanced invoicing through Stripe. It creates a Customer in stripe for each
+    Member in Spiff.
+permission_list
+    Lists all permissions in Spiff and Django.
