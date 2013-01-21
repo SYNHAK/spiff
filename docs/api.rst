@@ -21,18 +21,13 @@ other objects. This is indicated by the syntax "#Type#ID", such as
 Other serialization formats may be added later if there is enough
 demand.
 
+General purpose information about the space is available by fetching
+/status.json, as per the :doc:`spaceapi`.
+
+REST documentation pages
+````````````````````````
 .. toctree::
+   :glob:
   
-   api/resources
-   api/sensors
-
-SpaceAPI
---------
-
-Spiff currently implements version 0.12 of the SpaceAPI. You can read
-more about it at http://hackerspaces.nl/spaceapi/
-
-You may access the SpaceAPI through /status.json, as per the standard.
-
-Future versions of Spiff will permit more customization of the data in
-the API.
+   spaceapi
+   api/*

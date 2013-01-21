@@ -1,6 +1,13 @@
 Installation
 ============
 
+Since Spiff is written with Django, the `Django installation docs`_ may be a helpful primer.
+
+.. _`Django installation docs`: https://docs.djangoproject.com/en/1.4/topics/install/
+
+In Brief
+--------
+
 1. Create a local\_settings.py that contains any values you want to
    override from settings.py.
 
@@ -15,8 +22,35 @@ Installation
 The default settings use sqlite3 as the database, with
 /path/to/spiff/spiff.sqlite3 as the file.
 
+Common Environments
+---------------------
+
+MySQL
+`````
+
+Here is an example configuration to put in local_settings.py:
+
+::
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'spiff',
+            'USER': 'spiff',
+            'PASSWORD': 'hunter2',
+            'HOST': '',
+            'PORT': ''
+        }
+    }
+
+Leaving HOST and PORT empty uses 'localhost' at the default mysql port.
+
+Please refer to the `Django MySQL docs`_ for more details.
+
+.. _`Django MySQL docs`: https://docs.djangoproject.com/en/1.4/ref/databases/#mysql-notes
+
 Apache
-------
+``````
 
 This section is included as an example to get Spiff and Apache to work
 together in harmony. It is more or less exactly how we run things at
@@ -26,7 +60,7 @@ First, decide where you're going to serve up spiff. Keep in mind: this
 URL should probably never ever ever change in your space's lifetime. QR
 codes, hardware sensors, door swipes, and whatever else you have talking
 to Spiff will need reconfigured if things ever move. We run our instance
-at http://synhak.org/auth/
+at https://synhak.org/auth/
 
 Our git clone of Spiff is located in /usr/share/spiff/.
 
@@ -50,4 +84,6 @@ In /etc/httpd/conf.d/synhak.org.conf:
 That is all you need. You may then access spiff at
 http://your-space.org/auth/
 
+Other information for using Django with mod_wsgi can be found at the `Django mod_wsgi howto guide`.
 
+.. _`Django mod_wsgi howto guide`: https://docs.djangoproject.com/en/1.4/howto/deployment/wsgi/modwsgi/

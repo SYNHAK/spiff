@@ -26,8 +26,22 @@ $ curl --data "data={'test': true}" http://example.com/sensors/1
 
 The data can be anything: an image, a number, a basic string that says
 "Hello!", more strutured JSON data, or whatever else you want to put in
-there. Spiff doesn't care, it just stores the data until someone else
+there. Spiff doesn't care (except for `Boolean Sensors`_, it just stores the data until someone else
 wants it.
+
+Boolean Sensors
+~~~~~~~~~~~~~~~
+
+Spiff's REST API translates certain values into native values for requested
+serialization formats, and for the :ref:`Open Sensor`. 
+
+Accepted values that mean false:
+
+- The string "false" (case-insensitive)
+- The string "0"
+- An empty string
+
+Anything else is interpreted as true.
 
 Pamela
 ~~~~~~

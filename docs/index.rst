@@ -1,6 +1,12 @@
 Spaceman Spiff Manages Spaces
 =============================
 
+:Author: Trever Fischer <wm161@wm161.net>
+:Contact: irc://chat.freenode.net/#synhak
+:Date: |today|
+:Version: |release|
+:Copyright: Public Domain
+
 Spiff is a Django application that helps you manage a hackerspace. It is
 made available to the public under the AGPL.
 
@@ -24,7 +30,12 @@ Features
    Jazz" (viewing limited to members only), or "Nobel Prizes Earned"
    (public to the internet).
 -  A simple REST api to access everything
-
+-  A merit-based proficiency tracking system
+-  Machine and user-friendly sensor tracking
+-  Perform actions when sensors are updated
+-  An implementation of the SpaceAPI
+-  Accept member dues through Stripe
+-  Use of Django's builtin admin interface to provide low-level database editing.
 
 
 Contents:
