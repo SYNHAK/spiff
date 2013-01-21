@@ -15,7 +15,6 @@ Dependencies
 
 .. include:: ../pip-requirements
    :literal:
-   :code:
 
 Features
 --------
