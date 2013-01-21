@@ -145,6 +145,11 @@ Recording partial payments are supported. This is useful for instances such as a
 member paying $10 in cash and the last $40 via Stripe, or forgetting that dues
 are $35 and not $30.
 
+To enable stripe, set your API key in local_settings.py:
+
+::
+    STRIPE_KEY = "sk_test_foofoofoo"
+
 
 Resources
 ---------

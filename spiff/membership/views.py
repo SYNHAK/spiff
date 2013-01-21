@@ -123,6 +123,11 @@ def pay(request):
     form = forms.PaymentForm()
   rank = request.user.member.highestRank
   balance = request.user.member.outstandingDues
+  if stripe.api_key == "":
+    messages.error(request, "Stripe is not configured for this Spiff install.")
+    return render_to_response('membership/pay.html',
+      {'form': form},
+      context_instance=RequestContext(request))
   if balance < 0.5:
     messages.error(request, "Your outstanding balance of $%d costs less than "
         "$0.50, which is too small for Stripe to process."%(balance))
