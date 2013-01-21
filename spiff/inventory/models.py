@@ -6,6 +6,7 @@ class Resource(models.Model):
   trainable = models.BooleanField(default=True)
   users = models.ManyToManyField(Member, through='TrainingLevel',
       limit_choices_to={'is_active': True})
+  certified_users = models.ManyToManyField(Member, through='Certification', related_name='certified_resources')
 
   @models.permalink
   def get_absolute_url(self):
@@ -15,7 +16,8 @@ class Resource(models.Model):
     return {
       'name': self.name,
       'trainable': self.trainable,
-      'trainings': self.trainings,
+      'skills': self.trainings,
+      'certifications': self.certified_users,
       'metadata': self.metadata,
       'changelog': self.changelog,
       'id': self.id,
@@ -64,11 +66,20 @@ class TrainingLevel(models.Model):
   class Meta:
     permissions = (
       ('can_train', 'Can update own training on resources'),
+      ('certify', 'Can certify other users'),
     )
     ordering = ['-rank']
 
   def __unicode__(self):
     return "%s: level %d %s user"%(self.member.fullName, self.rank, self.resource.name)
+
+class Certification(models.Model):
+  member = models.ForeignKey(Member, related_name='certifications')
+  resource = models.ForeignKey(Resource, related_name='certifications')
+  comment = models.TextField()
+
+  def __unicode__(self):
+    return "%s: Certified on %s: %s"%(self.memer.fullName, self.comment, self.resource.name)
 
 class Change(models.Model):
   resource = models.ForeignKey(Resource, related_name='changelog')

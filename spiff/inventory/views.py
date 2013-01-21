@@ -123,6 +123,55 @@ def promoteTraining(request, id):
   return HttpResponseRedirect(reverse('inventory:view', 
     kwargs={'id': resource.id}))
 
+@permission_required('inventory.certify')
+def uncertify(request, certID):
+  """
+  Deletes a certification
+  """
+  cert = models.Certification.objects.get(pk=certID)
+  resource = cert.resource
+  oldValue = cert.comment
+  oldMember = cert.member
+  cert.delete()
+  resource.logChange(
+    member = request.user.member,
+    old=oldValue,
+    new=None,
+    trained_member=oldMember
+  )
+  messages.info(request, "Certification removed.")
+  return HttpResponseRedirect(reverse('inventory:view', 
+    kwargs={'id': resource.id}))
+
+@permission_required('inventory.certify')
+def certify(request, id):
+  """
+  Certifies a user for the given resource
+  """
+  resource = models.Resource.objects.get(pk=id)
+  if request.method == 'POST':
+    form = forms.CertificationForm(request.POST)
+  else:
+    form = forms.CertificationForm()
+  if form.is_valid():
+    certification = models.Certification.objects.create(
+      member=form.cleaned_data['member'],
+      resource=resource,
+      comment=form.cleaned_data['comment']
+    )
+    messages.info(request, "User certified!")
+    resource.logChange(
+      member=request.user.member,
+      trained_member=certification.member,
+      old=None,
+      new=form.cleaned_data['comment'],
+    )
+    return HttpResponseRedirect(reverse('inventory:view',
+    kwargs={'id': resource.id}))
+  return render_to_response('inventory/certify.html', {'item': resource,
+  'form': form},
+  context_instance=RequestContext(request))
+
 @permission_required('inventory.can_train')
 def train(request, id):
   """

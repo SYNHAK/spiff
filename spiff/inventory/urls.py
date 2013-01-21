@@ -9,6 +9,8 @@ urlpatterns = patterns('spiff.inventory',
   url(r'^deleteMeta/(?P<id>[0-9]+)$', 'views.deleteMeta', name='deleteMeta'),
   url(r'^(?P<id>[0-9]+)/meta/(?P<name>.+)$', 'views.addMeta', name='meta'),
   url(r'^(?P<id>[0-9]+)/train$', 'views.train', name='train'),
+  url(r'^(?P<id>[0-9]+)/certify$', 'views.certify', name='certify'),
+  url(r'^(?P<certID>[0-9]+)/uncertify$', 'views.uncertify', name='uncertify'),
   url(r'^(?P<id>[0-9]+)/promote$', 'views.promoteTraining', name='promote'),
 )
 

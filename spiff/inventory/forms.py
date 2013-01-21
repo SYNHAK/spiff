@@ -6,16 +6,10 @@ class AddResourceForm(forms.ModelForm):
     model = models.Resource
     fields = ['name', 'trainable']
 
-class TrainingForm(forms.Form):
-  rank = forms.IntegerField()
-  comments = forms.CharField()
-
-  def __init__(self, *args, **kwargs):
-    instance = kwargs.pop('instance', 0)
-    super(TrainingForm, self).__init__(*args, **kwargs)
-    if instance:
-      self.fields['rank'].initial = instance.rank
-      self.fields['comments'].initial = instance.comments
+class CertificationForm(forms.ModelForm):
+   class Meta:
+    model = models.Certification
+    fields = ['member', 'comment']
 
 class MetadataForm(forms.ModelForm):
   class Meta:

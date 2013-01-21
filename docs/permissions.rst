@@ -44,6 +44,11 @@ events.change\_event
 The user can edit other user's events. This along with can\_reserve\_resource is required for being able
 to attach resources to events that they don't own.
 
+inventory.certify
+~~~~~~~~~~~~~~~~~
+
+The user may grant and remove certifications for resources from members.
+
 inventory.change\_resource
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

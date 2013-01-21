@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Resource Certification{% endblock %}
+{% block sectiontitle %}Add certification for {{item.name}}{% endblock %}
+
+{% block content %}
+<form method="POST" action="{%url inventory:certify id=item.id%}">
+  {{form.as_p}}
+  {% csrf_token %}
+  <input type="submit" value="Save"/>
+</form>
+{% endblock %}
+

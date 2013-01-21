@@ -46,7 +46,7 @@
 </div>
 <div class="grid_8 alpha">
   {% if instance.trainable %}
-  <h2>Trained Users</h2>
+  <h2>Skilled Users</h2>
   <table>
     <tr><th>Name</th><th></th></tr>
     {% if instance.users.all %}
@@ -86,6 +86,32 @@
   </table>
 </div>
 <div class="grid_12 alpha omega">
+  {% if instance.trainable %}
+  <h2>Certified Users</h2>
+  <table>
+    <tr><th>Name</td><th>Comment</th></tr>
+    {% if instance.certifications.all %}
+      {% for cert in instance.certifications.all %}
+      <tr class="{% cycle 'even' 'odd' %}"><td>
+        {% if perms.inventory.certify %}
+        <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
+
+        {% endif %}
+        <a
+            href="{{cert.member.get_absolute_url}}">{{cert.member}}</a></td>
+        <td>
+        {{ cert.comment }}
+        </td>
+      </tr>
+      {% endfor %}
+    {% endif %}
+    {% if perms.inventory.certify %}
+    <tr><td colspan="2"><a href="{% url inventory:certify id=instance.id %}">Certify someone</a></td></tr>
+    {% endif %}
+  </table>
+  {% endif %}
+</div>
+<div class="grid_12 alpha omega">
   <h2>Changelog</h2>
   <table>
     <tr><th>Date</th><th>Who</th><th>What</th></tr>
@@ -112,10 +138,18 @@
             {% if event.old %}
               Promoted {{event.trained_member}} from Level {{event.old}} to Level
               {{event.new}}.
-            {% else %}
+            {% elif event.trained_member == event.member %}
               Used it for the first time.
+            {% else %}
+              {% if event.new and event.old %}
+                Changed certification for {{event.trained_member}} from "{{event.old}}" to "{{event.new}}"
+              {% elif event.old %}
+                Removed "{{event.old}}" certification from {{event.trained_member}}
+              {% else %}
+                Granted "{{event.new}}" certification to {{event.trained_member}}
+              {% endif %}
             {% endif %}
-          {% elif not event.old and not event.new%}
+          {% elif not event.old and not event.new and not event.trained_member %}
             Added it to spiff
           {% else %}
             Did some wizardry that spiff can't understand.

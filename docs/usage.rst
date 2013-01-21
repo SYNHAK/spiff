@@ -156,7 +156,12 @@ solves that problem.
 You can create a Resource object in Spiff for each real-world resource.
 After it is created, metadata can be attached to it and edited by users
 with the correct permissions. Members can also keep track of their
-training on the site. It works on an honor system that requires users
+training on the site, along with their relative skill ranks.
+
+Users require the inventory.certify permission to be able to add and remove
+certifications from members.
+
+Skill ranking works on an honor system that requires users
 undergo a vetting process by other users:
 
 -  Your hackerspace acquires a nice new lathe.
