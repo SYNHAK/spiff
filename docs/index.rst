@@ -35,6 +35,8 @@ Features
 -  An implementation of the SpaceAPI
 -  Accept member dues through Stripe
 -  Use of Django's builtin admin interface to provide low-level database editing.
+-  Keep track of who is certified to use equipment
+-  Merit based equipment skill level ranking system
 
 
 Contents:
@@ -47,6 +49,8 @@ Contents:
    permissions
    sensors
    api
+   development
+   spaces
 
 Indices and tables
 ==================

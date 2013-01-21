@@ -53,9 +53,11 @@ Spiff is totally 100% compatible with Pamela's basic API.
 
 To use pamela's ARP scanner with Spiff:
 
-$ ./pamela/scanner/pamela-scanner.sh -i "eth0" -o
-"http://example.com/sensors/1" -t mac.csv -d
-"/var/lib/dhcpd/dhcpd.leases"
+::
+
+    $ ./pamela/scanner/pamela-scanner.sh -i "eth0" -o \
+        "http://example.com/sensors/1" -t mac.csv -d \
+        "/var/lib/dhcpd/dhcpd.leases"
 
 Please see Pamela's documentation for more details.
 
