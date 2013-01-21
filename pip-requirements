@@ -11,3 +11,7 @@ wellknown
 xrd
 stripe
 PIL
+isodate
+requests
+stripe
+wsgiref
