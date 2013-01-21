@@ -59,4 +59,24 @@ $ ./pamela/scanner/pamela-scanner.sh -i "eth0" -o
 
 Please see Pamela's documentation for more details.
 
+Sensor Actions
+~~~~~~~~~~~~~~
 
+Spiff can do stuff when sensors are updated. There are 4 kinds of actions that
+can be added via the Django admin interface:
+
+- http: Sends a HTTP GET request to the given url
+- exec: Runs a command via subprocess.call_
+- python: Executes some python code. A spiff.sensors.models.Sensor object is available in the 'sensor' variable.
+- script: Writes a blob of text to a temporary file, performs chmod +x, and runs it.
+
+.. _subprocess.call: http://docs.python.org/2/library/subprocess.html#subprocess.call
+
+.. warning::
+
+   Be extremely careful with the exec, python, and script actions! The commands
+   are ran by the python process, which also means don't run spiff as root ever!
+   Scary things can happen! Don't forget that your members trust you with the
+   information you keep in spiff!
+
+.. _`subprocess.call`: 
