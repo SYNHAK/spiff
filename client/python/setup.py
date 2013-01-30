@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 setup(name='Spiff',
-    version='0.1',
+    version='0.1.1',
     description="API to Spaceman Spiff",
     author='Trever Fischer',
     author_email='wm161@wm161.net',
