@@ -7,5 +7,6 @@ setup(name='Spiff',
     author='Trever Fischer',
     author_email='wm161@wm161.net',
     url='http://github.com/synhak/spiff',
-    py_modules=['spiff']
+    py_modules=['spiff'],
+    requires=['requests'],
 )
