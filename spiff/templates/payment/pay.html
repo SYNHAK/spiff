@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load gravatar %}
+
+{% block title %}Pay Dues{% endblock %}
+{% block sectiontitle %}Pay Dues{% endblock %}
+
+{% block content %}
+<table>
+  <tr><th>Item</th><th>Unit Price</th><th>Quantity</th><th>Total Price</th></tr>
+  {% for line in invoice.items.all %}
+    <tr>
+      <td>{{line.name}}</td>
+      <td>${{line.unitPrice}}</td>
+      <td>{{line.quantity}}</td>
+      <td>${{line.totalPrice}}</td>
+  {% endfor %}
+  {% for payment in invoice.payments.all %}
+    <tr>
+      <td colspan="3">{{payment.get_method_display}} payment on {{payment.created}}</td>
+      <td>-${{payment.value}}</td>
+    </tr>
+  {% endfor %}
+  <tr>
+    <th colspan="3">Grand Total:</th>
+    <th>${{invoice.unpaidBalance}}</th>
+  </tr>
+</table>
+
+<form method="POST">
+{{form.as_p}}
+{% csrf_token %}
+<input type="submit" value="Submit"/>
+</form>
+{% endblock %}
