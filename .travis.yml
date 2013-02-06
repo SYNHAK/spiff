@@ -3,4 +3,7 @@ python:
   - "2.6"
   - "2.7"
 
-script: ./run-unit-tests.sh
+install: "pip install -r pip-requirements"
+script:
+  - coverage run ./manage.py test
+  - coverage report -m --include=\* --omit=\*/migrations/\*,settings.py,local_settings.py,manage.py,bulkops.py
