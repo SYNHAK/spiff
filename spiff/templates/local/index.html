@@ -5,11 +5,21 @@
 
 {% block content %}
 <div class="grid_2 alpha">
+  <h2>Current Membership</h2>
+  <ul>
+    <li>Member since: {{user.member.created.date}}</li>
+    <li>Expiration date: {{user.member.membershipExpiration.date}}</li>
+  </ul>
   <h2>Groups</h2>
   <ul>
   {% if user.groups.all %}
     {% for g in user.groups.all %}
-    <li>{{g}}</li>
+    <li>
+      {{g}}
+      {% if g.rank.monthlyDues > 0 %}
+      (${{g.rank.monthlyDues}}/mo)
+      {% endif %}
+    </li>
     {% endfor %}
   {% else %}
     <li><em>None</em></li>
@@ -48,7 +58,20 @@
           </tr>
         {% endfor %}
     </table>
+  <h2>Recent Payments</h2>
+    <table>
+      <tr><th>Date</th><th>Invoice</th><th>Total</th></tr>
+      {% for payment in user.payments.all %}
+        <tr>
+          <td>{{payment.created}}</td>
+          <td><a href="{{payment.invoice.get_absolute_url}}">{{payment.invoice}}</a></td>
+          <td>${{payment.value}}</td>
+        </tr>
+      {% endfor %}
+    </table>
 </div>
+
+<div class="clear"></div>
 
 <div class="grid_8 alpha">
   <h2>Upcoming Events</h2>
