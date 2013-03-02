@@ -18,33 +18,36 @@
 </div>
 
 <div class="grid_10 omega">
-  <h2>Recent Payments</h2>
   <div class="messages">
   {% if user.member.activeMember %}
-    {% if user.member.paidForMonth %}
-    You are paid up for the month.
+    {% if not user.member.billedForMonth %}
+      You have not yet been billed for this month.
+    {% endif %}
+    {% if user.member.outstandingBalance == 0 %}
+    You are all paid up.
     {% else %}
       {% if user.member.overdue %}
         You are overdue!
       {% else %}
-      You have not paid this month's dues. You owe ${{user.member.outstandingDues}}.
+      You have an outstanding balance of ${{user.member.outstandingBalance}}
       {% endif %}
     {% endif %}
   {% else %}
     You are not an active member.
   {% endif %}
   </div>
-  <table>
-    <tr><th>Date</th><th>Value</th><th>Method</th><th>Membership Level</th></tr>
-    <tr class="actionbar">
-      <td colspan="4">
-        <a href="{%url membership:pay %}">Make a payment</a>
-      </td>
-    </tr>
-    {% for payment in user.member.payments.all %}
-    <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td>{{payment.rank.group.name}}</td></tr>
-    {% endfor %}
-  </table>
+  <h2>Open Invoices</h2>
+    <table>
+      <tr><th>ID</th><th>Due Date</th><th colspan="2">Total Unpaid</th></tr>
+        {% for invoice in user.invoices.unpaid %}
+          <tr>
+            <td>{{invoice.id}}</td>
+            <td>{{invoice.dueDate}}
+            <td>${{invoice.unpaidBalance}}</td>
+            <td><a href="{% url payment:pay invoiceID=invoice.id %}">Pay</a></td>
+          </tr>
+        {% endfor %}
+    </table>
 </div>
 
 <div class="grid_8 alpha">
