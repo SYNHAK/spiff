@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import utc
 import datetime
 
 class InvoiceManager(models.Manager):
@@ -14,7 +15,7 @@ class InvoiceManager(models.Manager):
         return self.filter(id__in=ids, draft=False)
 
     def pastDue(self):
-        return self.unpaid().filter(dueDate__lt=datetime.date.today(), draft=False)
+        return self.unpaid().filter(dueDate__lt=datetime.date.utcnow().replace(tzinfo=utc), draft=False)
 
 class Invoice(models.Model):
     user = models.ForeignKey(User, related_name='invoices')
@@ -86,7 +87,7 @@ class Payment(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id and not self.created:
-            self.created = datetime.datetime.today()
+            self.created = datetime.datetime.utcnow().replace(tzinfo=utc)
         super(Payment, self).save(*args, **kwargs)
         if self.invoice.unpaidBalance == 0:
             self.invoice.open = False
