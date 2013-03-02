@@ -4,16 +4,24 @@ import datetime
 
 class InvoiceManager(models.Manager):
     def allOpen(self):
-        return self.filter(open=True)
+        return self.filter(open=True, draft=False)
+
+    def unpaid(self):
+        ids = []
+        for i in self.filter(open=True):
+            if i.unpaidBalance > 0:
+                ids.append(i.id)
+        return self.filter(id__in=ids, draft=False)
 
     def pastDue(self):
-        return self.allOpen().filter(dueDate__lt=datetime.date.today())
+        return self.unpaid().filter(dueDate__lt=datetime.date.today(), draft=False)
 
 class Invoice(models.Model):
     user = models.ForeignKey(User, related_name='invoices')
     created = models.DateTimeField(auto_now_add=True)
     dueDate = models.DateField()
     open = models.BooleanField(default=True)
+    draft = models.BooleanField(default=True)
 
     @property
     def unpaidBalance(self):
@@ -31,6 +39,9 @@ class Invoice(models.Model):
             sum += s.totalPrice()
         return sum
 
+    def __unicode__(self):
+        return "Invoice %d"%(self.id)
+
 class LineItem(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='items')
     name = models.TextField()
@@ -42,6 +53,9 @@ class LineItem(models.Model):
 
     def totalPrice(self):
         return self.unitPrice * self.quantity
+
+    def __unicode__(self):
+        return "%d %s @%d ea, %s"%(self.unitPrice, self.name, self.quantity, self.invoice)
 
 class Payment(models.Model):
     METHOD_CASH = 0
@@ -62,7 +76,7 @@ class Payment(models.Model):
         (STATUS_PENDING, 'Pending'),
         (STATUS_PAID, 'Paid'),
     )
-    user = models.OneToOneField(User)
+    user = models.ForeignKey(User, related_name='payments')
     value = models.FloatField()
     created = models.DateTimeField()
     status = models.IntegerField(default=STATUS_PENDING, choices=STATUS)
@@ -77,3 +91,6 @@ class Payment(models.Model):
         if self.invoice.unpaidBalance == 0:
             self.invoice.open = False
             self.invoice.save()
+
+    def __unicode__(self):
+        return "%d %s by %s for %s"%(self.value, self.get_method_display(), self.user, self.invoice)
