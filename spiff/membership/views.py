@@ -40,7 +40,7 @@ class MemberView(ObjectView):
       Q(user__is_active=True) |
       Q(user__groups__rank__isActiveMembership=True)).filter(
       Q(hidden=False) |
-      Q(hidden=viewHidden))[0]
+      Q(hidden=viewHidden)).get()
 
   def get_context_data(self, request, instance, instances, **kwargs):
     cxt = super(MemberView, self).get_context_data(
