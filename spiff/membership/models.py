@@ -69,29 +69,21 @@ class Member(models.Model):
       return "%s %s"%(self.user.first_name, self.user.last_name)
 
   @property
-  def paidForMonth(self):
-    return self.outstandingDues <= 0
-
-  @property
-  def outstandingDues(self):
-    now = datetime.date.today()
-    firstOfMonth = datetime.date(now.year, now.month, 1)
-    payments = self.payments.filter(created__gt=firstOfMonth)
-    return self.highestRank.monthlyDues-sum(map(lambda x:x.value, payments))
+  def outstandingBalance(self):
+    sum = 0
+    invoices = self.user.invoices.unpaid()
+    for i in invoices:
+        sum += i.unpaidBalance
+    return sum
 
   @property
   def overdue(self):
-    now = datetime.date.today()
-    firstOfMonth = datetime.date(now.year, now.month, 1)
-    lateDate = firstOfMonth+datetime.timedelta(days=30)
-    payments = self.payments.filter(created__lt=lateDate)
-    return len(payments) == 0
+    return len(self.user.invoices.pastDue()) > 0
 
   @property
   def keyholder(self):
     groups = self.user.groups.filter(rank__isKeyholder=True)
     return len(groups) > 0
-    
 
   def activeMember(self):
     if not self.user.is_active:

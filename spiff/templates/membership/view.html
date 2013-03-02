@@ -58,18 +58,13 @@
     {% endif %}
   </div>
   <div class="grid_6 omega">
-    {% if perms.membership.add_due_payment %}
-    <h2>Due Payments</h2>
+    {% if perms.payment.add_payment %}
+    <h2>Recent Payments</h2>
     <table>
-      <tr><th>Date</th><th>Value</th><th>Method</th><th>Membership Level</th></tr>
-      {% for payment in instance.payments.all %}
-      <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td>{{payment.rank.group.name}}</td></tr>
+      <tr><th>Date</th><th>Value</th><th>Method</th><th>Invoice</th></tr>
+      {% for payment in instance.user.payments.all %}
+      <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td><a href="{% url payment:viewInvoice invoiceID=payment.invoice.id %}">{{payment.invoice}}</a></td></tr>
       {% endfor %}
-      <tr class="actionbar">
-        <td colspan="4">
-          <a class="action-add-payment" href="{%url membership:addPayment username=instance.user.username %}">Add a previous payment</a>
-        </td>
-      </tr>
     </table>
     {% endif %}
   </div>
