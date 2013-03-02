@@ -49,7 +49,9 @@ def register(request):
       oldUser = User.objects.get(username__exact=userForm.cleaned_data['username'])
     except ObjectDoesNotExist, e:
       pass
-    if not oldUser:
+    if oldUser:
+      messages.info(request, "That username is already taken.")
+    else:
       user = User.objects.create_user(userForm.cleaned_data['username'],
           userForm.cleaned_data['email'], userForm.cleaned_data['password'])
       user.first_name = userForm.cleaned_data['firstName']
