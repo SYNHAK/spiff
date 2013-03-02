@@ -87,9 +87,12 @@ class Member(models.Model):
     return len(groups) > 0
 
   def billedForMonth(self, date=None):
-    return len(self.getMembershipLineItemForMonth(date)) > 0
+    return len(self.getMembershipLineItemsForMonth(date)) > 0
 
-  def getMembershipLineItemForMonth(self, date=None):
+  def membershipExpiration(self):
+    return self.getMembershipLineItemsForMonth()[0].activeToDate
+
+  def getMembershipLineItemsForMonth(self, date=None):
     monthStart, monthEnd = monthRange(date)
     billedMonths = self.rankLineItems.filter(
       activeFromDate__gte=monthStart,
@@ -98,7 +101,7 @@ class Member(models.Model):
     return billedMonths
 
   def paidForMonth(self, date=None):
-    billedMonths = self.getMembershipLineItemForMonth(date)
+    billedMonths = self.getMembershipLineItemsForMonth(date)
     if len(billedMonths) == 0:
       return False
     for lineItem in billedMonths:
