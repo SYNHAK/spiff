@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'spiff.events',
     'spiff.sensors',
     'spiff.payment',
+    'spiff.management',
 )
 
 WEBFINGER_HANDLER = 'spiff.local.webfinger.handle'
