@@ -26,10 +26,14 @@ class Invoice(models.Model):
 
     @property
     def unpaidBalance(self):
+        return self.total - self.paidBalance
+
+    @property
+    def paidBalance(self):
         sum = 0
         for p in self.payments.all():
             sum += p.value
-        return self.total - sum
+        return sum
 
     objects = InvoiceManager()
 
@@ -37,11 +41,17 @@ class Invoice(models.Model):
     def total(self):
         sum = 0
         for s in self.items.all():
-            sum += s.totalPrice()
+            sum += s.totalPrice
+        for d in self.discounts.all():
+            sum -= d.value
         return sum
 
     def __unicode__(self):
         return "Invoice %d"%(self.id)
+
+    @models.permalink
+    def get_absolute_url(self):
+      return ("payment:viewInvoice", [], {"invoiceID": self.id})
 
 class LineItem(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='items')
@@ -52,11 +62,27 @@ class LineItem(models.Model):
     def isOpen(self):
         return self.invoice.open
 
+    @property
     def totalPrice(self):
         return self.unitPrice * self.quantity
 
     def __unicode__(self):
         return "%d %s @%d ea, %s"%(self.unitPrice, self.name, self.quantity, self.invoice)
+
+class LineDiscountItem(models.Model):
+    invoice = models.ForeignKey(Invoice, related_name='discounts')
+    description = models.TextField()
+    flatRate = models.FloatField(default=0)
+    percent = models.FloatField(default=0)
+    lineItem = models.ForeignKey(LineItem, related_name='discounts')
+
+    @property
+    def value(self):
+      """Returns the positive value to subtract from the total."""
+      originalPrice = self.lineItem.totalPrice
+      if self.flatRate == 0:
+        return originalPrice * self.percent
+      return self.flatRate
 
 class Payment(models.Model):
     METHOD_CASH = 0
