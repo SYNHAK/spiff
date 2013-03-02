@@ -117,40 +117,6 @@ class Member(models.Model):
       return "Anonymous"
     return "%s, %s"%(self.user.last_name, self.user.first_name)
 
-class DuePayment(models.Model):
-  METHOD_CASH = 0
-  METHOD_CHECK = 1
-  METHOD_STRIPE = 2
-  METHOD_OTHER = 3
-  METHODS = (
-    (METHOD_CASH, 'Cash'),
-    (METHOD_CHECK, 'Check'),
-    (METHOD_STRIPE, 'Stripe'),
-    (METHOD_OTHER, 'Other'),
-  )
-  STATUS_PENDING = 0
-  STATUS_PAID = 1
-  STATUS = (
-    (STATUS_PENDING, 'Pending'),
-    (STATUS_PAID, 'Paid'),
-  )
-  member = models.ForeignKey(Member, related_name='payments')
-  user = models.ForeignKey(User)
-  value = models.FloatField()
-  created = models.DateTimeField()
-  rank = models.ForeignKey('Rank', related_name='payments')
-  status = models.IntegerField(default=STATUS_PENDING, choices=STATUS)
-  transactionID = models.TextField(blank=True, null=True)
-  method = models.IntegerField(choices=METHODS)
-
-  def save(self, *args, **kwargs):
-    if not self.id and not self.created:
-      self.created = datetime.datetime.today()
-    super(DuePayment, self).save(*args, **kwargs)
-
-  def __unicode__(self):
-    return "%s from %s"%(self.value, self.member.fullName)
-
 class Rank(models.Model):
   description = models.TextField(blank=True)
   monthlyDues = models.FloatField(default=0)

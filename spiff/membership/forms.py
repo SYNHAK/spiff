@@ -8,12 +8,6 @@ class RankForm(forms.ModelForm):
     model = User
     fields = ['groups']
 
-class DueForm(forms.ModelForm):
-  created = JqSplitDateTimeField()
-  class Meta:
-    model = models.DuePayment
-    fields = ['value', 'created', 'rank', 'method']
-
 class UserForm(forms.Form):
   email = forms.EmailField()
   firstName = forms.CharField()
