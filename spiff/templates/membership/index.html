@@ -1,14 +1,21 @@
 {% extends "base.html" %}
 {% load gravatar %}
 
-{% block title %}Members{% endblock %}
-{% block sectiontitle %}Members{% endblock %}
+{% block title %}Active Members{% endblock %}
+{% block sectiontitle %}Active Members{% endblock %}
 
 {% block content %}
 <table>
   <tr><th>Name</th><th>Member Since</th></tr>
-  {% for user in instances %}
-  <tr class="{% cycle 'odd' 'even' %}"><td><a href="{% url membership:view user__username=user.username %}">{% gravatar user %} {{user.member.fullName}}</a></td><td>{{user.member.created}}</td></tr>
+  {% for member in instances %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>
+      <a href="{% url membership:view user__username=member.user.username %}">
+        {% gravatar member.user %} {{member.fullName}}
+      </a>
+    </td>
+    <td>{{member.created}}</td>
+  </tr>
   {% endfor %}
 </table>
 {% endblock %}
