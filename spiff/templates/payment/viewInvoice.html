@@ -5,32 +5,6 @@
 {% block sectiontitle %}Invoice {{invoice.id}}{% endblock %}
 
 {% block content %}
-<ul>
-    <li>To: {{invoice.user.member}}</li>
-    <li>Created: {{invoice.created}}</li>
-    <li>Due date: {{invoice.dueDate}}</li>
-    <li>Open: {{invoice.open}}</li>
-</ul>
-
-<table>
-  <tr><th>Item</th><th>Unit Price</th><th>Quantity</th><th>Total Price</th></tr>
-  {% for line in invoice.items.all %}
-    <tr>
-      <td>{{line.name}}</td>
-      <td>${{line.unitPrice}}</td>
-      <td>{{line.quantity}}</td>
-      <td>${{line.totalPrice}}</td>
-  {% endfor %}
-  {% for payment in invoice.payments.all %}
-    <tr>
-      <td colspan="3">{{payment.get_method_display}} payment on {{payment.created}}</td>
-      <td>-${{payment.value}}</td>
-    </tr>
-  {% endfor %}
-  <tr>
-    <th colspan="3">Grand Total:</th>
-    <th>${{invoice.unpaidBalance}}</th>
-  </tr>
-</table>
+{% include 'payment/_invoice.html' %}
 {% endblock %}
 

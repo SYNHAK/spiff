@@ -165,3 +165,22 @@ pre {
   border: 1px solid black;
   padding: 3px;
 }
+
+.line-item-discount td {
+  background-color: #eee;
+  font-style: italic;
+}
+
+.invoice-summary div {
+  font-size: x-large;
+  text-align: right;
+}
+
+.invoice-grand-total {
+  font-size: xx-large;
+  border-top: 2px solid black;
+}
+
+.invoice-grand-total-value {
+  font-weight: bold;
+}

@@ -1,0 +1,60 @@
+<ul>
+    <li>To: {{invoice.user.member}}</li>
+    <li>Created: {{invoice.created}}</li>
+    <li>Due date: {{invoice.dueDate}}</li>
+    <li>Open: {{invoice.open}}</li>
+</ul>
+
+<table>
+  <tr><th>Item</th><th>Unit Price</th><th>Quantity</th><th>Total Price</th></tr>
+  {% for line in invoice.items.all %}
+    <tr>
+      <td>{{line.name}}</td>
+      <td>${{line.unitPrice}}</td>
+      <td>{{line.quantity}}</td>
+      <td>${{line.totalPrice}}</td>
+    </tr>
+    {% for discount in line.discounts.all %}
+      <tr class="line-item-discount">
+        <td>{{discount.description}}</td>
+        <td>-${{discount.value}}</td>
+        <td>1</td>
+        <td>-${{discount.value}}</td>
+      </tr>
+    {% endfor %}
+  {% endfor %}
+  <tr>
+    <th colspan="3">Subtotal:</th>
+    <th>${{invoice.total}}</th>
+  </tr>
+</table>
+{% if invoice.payments.all %}
+<h2>Payments</h2>
+<table>
+  <tr>
+    <th>Method</th>
+    <th>Date</th>
+    <th>Value</th>
+  </tr>
+  {% for payment in invoice.payments.all %}
+    <tr>
+      <td>{{payment.get_method_display}}</td>
+      <td>{{payment.created}}</td>
+      <td>-${{payment.value}}</td>
+    </tr>
+  {% endfor %}
+  <tr>
+    <th colspan="2">Grand Total:</th>
+    <th>${{invoice.unpaidBalance}}</th>
+  </tr>
+</table>
+{% endif %}
+
+<div class="invoice-summary">
+  <div class="invoice-sub-total">Subtotal: <span
+  class='invoice-sub-total-value'>${{invoice.total}}</span></div>
+  <div class="invoice-payment-total">Payments: <span
+  class='invoice-payment-total-value'>-${{invoice.paidBalance}}</span></div>
+  <div class="invoice-grand-total">Grand Total: <span
+  class='invoice-grand-total-value'>${{invoice.unpaidBalance}}</span></div>
+</div>
