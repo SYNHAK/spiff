@@ -5,6 +5,8 @@
 
 {% block content %}
 <ul>
-{# <a href="{% url management:createUser %}">Create User</a> #}
+  {% if perms.auth.add_user %}
+  <li><a href="{% url management:createUser %}">Create User</a></li>
+  {% endif %}
 </ul>
 {% endblock %}
