@@ -30,4 +30,7 @@ class Command(BaseCommand):
           invoice.save()
           print "\tInvoice saved!"
       else:
-        print member, "has already been billed for the month"
+        print "%s has outstanding balance of $%s"%(
+          member,
+          member.outstandingBalance
+        )
