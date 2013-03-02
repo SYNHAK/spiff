@@ -74,7 +74,26 @@
 </div>
 
 <div class="grid_12 alpha omega">
-  <h2>Trained Resources</h2>
+  <h2>Resource Certifications</h2>
+  <table>
+    <tr><th>Resource</th><th>Comment</th></tr>
+    {% if instance.certifications.all %}
+      {% for cert in instance.certifications.all %}
+      <tr class="{% cycle 'even' 'odd' %}"><td>
+        {% if perms.inventory.certify %}
+        <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
+
+        {% endif %}
+        <a
+            href="{{cert.resource.get_absolute_url}}">{{cert.resource}}</a></td>
+        <td>
+        {{ cert.comment }}
+        </td>
+      </tr>
+      {% endfor %}
+    {% endif %}
+  </table>
+  <h2>Proficiencies</h2>
   <table>
     <tr><th>Name</th><th>Level</th></tr>
     {% if instance.trainings.all %}
