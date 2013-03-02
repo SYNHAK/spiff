@@ -8,6 +8,12 @@ import models
 import forms
 from django.shortcuts import render_to_response
 
+def viewInvoice(request, invoiceID):
+  invoice = models.Invoice.objects.get(pk=invoiceID)
+  return render_to_response('payment/viewInvoice.html',
+    {'invoice': invoice},
+    context_instance=RequestContext(request))
+
 def pay(request, invoiceID):
   invoice = models.Invoice.objects.get(pk=invoiceID)
   if request.method == 'POST':
