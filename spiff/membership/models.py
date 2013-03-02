@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from openid_provider.models import OpenID
+from spiff.membership.utils import monthRange
 import datetime
 import stripe
 from django.conf import settings
@@ -84,6 +85,26 @@ class Member(models.Model):
   def keyholder(self):
     groups = self.user.groups.filter(rank__isKeyholder=True)
     return len(groups) > 0
+
+  def billedForMonth(self, date=None):
+    return len(self.getMembershipLineItemForMonth(date)) > 0
+
+  def getMembershipLineItemForMonth(self, date=None):
+    monthStart, monthEnd = monthRange(date)
+    billedMonths = self.rankLineItems.filter(
+      activeFromDate__gte=monthStart,
+      activeToDate__lte=monthEnd
+    )
+    return billedMonths
+
+  def paidForMonth(self, date=None):
+    billedMonths = self.getMembershipLineItemForMonth(date)
+    if len(billedMonths) == 0:
+      return False
+    for lineItem in billedMonths:
+      if billedMonths.invoice.unpaidBalance() > 0:
+        return False
+    return True
 
   def activeMember(self):
     if not self.user.is_active:
