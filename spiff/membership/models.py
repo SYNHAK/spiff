@@ -20,6 +20,7 @@ class Member(models.Model):
   class Meta:
     permissions = (
       ('can_view_hidden_members', 'Can view hidden members'),
+      ('list_members', 'Can list members'),
     )
 
   def stripeCustomer(self):
