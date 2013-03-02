@@ -79,7 +79,7 @@ class Certification(models.Model):
   comment = models.TextField()
 
   def __unicode__(self):
-    return "%s: Certified on %s: %s"%(self.memer.fullName, self.comment, self.resource.name)
+    return "%s: Certified on %s: %s"%(self.member.fullName, self.comment, self.resource.name)
 
 class Change(models.Model):
   resource = models.ForeignKey(Resource, related_name='changelog')
