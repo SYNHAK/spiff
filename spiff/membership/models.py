@@ -174,6 +174,8 @@ class FieldValue(models.Model):
 class RankLineItem(LineItem):
     rank = models.ForeignKey(Rank)
     member = models.ForeignKey(Member, related_name='rankLineItems')
+    activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
+    activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
 
     def save(self, *args, **kwargs):
         if not self.id:
