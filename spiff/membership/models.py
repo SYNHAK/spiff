@@ -5,6 +5,7 @@ from openid_provider.models import OpenID
 import datetime
 import stripe
 from django.conf import settings
+from spiff.payment.models import LineItem, Invoice
 
 stripe.api_key = settings.STRIPE_KEY
 
@@ -177,6 +178,17 @@ class FieldValue(models.Model):
 
   def __unicode__(self):
     return "%s: %s = %s"%(self.member.fullName, self.field.name, self.value)
+
+class RankLineItem(LineItem):
+    rank = models.ForeignKey(Rank)
+    member = models.ForeignKey(Member, related_name='rankLineItems')
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            if self.unitPrice == 0:
+              self.unitPrice = self.rank.monthlyDues
+            self.name = "%s membership dues"%(self.rank)
+        super(RankLineItem, self).save(*args, **kwargs)
 
 def create_member(sender, instance, created, **kwargs):
   if created:
