@@ -18,8 +18,7 @@ class UserForm(forms.Form):
   email = forms.EmailField()
   firstName = forms.CharField()
   lastName = forms.CharField()
-  profession = forms.CharField()
-  tagline = forms.CharField()
+  tagline = forms.CharField(required=False)
   hidden = forms.BooleanField(required=False)
 
   def __init__(self, *args, **kwargs):
@@ -29,7 +28,6 @@ class UserForm(forms.Form):
       self.fields['email'].initial = instance.email
       self.fields['firstName'].initial = instance.first_name
       self.fields['lastName'].initial = instance.last_name
-      self.fields['profession'].initial = instance.member.profession
       self.fields['tagline'].initial = instance.member.tagline
       self.fields['hidden'].initial = instance.member.hidden
 

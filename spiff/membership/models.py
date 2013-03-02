@@ -10,7 +10,6 @@ stripe.api_key = settings.STRIPE_KEY
 
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
-  profession = models.CharField(max_length=255)
   user = models.OneToOneField(User)
   created = models.DateTimeField(editable=False, auto_now_add=True)
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
@@ -37,7 +36,6 @@ class Member(models.Model):
 
   def serialize(self):
     return {
-      'profession': self.profession,
       'firstName': self.user.first_name,
       'lastName': self.user.last_name,
       'created': self.created,
