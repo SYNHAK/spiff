@@ -67,7 +67,6 @@ def edit(request, username=None):
     user.email = userForm.cleaned_data['email']
     user.save()
     member = user.member
-    member.birthday = userForm.cleaned_data['birthday']
     member.profession = userForm.cleaned_data['profession']
     member.tagline = userForm.cleaned_data['tagline']
     member.hidden = userForm.cleaned_data['hidden']

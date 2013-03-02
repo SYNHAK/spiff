@@ -56,7 +56,6 @@ def register(request):
       user.last_name = userForm.cleaned_data['lastName']
       user.save()
       member = user.member
-      member.birthday = userForm.cleaned_data['birthday']
       member.profession = userForm.cleaned_data['profession']
       member.save()
       user = authenticate(username=userForm.cleaned_data['username'], password=userForm.cleaned_data['password'])

@@ -15,7 +15,6 @@ class Member(models.Model):
   created = models.DateTimeField(editable=False, auto_now_add=True)
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
   fields = models.ManyToManyField('Field', through='FieldValue')
-  birthday = models.DateField(blank=True, null=True)
   stripeID = models.TextField()
   hidden = models.BooleanField(default=False)
 
