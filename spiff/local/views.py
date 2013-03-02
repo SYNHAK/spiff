@@ -24,8 +24,8 @@ from django.core.urlresolvers import reverse
 import datetime
 
 def index(request):
-  now = datetime.datetime.now()
-  events = Event.objects.filter(end__gt=now)
+  now = datetime.datetime.utcnow()
+  events = Event.objects.filter(end__gte=now)
   if request.user.is_anonymous():
     return render_to_response('local/index_anonymous.html',
         {'events': events},
