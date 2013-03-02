@@ -89,7 +89,7 @@
   {% if instance.trainable %}
   <h2>Certified Users</h2>
   <table>
-    <tr><th>Name</td><th>Comment</th></tr>
+    <tr><th>Name</th><th>Comment</th></tr>
     {% if instance.certifications.all %}
       {% for cert in instance.certifications.all %}
       <tr class="{% cycle 'even' 'odd' %}"><td>

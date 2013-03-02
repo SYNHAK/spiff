@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.utils import DatabaseError
 from django.contrib.sites.models import Site
 from django.db.models.signals import post_save
 from spiff.sensors.models import Sensor, SENSOR_TYPE_BOOLEAN
@@ -34,6 +35,9 @@ class SpaceFeed(models.Model):
     url = models.TextField()
 
 def create_config(sender, instance, created, **kwargs):
-  SpaceConfig.objects.get_or_create(site=instance)
+  try:
+    SpaceConfig.objects.get_or_create(site=instance)
+  except DatabaseError: #Happens when we run syncdb and the spaceconfig table doesn't exist yet
+    pass
 
 post_save.connect(create_config, sender=Site)

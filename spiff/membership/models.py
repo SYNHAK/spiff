@@ -12,18 +12,17 @@ stripe.api_key = settings.STRIPE_KEY
 
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
-  profession = models.CharField(max_length=255)
   user = models.OneToOneField(User)
   created = models.DateTimeField(editable=False, auto_now_add=True)
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
   fields = models.ManyToManyField('Field', through='FieldValue')
-  birthday = models.DateField(blank=True, null=True)
   stripeID = models.TextField()
   hidden = models.BooleanField(default=False)
 
   class Meta:
     permissions = (
       ('can_view_hidden_members', 'Can view hidden members'),
+      ('list_members', 'Can list members'),
     )
 
   def stripeCustomer(self):
@@ -40,7 +39,6 @@ class Member(models.Model):
 
   def serialize(self):
     return {
-      'profession': self.profession,
       'firstName': self.user.first_name,
       'lastName': self.user.last_name,
       'created': self.created,

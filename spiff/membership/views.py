@@ -20,18 +20,25 @@ class MemberView(ObjectView):
   index_template_name = 'membership/index.html'
   slug_field = 'user__username'
 
+  def get(self, request, *args, **kwargs):
+    if request.user.has_perm('membership.list_members'):
+      return super(MemberView, self).get(request, *args, **kwargs)
+    raise PermissionDenied()
+
   def instances(self, request, *args, **kwargs):
     viewHidden = request.user.has_perm('membership.can_view_hidden_members')
-    return User.objects.filter(
-      Q(is_active=True) |
-      Q(groups__rank__isActiveMembership=True)).filter(
-      Q(member__hidden=False) |
-      Q(member__hidden=viewHidden)).distinct() 
+    return models.Member.objects.filter(
+      Q(user__is_active=True) |
+      Q(user__groups__rank__isActiveMembership=True)).filter(
+      Q(hidden=False) |
+      Q(hidden=viewHidden)).distinct() 
 
   def instance(self, request, *args, **kwargs):
     viewHidden = request.user.has_perm('membership.can_view_hidden_members')
     return models.Member.objects.filter(
       Q(user__username=kwargs['user__username'])).filter(
+      Q(user__is_active=True) |
+      Q(user__groups__rank__isActiveMembership=True)).filter(
       Q(hidden=False) |
       Q(hidden=viewHidden))[0]
 
@@ -67,8 +74,6 @@ def edit(request, username=None):
     user.email = userForm.cleaned_data['email']
     user.save()
     member = user.member
-    member.birthday = userForm.cleaned_data['birthday']
-    member.profession = userForm.cleaned_data['profession']
     member.tagline = userForm.cleaned_data['tagline']
     member.hidden = userForm.cleaned_data['hidden']
     member.save()
