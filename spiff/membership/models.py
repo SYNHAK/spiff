@@ -88,7 +88,10 @@ class Member(models.Model):
     return len(self.getMembershipLineItemsForMonth(date)) > 0
 
   def membershipExpiration(self):
-    return self.getMembershipLineItemsForMonth()[0].activeToDate
+    items = self.getMembershipLineItemsForMonth()
+    if len(items) > 0:
+      return items[0].activeToDate
+    return None
 
   def getMembershipLineItemsForMonth(self, date=None):
     monthStart, monthEnd = monthRange(date)
