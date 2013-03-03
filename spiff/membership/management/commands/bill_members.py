@@ -27,6 +27,7 @@ class Command(BaseCommand):
               )
               print "\tCreated", lineItem
           invoice.draft = False
+          invoice.open = True
           invoice.save()
           print "\tInvoice saved!"
       else:

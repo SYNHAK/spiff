@@ -1,0 +1,22 @@
+Hi, {{user.first_name}}!
+
+An invoice has been created for your account.
+
+Invoice #{{invoice.id}}
+
+To: {{invoice.user.member}}
+Created: {{invoice.created}}
+Due date: {{invoice.dueDate}}
+
+{% for line in invoice.items.all %}
+
+{{line.name}} {{line.quantity}} @ ${{line.unitPrice}}ea.: ${{line.totalPrice}}
+
+{% for discount in line.discounts.all %}
+  * {{discount.description}}: -${{discount.value}}
+{% endfor %}
+{% endfor %}
+
+Total: {{invoice.total}}
+
+You may view it online at http://{{current_site}}{% url payment:viewInvoice invoiceID=invoice.id %}

@@ -3,7 +3,10 @@ from django.contrib.auth.models import User
 from django.utils.timezone import utc
 import datetime
 
+from spiff.notification_loader import notification
+
 class InvoiceManager(models.Manager):
+
     def allOpen(self):
         return self.filter(open=True, draft=False)
 
@@ -23,6 +26,18 @@ class Invoice(models.Model):
     dueDate = models.DateField()
     open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+      if self.pk and notification:
+        current = Invoice.objects.get(pk=self.pk)
+        if current.draft == True or current.open == False:
+          if self.draft == False and self.open == True and self.unpaidBalance > 0:
+            notification.send(
+              [self.user],
+              "invoice_ready",
+              {'user': self.user, 'invoice': self},
+            ) 
+      super(Invoice, self).save(*args, **kwargs)
 
     @property
     def unpaidBalance(self):

@@ -9,6 +9,7 @@ from django.shortcuts import render_to_response
 from spiff.membership.forms import ProfileForm
 from spiff.management.forms import RegistrationForm
 from spiff.membership.models import Field
+from spiff.notification_loader import notification
 
 def index(request):
   if request.user.is_staff:
@@ -48,11 +49,10 @@ def createUser(request):
       member.tagline = userForm.cleaned_data['tagline']
       member.save()
       messages.info(request, "User '%s' created!"%userForm.cleaned_data['username'])
-      member.sendMail(
-        request,
-        "Account Created",
-        "management/account-created.txt",
-        {'newUser': user, 'creator': request.user}
+      notification.send(
+        [user],
+        "account_created",
+        {'user': user, 'creator': request.user}
       )
       for field in fields:
         value = FieldValue.objects.create(field=field,

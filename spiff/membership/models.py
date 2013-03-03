@@ -1,11 +1,10 @@
 from django.db import models
-from django.contrib.sites.models import get_current_site
 from django.template import RequestContext
-from django.core.mail import send_mail
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from openid_provider.models import OpenID
 from spiff.membership.utils import monthRange
+from django.contrib.sites.models import get_current_site
 import datetime
 import stripe
 from django.conf import settings
@@ -120,15 +119,6 @@ class Member(models.Model):
       return False
     groups = self.user.groups.filter(rank__isActiveMembership=True)
     return len(groups) > 0
-
-  def sendMail(self, request, subject, template, values={}, fromAddr=None):
-    if fromAddr is None:
-      fromAddr = settings.SPIFF_EMAIL_ADDRESS
-      if fromAddr is None:
-        site = get_current_site(request)
-        fromAddr = "spiff@%s"%(site.domain)
-    body = get_template(template).render(RequestContext(request, values))
-    return send_mail(subject, body, fromAddr, [self.user.email])
 
   def __unicode__(self):
     if self.hidden:

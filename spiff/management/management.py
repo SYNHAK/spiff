@@ -4,8 +4,10 @@ from spiff.notification_loader import notification
 
 def create_notice_types(app, created_models, verbosity, **kwargs):
   notification.NoticeType.create(
-    'invoice_ready',
-    _('Invoice Ready'),
-    _('An invoice has been added to your account')
+    'account_created',
+    _('Account Created'),
+    _('A Spiff account has been created for you')
   )
+
 signals.post_syncdb.connect(create_notice_types, sender=notification)
+
