@@ -1,0 +1,11 @@
+Hi, {{newUser.first_name}}!
+
+{{creator.first_name}} {{creator.last_name}} created an account for you in
+Spiff, the hackerspace management system.
+
+Usage of your Spiff account is entirely optional for non-members, so you are
+free to disregard this message if that is the case.
+
+If you wish to login and configure a password, please visit this link:
+
+{{ROOT_URL}}{%url django.contrib.auth.views.password_reset %}

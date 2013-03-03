@@ -43,12 +43,17 @@ def createUser(request):
       )
       user.first_name = userForm.cleaned_data['firstName']
       user.last_name = userForm.cleaned_data['lastName']
-      user.is_active = False
       user.save()
       member = user.member
       member.tagline = userForm.cleaned_data['tagline']
       member.save()
       messages.info(request, "User '%s' created!"%userForm.cleaned_data['username'])
+      member.sendMail(
+        request,
+        "Account Created",
+        "management/account-created.txt",
+        {'newUser': user, 'creator': request.user}
+      )
       for field in fields:
         value = FieldValue.objects.create(field=field,
             value=profileForm.fieldValue(field), member=member)
