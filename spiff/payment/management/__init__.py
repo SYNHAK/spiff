@@ -8,4 +8,11 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
     _('Invoice Ready'),
     _('An invoice has been added to your account')
   )
+
+  notification.NoticeType.create(
+    'payment_received',
+    _('Payment Received'),
+    _('A payment has been received and posted to your account')
+  )
+
 signals.post_syncdb.connect(create_notice_types, sender=notification)

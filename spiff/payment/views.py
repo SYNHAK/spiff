@@ -7,6 +7,7 @@ from django.contrib import messages
 import models
 import forms
 from django.shortcuts import render_to_response
+from spiff.notification_loader import notification
 
 def viewInvoice(request, invoiceID):
   invoice = models.Invoice.objects.get(pk=invoiceID)
@@ -55,6 +56,12 @@ def pay(request, invoiceID):
         method = models.Payment.METHOD_STRIPE,
         invoice = invoice
       )
+      if notification:
+        notification.send(
+          [request.user],
+          'payment_received',
+          {'user': request.user, 'payment': payment}
+        )
       messages.info(request, "Your payment has been processed. Thanks!")
       return HttpResponseRedirect(reverse('home'))
     except stripe.CardError, e:

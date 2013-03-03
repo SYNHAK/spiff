@@ -1,0 +1,10 @@
+Hi, {{user.first_name}}!
+
+I've recieved a payment and posted it to your account.
+
+Payment #{{payment.id}} for invoice #{{payment.invoice.id}}
+
+Method: {{payment.get_method_display}}
+Total: {{payment.value}}
+
+Remaining balance due: ${{payment.invoice.unpaidBalance}}
