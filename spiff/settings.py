@@ -199,6 +199,10 @@ LOGGING = {
 
 STRIPE_KEY = ''
 
+# Setting this to None defaults to "spiff@your-site-domain.ext" as configured in
+# the admin pages
+SPIFF_EMAIL_ADDRESS = None
+
 try:
   from local_settings import *
 except ImportError:
