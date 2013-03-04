@@ -20,6 +20,7 @@ class Sensor(models.Model):
   name = models.CharField(max_length=255)
   description = models.TextField()
   type = models.IntegerField(choices=SENSOR_TYPES)
+  ttl = models.IntegerField(default=255)
 
   def serialize(self):
     return {
@@ -28,6 +29,7 @@ class Sensor(models.Model):
       'id': self.id,
       'description': self.description,
       'type': SENSOR_TYPES[self.type],
+      'ttl': self.ttl
     }
 
   def valueObj(self):
@@ -106,3 +108,9 @@ def exec_sensor_actions(sender, instance, created, **kwargs):
         print e
 
 post_save.connect(exec_sensor_actions, sender=SensorValue)
+
+def flush_old_values(sender, instance, created, **kwargs):
+  for v in instance.sensor.values.extra(order_by='-stamp')[0:-instance.sensor.ttl]:
+    v.delete()
+
+post_save.connect(flush_old_values, sender=SensorValue)
