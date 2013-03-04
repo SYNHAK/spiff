@@ -11,7 +11,7 @@ class Command(BaseCommand):
       if not member.billedForMonth():
         if member.highestRank is not None and member.highestRank.monthlyDues > 0:
           print "Billing", member, "for the month"
-          endOfMonth, startOfMonth = monthRange()
+          startOfMonth, endOfMonth = monthRange()
           invoice = Invoice.objects.create(
             user=member.user,
             dueDate=endOfMonth,
