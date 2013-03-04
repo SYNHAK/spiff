@@ -110,7 +110,7 @@ def exec_sensor_actions(sender, instance, created, **kwargs):
 post_save.connect(exec_sensor_actions, sender=SensorValue)
 
 def flush_old_values(sender, instance, created, **kwargs):
-  for v in instance.sensor.values.extra(order_by='-stamp')[0:-instance.sensor.ttl]:
+  for v in instance.sensor.values.extra(order_by='stamp')[0:-instance.sensor.ttl]:
     v.delete()
 
 post_save.connect(flush_old_values, sender=SensorValue)
