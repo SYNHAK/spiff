@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from spiff.membership.forms import ProfileForm
-from spiff.management.forms import RegistrationForm
+from spiff.management.forms import RegistrationForm, UserSelectionForm
 from spiff.membership.models import Field
 from spiff.notification_loader import notification
 
@@ -15,6 +15,29 @@ def index(request):
   if request.user.is_staff:
     return render_to_response('management/index.html',
       context_instance=RequestContext(request))
+
+@permission_required('payment.add_invoice')
+def billUser(request, username=None):
+  user = None
+  invoice = None
+
+  if request.method == 'POST':
+    form = UserSelectionForm(request.POST)
+  else:
+    form = UserSelectionForm()
+  if form.is_valid():
+    user = form.cleaned_data['user']
+  if username is not None:
+    user = User.objects.get(username=username)
+  if user:
+    invoice = user.member.generateMonthlyInvoice()
+    if invoice:
+      messages.info(request, 'Invoice generated.')
+    else:
+      messages.info(request, 'User already has invoice for this month.')
+  return render_to_response('management/billUser.html',
+    {'form': form, 'invoice': invoice},
+    context_instance=RequestContext(request))
 
 @permission_required('auth.add_user')
 def createUser(request):

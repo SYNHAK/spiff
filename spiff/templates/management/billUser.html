@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Bill User{% endblock %}
+{% block sectiontitle %}Bill User{% endblock %}
+
+{% block content %}
+{% if invoice %}
+  {% include 'payment/_invoice.html' %}
+{% else %}
+  <form method="POST" action="{%url management:billUser %}">
+    {{form.as_p}}
+    {% csrf_token %}
+    <input type="submit" value="Generate Invoice"/>
+  </form>
+{% endif %}
+{% endblock %}

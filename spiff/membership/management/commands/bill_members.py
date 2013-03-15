@@ -8,28 +8,11 @@ class Command(BaseCommand):
 
   def handle(self, *args, **options):
     for member in Member.objects.all():
-      if not member.billedForMonth():
-        if member.highestRank is not None and member.highestRank.monthlyDues > 0:
-          print "Billing", member, "for the month"
-          startOfMonth, endOfMonth = monthRange()
-          invoice = Invoice.objects.create(
-            user=member.user,
-            dueDate=endOfMonth,
-          )
-          for group in member.user.groups.all():
-            if group.rank.monthlyDues > 0:
-              lineItem = RankLineItem.objects.create(
-                rank = group.rank,
-                member = member,
-                activeFromDate=startOfMonth,
-                activeToDate=endOfMonth,
-                invoice=invoice
-              )
-              print "\tCreated", lineItem
-          invoice.draft = False
-          invoice.open = True
-          invoice.save()
-          print "\tInvoice saved!"
+      invoice = member.generateMonthlyInvoice()
+      if invoice:
+        print "Billed", member, "for the month:"
+        for item in invoice.items:
+          print "\t", line
       else:
         print "%s has outstanding balance of $%s"%(
           member,

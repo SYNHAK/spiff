@@ -29,6 +29,29 @@ class Member(models.Model):
       ('list_members', 'Can list members'),
     )
 
+  def generateMonthlyInvoice(self):
+    if not self.billedForMonth():
+      if self.highestRank is not None and self.highestRank.monthlyDues > 0:
+        startOfMonth, endOfMonth = monthRange()
+        invoice = Invoice.objects.create(
+          user=self.user,
+          dueDate=endOfMonth,
+        )
+        for group in self.user.groups.all():
+          if group.rank.monthlyDues > 0:
+            lineItem = RankLineItem.objects.create(
+              rank = group.rank,
+              member = self,
+              activeFromDate=startOfMonth,
+              activeToDate=endOfMonth,
+              invoice=invoice
+            )
+        invoice.draft = False
+        invoice.open = True
+        invoice.save()
+        return invoice
+    return None
+
   def stripeCustomer(self):
     try:
       customer = stripe.Customer.retrieve(self.stripeID)
