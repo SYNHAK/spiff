@@ -27,6 +27,11 @@ class Invoice(models.Model):
     open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
 
+    class Meta:
+      permissions = (
+        ('view_other_invoices', 'Can view invoices assigned to other users'),
+      )
+
     def save(self, *args, **kwargs):
       if self.pk and notification:
         current = Invoice.objects.get(pk=self.pk)
