@@ -176,7 +176,7 @@ class RankLineItem(LineItem):
         if not self.id:
             if self.unitPrice == 0:
               self.unitPrice = self.rank.monthlyDues
-            self.name = "%s membership dues"%(self.rank)
+            self.name = "%s membership dues for %s, %s to %s"%(self.rank, self.member, self.activeFromDate, self.activeToDate)
         super(RankLineItem, self).save(*args, **kwargs)
 
 def create_member(sender, instance, created, **kwargs):
