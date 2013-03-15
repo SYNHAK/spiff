@@ -1,4 +1,5 @@
 from django.template import RequestContext
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.conf import settings
 import stripe
@@ -11,8 +12,36 @@ from spiff.notification_loader import notification
 
 def viewInvoice(request, invoiceID):
   invoice = models.Invoice.objects.get(pk=invoiceID)
+  if not (request.user.has_perm('payment.view_other_invoices') or invoice.user != request.user):
+    raise PermissionDenied()
   return render_to_response('payment/viewInvoice.html',
     {'invoice': invoice},
+    context_instance=RequestContext(request))
+
+def addPayment(request, invoiceID):
+  invoice = models.Invoice.objects.get(pk=invoiceID)
+  if request.method == 'POST':
+    form = forms.AddPaymentForm(request.POST)
+  else:
+    form = forms.AddPaymentForm()
+  if form.is_valid():
+    payment = models.Payment.objects.create(
+      user = form.cleaned_data['user'],
+      value = form.cleaned_data['value'],
+      created = form.cleaned_data['created'],
+      method = form.cleaned_data['method'],
+      invoice = invoice
+    )
+    if notification:
+      notification.send(
+        [payment.user],
+        'payment_received',
+        {'user': invoice.user, 'payment': payment}
+      )
+      messages.info(request, "Payment added.")
+    return HttpResponseRedirect(reverse('payment:viewInvoice', kwargs={'invoiceID': invoice.id}))
+  return render_to_response('payment/addPayment.html',
+    {'invoice': invoice, 'form': form},
     context_instance=RequestContext(request))
 
 def pay(request, invoiceID):
