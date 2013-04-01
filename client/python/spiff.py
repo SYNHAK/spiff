@@ -28,13 +28,13 @@ class API(object):
 
     def objects(self, uriType):
         ret = []
-        for res in self.get("%s/.json"%(uriType)).json:
+        for res in self.get("%s/.json"%(uriType)).json():
             obj = ModelObject.new(self, res)
             ret.append(obj)
         return ret
 
     def object(self, uriType, id):
-        res = self.get("%s/%s.json"%(uriType, id)).json
+        res = self.get("%s/%s.json"%(uriType, id)).json()
         return ModelObject.new(self, res)
 
     def resources(self):
