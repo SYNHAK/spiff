@@ -23,6 +23,13 @@ Summary:        Python client to Spiff
 %description -n python-spiff
 Python client to Spiff
 
+%package bonehead-plugin
+Summary:        A bonehead plugin for Spiff
+Requires:       bonehead = 0.1.0
+
+%description bonehead-plugin
+A bonehead plugin for Spiff
+
 
 %prep
 %setup -q
@@ -31,7 +38,7 @@ Python client to Spiff
 %build
 cd client/python/
 # Remove CFLAGS=... for noarch packages (unneeded)
-CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
+%{__python} setup.py build
 
 
 %install
@@ -39,11 +46,17 @@ rm -rf $RPM_BUILD_ROOT
 cd client/python/
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 
+cd ../bonehead/
+%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+
  
 %files -n python-spiff
 %doc
 # For noarch packages: sitelib
 %{python_sitelib}/*
+
+%files bonehead-plugin
+%{_datadir}/bonehead/plugins/*
 
 
 %changelog
