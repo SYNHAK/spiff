@@ -2,6 +2,7 @@ import spiff
 from bonehead import Plugin
 from bonehead.ui import Page
 from PyQt4 import QtCore, QtGui, QtWebKit, QtNetwork
+import threading
 
 class OpenClosePlugin(Plugin):
     def newPage(self, name, args, ui):
@@ -22,12 +23,18 @@ class OpenClosePage(Page):
         self.button.clicked.connect(self.toggle)
         self.updateButton()
 
-    def toggle(self):
+    def _runToggle(self):
         if self.__sensor.value == True:
+            self.text.setText("Closing space...")
             self.__sensor.setValue(False)
         else:
+            self.text.setText("Opening space...")
             self.__sensor.setValue(True)
         self.updateButton()
+
+    def toggle(self):
+        t = threading.Thread(target=self._runToggle)
+        t.start()
 
     def updateButton(self):
         if self.__sensor.value == True:
