@@ -11,8 +11,8 @@ class Command(BaseCommand):
       invoice = member.generateMonthlyInvoice()
       if invoice:
         print "Billed", member, "for the month:"
-        for item in invoice.items:
-          print "\t", line
+        for item in invoice.items.all():
+          print "\t", item
       else:
         print "%s has outstanding balance of $%s"%(
           member,
