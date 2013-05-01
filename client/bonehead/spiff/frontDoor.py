@@ -4,15 +4,14 @@ from bonehead.ui import Page
 from PyQt4 import QtCore, QtGui, QtWebKit, QtNetwork
 import threading
 
-class OpenClosePlugin(Plugin):
+class FrontDoorPlugin(Plugin):
     def newPage(self, name, args, ui):
-        api = spiff.API(args['url'], verify=False)
-        return OpenClosePage(api.sensor(args['sensor-id']), ui)
+        return FrontDoorPage(args['sensor-id'], ui)
 
-class OpenClosePage(Page):
-    def __init__(self, sensor, parent=None):
-        super(OpenClosePage, self).__init__('Open/Close Space', parent)
-        self.__sensor = sensor
+class FrontDoorPage(Page):
+    def __init__(self, sensorID, ui):
+        super(OpenClosePage, self).__init__(api, 'Open/Close Space', parent)
+        self.__sensor = ui.app.spaceAPI.sensor(sensorID)
         self.setStyleSheet("*{font-size:32pt}")
         self.layout = QtGui.QVBoxLayout(self)
         self.button = QtGui.QPushButton(self)
@@ -45,4 +44,5 @@ class OpenClosePage(Page):
             self.button.setStyleSheet("*{background-color: #0f0;}")
             self.button.setText("Open Space")
             self.text.setText("Space is CLOSED")
+
 
