@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{setspace}
+\usepackage{rotating}
+\usepackage{multicol}
+\pagestyle{empty}
+\setlength\parindent{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage[landscape,left=0.1in,right=0.2in,top=0.16in,bottom=0.16in,noheadfoot,nomarginpar,paperwidth=3.5in,paperheight=1.1in]{geometry}
+\doublespacing
+
+\begin{document}
+\centering
+\begin{rotate}{270}
+    \begin{minipage}{3.5in}
+	\begin{tabular}{l|r}
+    	   ${name} \\ https://synhak.org/r/${id} &
+    	   \includegraphics[width=0.8in]{qr.png}
+	\end{tabular}
+    \end{minipage}
+\end{rotate}
+\end{document}
+
