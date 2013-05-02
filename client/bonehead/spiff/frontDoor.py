@@ -10,8 +10,9 @@ class FrontDoorPlugin(Plugin):
 
 class FrontDoorPage(Page):
     def __init__(self, sensorID, ui):
-        super(OpenClosePage, self).__init__(api, 'Open/Close Space', parent)
-        self.__sensor = ui.app.spaceAPI.sensor(sensorID)
+        super(FrontDoorPage, self).__init__('Open/Close Space', ui)
+        self._api = spiff.API(ui.app.spaceAPI.raw['x-spiff-url'], verify=False)
+        self.__sensor = self._api.sensor(sensorID)
         self.setStyleSheet("*{font-size:32pt}")
         self.layout = QtGui.QVBoxLayout(self)
         self.button = QtGui.QPushButton(self)
