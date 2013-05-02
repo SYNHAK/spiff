@@ -106,7 +106,7 @@ class ModelObject(dict):
 
     def refresh(self):
         if isinstance(self.__data, dict):
-            self.__data = self.api.object(self.type, self.id).__data
+            self.__data = self.api.object(self.uriType, self.id).__data
         else:
             self.resolve().refresh()
 
