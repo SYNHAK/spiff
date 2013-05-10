@@ -2,9 +2,11 @@
 
 {% block extrahead %}
 {{eventForm.media}}
+<script type="text/javascript">
 $(function() {
      $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
 });
+</script>
 {% endblock %}
 
 {% block title %}Events{% endblock %}
