@@ -5,6 +5,7 @@ import fields
 
 class EventForm(forms.ModelForm):
   class Meta:
+    model = models.Event
     fields = ['start', 'end', 'name', 'description']
   start = fields.JqSplitDateTimeField()
   end = fields.JqSplitDateTimeField()
