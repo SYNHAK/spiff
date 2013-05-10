@@ -89,6 +89,16 @@ class ObjectView(TemplateView):
     isIndex = kwargs.pop('_index', False)
     instances = None
     instance = None
+
+    if format:
+      if format == 'json':
+        data = json.dumps(data, cls=ModelEncoder, indent=True)
+        resp = HttpResponse(data)
+        resp['Content-Type'] = 'text/json'
+        return resp
+      else:
+        kwargs[self.slug_field] = "%s.%s"%(kwargs[self.slug_field], format)
+
     if isIndex:
       instances = self.instances(request, **kwargs)
       template = self.index_template_name
@@ -103,13 +113,6 @@ class ObjectView(TemplateView):
       data = self.get(request, *args, **kwargs)
     if request.method == 'POST':
       data = self.post(request, *args, **kwargs)
-    if format:
-      if format == 'json':
-        data = json.dumps(data, cls=ModelEncoder, indent=True)
-        resp = HttpResponse(data)
-        resp['Content-Type'] = 'text/plain'
-        return resp
-      raise NotImplementedError, format
     cxt = self.get_context_data(request, **kwargs)
     return render_to_response(template,
         cxt,
@@ -125,7 +128,7 @@ class ObjectView(TemplateView):
     urls = (
         url("^%s(?:\.(?P<format>.*))?$"%(prefix),
           cls.as_view(), idxArgs, name=indexName),
-        url("^%s(?P<%s>\w+?)(?:\.(?P<format>.*))?$"%(prefix, cls.slug_field),
+        url("^%s(?P<%s>[\w\.]+?)(?:\.(?P<format>.*))?$"%(prefix, cls.slug_field),
           csrf_exempt(cls.as_view()), kwargs, name=name),
     )
     return urls
