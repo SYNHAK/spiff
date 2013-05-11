@@ -5,11 +5,12 @@ from PyQt4 import QtCore, QtGui, QtWebKit, QtNetwork, uic
 import threading
 import tempfile
 import subprocess
+import cups
 from mako.template import Template
 
 class SpiffResourceLabelPlugin(bonehead.Plugin):
 	def newPage(self, name, args, ui):
-		return SpiffResourcePage(ui)
+		return SpiffResourcePage(args['printer'], ui)
 
 class CertificationModel(QtCore.QAbstractListModel):
   def __init__(self, parent=None):
@@ -78,9 +79,10 @@ class ResourceModel(QtCore.QAbstractListModel):
       return self._cache[idx.row()]
 
 class SpiffResourcePage(Page):
-  def __init__(self, ui):
+  def __init__(self, printer, ui):
     super(SpiffResourcePage, self).__init__('Resources', ui)
     self._api = spiff.API(ui.app.spaceAPI.raw['x-spiff-url'], verify=False)
+    self._printer = printer
     basename = '/'.join(__file__.split("/")[0:-1]+['resources.ui',])
     uic.loadUi(basename, self)
     self.model = ResourceModel(self._api, self)
@@ -120,6 +122,6 @@ class SpiffResourcePage(Page):
       subprocess.call(args, cwd=tempDir)
 
       print "Wrote out.pdf to", tempDir
-      #conn = cups.Connection()
-      #conn.printFile(self._printer, "%s/out.pdf"%(tempDir), "Label for %s"%(resource['name']), {'PageSize':'29x90','BrMirror':'OFF', 'orientation-requested': '5'})
+      conn = cups.Connection()
+      conn.printFile(self._printer, "%s/out.pdf"%(tempDir), "Label for %s"%(resource['name']), {'PageSize':'29x90','BrMirror':'OFF', 'orientation-requested': '5'})
       self.reset()
