@@ -91,13 +91,9 @@ class ObjectView(TemplateView):
     instance = None
 
     if format:
-      if format == 'json':
-        data = json.dumps(data, cls=ModelEncoder, indent=True)
-        resp = HttpResponse(data)
-        resp['Content-Type'] = 'text/json'
-        return resp
-      else:
+      if format not in ['json']:
         kwargs[self.slug_field] = "%s.%s"%(kwargs[self.slug_field], format)
+        return dispatch(request, *args, **kwargs)
 
     if isIndex:
       instances = self.instances(request, **kwargs)
@@ -114,9 +110,19 @@ class ObjectView(TemplateView):
     if request.method == 'POST':
       data = self.post(request, *args, **kwargs)
     cxt = self.get_context_data(request, **kwargs)
-    return render_to_response(template,
-        cxt,
-        context_instance=RequestContext(request))
+
+    if format:
+      if format == 'json':
+        data = json.dumps(data, cls=ModelEncoder, indent=True)
+        resp = HttpResponse(data)
+        resp['Content-Type'] = 'text/json'
+        return resp
+      else:
+        raise NotImplemented, "Unsupported format: %s"%(format)
+    else:
+      return render_to_response(template,
+          cxt,
+          context_instance=RequestContext(request))
   
   def options(request, *args, **kwargs):
     return ['get', 'post', 'options']
