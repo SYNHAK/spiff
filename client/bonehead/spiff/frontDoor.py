@@ -37,6 +37,7 @@ class FrontDoorPage(Page):
         t.start()
 
     def updateButton(self):
+        self.__sensor.refresh()
         if self.__sensor.value == True:
             self.button.setStyleSheet("*{background-color: #f00;}")
             self.button.setText("Close Space")
