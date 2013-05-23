@@ -47,12 +47,15 @@ class API(object):
         data = self.get("%s/.json"%(uriType)).json()
         return self._expand(data)
 
-    def object(self, uriType, id):
+    def object(self, uriType, id, refresh=False):
         id = int(id)
         if uriType not in self.__db:
             self.__db[uriType] = {}
         if id in self.__db[uriType]:
-            return self.__db[uriType][id]
+            if refresh:
+                del self.__db[uriType][id]
+            else:
+                return self.__db[uriType][id]
 
         res = self.get("%s/%s.json"%(uriType, id)).json()
         return ModelObject.new(self, res)
@@ -106,7 +109,7 @@ class ModelObject(dict):
 
     def refresh(self):
         if isinstance(self.__data, dict):
-            self.__data = self.api.object(self.uriType, self.id).__data
+            self.__data = self.api.object(self.uriType, self.id, refresh=True).__data
         else:
             self.resolve().refresh()
 
