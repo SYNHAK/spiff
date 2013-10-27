@@ -2,10 +2,10 @@
 {% load gravatar %}
 
 {% block title %}Active Members{% endblock %}
-{% block sectiontitle %}Active Members{% endblock %}
+{% block pageTitle%}Active Members{% endblock %}
 
 {% block content %}
-<table>
+<table class="table table-striped">
   <tr><th>Name</th><th>Member Since</th></tr>
   {% for member in instances %}
   <tr class="{% cycle 'odd' 'even' %}">

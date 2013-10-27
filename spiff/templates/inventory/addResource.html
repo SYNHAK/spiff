@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load bootstrap_toolkit %}
 
 {% block title %}Add Resource{% endblock %}
-{% block sectiontitle %}Add resource{% endblock %}
+{% block pageTitle %}Add resource{% endblock %}
 
 {% block content %}
 <form method="POST">
-    {{form.as_p}}
+    {{form|as_bootstrap}}
     {% csrf_token %}
     <input type="submit" value="Create"/>
 </form>

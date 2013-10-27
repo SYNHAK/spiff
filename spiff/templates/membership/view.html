@@ -2,47 +2,67 @@
 {% load gravatar %}
 
 {% block title %}{{instance.fullName}}{% endblock %}
-{% block sectiontitle %}{{instance.fullName}}{% endblock %}
+{% block pageTitle %}{% gravatar instance.user %} {{instance.fullName}}{% endblock %}
 
-{% block extrahead %}
+{% block pageSubtitle %}
+{{instance.tagline}}
+{% endblock %}
+
+{% block extra_head %}
 <link rel="openid2.local_id" href="{% url openid-provider-identity id=openid.openid %}"/>
 {% endblock %}
 
 {% block content %}
-<div class="grid_4 alpha">
-<p>{% gravatar instance.user %}</p>
-<ul>
-  {% if instance.tagline %}
-  <li>"<em>{{instance.tagline}}</em>" &mdash;{{instance.fullName}}</li>
-  {% endif %}
-  <li>Joined: {{instance.created}}</li>
-  <li>Last Seen: {{instance.lastSeen}}</li>
-  {% if user.is_authenticated %}
-    <li>Email: {{instance.user.email}}</li>
-  {% else %}
-    <li>Email: <em>login to view email</em></li>
-  {% endif %}
-</ul>
-</div>
-
-<div class="grid_8 omega">
-  {% if instance.activeMember %}
-  {% else %}
-  <div class="messages">
-    Not an Active Member
+{% if not instance.activeMember %}
+  <div class="alert alert-info">Not an active member</div>
+{% endif %}
+{% if user == instance.user or perms.auth.change_user %}
+<div class="row">
+  <div class="span12">
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a href="#">View</a>
+      </li>
+      <li>
+        <a href="{% url membership:edit username=instance.user.username %}">Edit Profile</a>
+      </li>
+      {% if user == instance.user %}
+      <li>
+        <a href="https://en.gravatar.com/emails">Change Avatar</a>
+      </li>
+      {% endif %}
+    </ul>
   </div>
-  {% endif %}
-
-  <h2>Profile {% if user == instance.user or perms.auth.change_user %}<sup><a
-        href="{% url membership:edit username=instance.user.username %}">Edit</a> <a href="https://en.gravatar.com/emails">Change Avatar</a></sup>{% endif %}</h2>
-  <table>
-    {% for field in instance.attributes.all %}
-    {% if field.field.public or instance.user == user or perms.membership.can_view_private_fields %}
-      <tr class="{% cycle 'even' 'odd' %}"><td>{{field.field.name}}</td><td>{{field.value}}</td></tr>
-    {% endif %}
-    {% endfor %}
-  </table>
-  <div class="grid_2 alpha">
+</div>
+{% endif %}
+<div class="row">
+  <div class="span4">
+    <h2>Profile</h2>
+    <table class="table table-striped">
+      <tr>
+        <th>Joined</th>
+        <td>{{instance.created}}</td>
+      </tr>
+      <tr>
+        <th>Last Seen</th>
+        <td>{{instance.lastSeen}}</td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td>
+          {% if user.is_authenticated %}
+            {{instance.user.email}}
+          {% else %}
+            <em>login to view email</em>
+          {% endif %}
+        </td>
+      </tr>
+      {% for field in instance.attributes.all %}
+      {% if field.field.public or instance.user == user or perms.membership.can_view_private_fields %}
+        <tr><th>{{field.field.name}}</th><td>{{field.value}}</td></tr>
+      {% endif %}
+      {% endfor %}
+    </table>
     {% if perms.membership.can_view_member_rank %}
     <h2>Groups</h2>
     <ul>
@@ -50,26 +70,27 @@
         <li>{{group}}</li>
       {% endfor %}
       {% if perms.membership.can_change_member_rank %}
-        <li><a href="{% url membership:editRank username=instance.user.username %}">Change</a></li>
+        <li><a href="{% url membership:editRank username=instance.user.username %}">Modify Groups</a></li>
       {% endif %}
     </ul>
     {% endif %}
   </div>
-  <div class="grid_6 omega">
+
+  <div class="span8">
     {% if perms.payment.add_payment %}
       <h2>Recent Payments</h2>
-      <table>
+      <table class="table table-hover table-striped">
         <tr><th>Date</th><th>Value</th><th>Method</th><th>Invoice</th></tr>
         {% for payment in instance.user.payments.all %}
-        <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td><a href="{% url payment:viewInvoice invoiceID=payment.invoice.id %}">{{payment.invoice}}</a></td></tr>
+        <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td><a href="{% url payment:viewInvoice invoiceID=payment.invoice.id %}">#{{payment.invoice.id}}</a></td></tr>
         {% endfor %}
       </table>
       <h2>Recent Invoices</h2>
-      <table>
-        <tr><th>ID</th><th>Due Date</th><th colspan="2">Unpaid Balance</th></tr>
+      <table class="table table-hover table-striped">
+        <tr><th>Invoice</th><th>Due Date</th><th colspan="2">Unpaid Balance</th></tr>
         {% for invoice in instance.user.invoices.all %}
           <tr>
-            <td>{{invoice.id}}</td>
+            <td>#{{invoice.id}}</td>
             <td>{{invoice.dueDate}}</td>
             <td>${{invoice.unpaidBalance}}</td>
             <td><a href="{% url payment:addPayment invoiceID=invoice.id %}">Add Payment</a></td>
@@ -80,36 +101,38 @@
   </div>
 </div>
 
-<div class="grid_12 alpha omega">
-  <h2>Resource Certifications</h2>
-  <table>
-    <tr><th>Resource</th><th>Comment</th></tr>
-    {% if instance.certifications.all %}
-      {% for cert in instance.certifications.all %}
-      <tr class="{% cycle 'even' 'odd' %}"><td>
-        {% if perms.inventory.certify %}
-        <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
+<div class="row">
+  <div class="span12">
+    <h2>Resource Certifications</h2>
+    <table class="table table-striped">
+      <tr><th>Resource</th><th>Comment</th></tr>
+      {% if instance.certifications.all %}
+        {% for cert in instance.certifications.all %}
+        <tr class="{% cycle 'even' 'odd' %}"><td>
+          {% if perms.inventory.certify %}
+          <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
 
-        {% endif %}
-        <a
-            href="{{cert.resource.get_absolute_url}}">{{cert.resource}}</a></td>
-        <td>
-        {{ cert.comment }}
-        </td>
-      </tr>
-      {% endfor %}
-    {% endif %}
-  </table>
-  <h2>Proficiencies</h2>
-  <table>
-    <tr><th>Name</th><th>Level</th></tr>
-    {% if instance.trainings.all %}
-      {% for training in instance.trainings.all %}
-      <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url inventory:view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
-      {% endfor %}
-    {% else %}
-      <tr><td colspan="2">None :(</td></tr>
-    {% endif %}
-  </table>
+          {% endif %}
+          <a
+              href="{{cert.resource.get_absolute_url}}">{{cert.resource}}</a></td>
+          <td>
+          {{ cert.comment }}
+          </td>
+        </tr>
+        {% endfor %}
+      {% endif %}
+    </table>
+    <h2>Proficiencies</h2>
+    <table class="table table-striped">
+      <tr><th>Name</th><th>Level</th></tr>
+      {% if instance.trainings.all %}
+        {% for training in instance.trainings.all %}
+        <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url inventory:view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="2">None :(</td></tr>
+      {% endif %}
+    </table>
+  </div>
 </div>
 {% endblock %}

@@ -1,11 +1,17 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block title %}Welcome{% endblock %}
-{% block sectiontitle %}Welcome{% endblock %}
 
 {% block content %}
-<p>Welcome to Spaceman Spiff, the management website for your local
-hackerspace.</p>
-<p>Feel free to browse any publicly available resources.</p>
+<div class="row">
+  <div class="span12">
+    <div class="hero-unit">
+      <h1>{{greetingOfTheDay}}</h1>
+      {{site.spaceconfig.motd}}
+      <p><a class="btn btn-primary btn-large" href="{% url 'django.contrib.auth.views.login' %}">Login</a></p>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
