@@ -1,5 +1,7 @@
 from django.contrib.sites.models import get_current_site
+from django.conf import settings
 import forms
+import random
 
 def space_info(request):
   site = get_current_site(request)
@@ -17,3 +19,6 @@ def search_form(request):
   else:
     searchForm = forms.SearchForm()
   return {'searchForm': searchForm}
+
+def greeting_of_the_day(request):
+  return {'greetingOfTheDay': random.choice(settings.GREETINGS)}

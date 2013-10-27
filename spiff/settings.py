@@ -168,6 +168,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
   "django.contrib.messages.context_processors.messages",
   'spiff.local.context.space_info',
   'spiff.local.context.search_form',
+  'spiff.local.context.greeting_of_the_day',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -202,6 +203,10 @@ LOGGING = {
 STRIPE_KEY = ''
 
 DEFAULT_FROM_EMAIL = "spiff@localhost"
+
+GREETINGS = (
+  "Hello!",
+)
 
 try:
   from local_settings import *
