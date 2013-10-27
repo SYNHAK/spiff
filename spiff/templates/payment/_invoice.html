@@ -2,10 +2,15 @@
     <li>To: {{invoice.user.member}}</li>
     <li>Created: {{invoice.created}}</li>
     <li>Due date: {{invoice.dueDate}}</li>
-    <li>Open: {{invoice.open}}</li>
 </ul>
 
-<table>
+{% if not invoice.open %}
+  <div class="alert alert-info">
+    This invoice has been marked as closed.
+  </div>
+{% endif %}
+
+<table class="table table-striped table-hover">
   <tr><th>Item</th><th>Unit Price</th><th>Quantity</th><th>Total Price</th></tr>
   {% for line in invoice.items.all %}
     <tr>
@@ -23,14 +28,14 @@
       </tr>
     {% endfor %}
   {% endfor %}
-  <tr>
+  <tr class="invoice-total">
     <th colspan="3">Subtotal:</th>
-    <th>${{invoice.total}}</th>
+    <td>${{invoice.total}}</td>
   </tr>
 </table>
 {% if invoice.payments.all %}
 <h2>Payments</h2>
-<table>
+<table class="table table-striped table-hover">
   <tr>
     <th>Method</th>
     <th>Date</th>
@@ -43,18 +48,15 @@
       <td>-${{payment.value}}</td>
     </tr>
   {% endfor %}
-  <tr>
-    <th colspan="2">Grand Total:</th>
-    <th>${{invoice.unpaidBalance}}</th>
+  <tr class="invoice-total">
+    <th colspan="2">Paid Total:</th>
+    <td>${{invoice.paidBalance}}</td>
   </tr>
 </table>
 {% endif %}
 
-<div class="invoice-summary">
-  <div class="invoice-sub-total">Subtotal: <span
-  class='invoice-sub-total-value'>${{invoice.total}}</span></div>
-  <div class="invoice-payment-total">Payments: <span
-  class='invoice-payment-total-value'>-${{invoice.paidBalance}}</span></div>
-  <div class="invoice-grand-total">Grand Total: <span
-  class='invoice-grand-total-value'>${{invoice.unpaidBalance}}</span></div>
-</div>
+<table class="table invoice-summary table-bordered table-hover">
+  <tr class="invoice-total"><th>Subtotal</th><td>${{invoice.total}}</td></tr>
+  <tr class="invoice-total"><th>Payments</th><td>${{invoice.paidBalance}}</td></tr>
+  <tr class="invoice-total"><th>Grand Total</th><td>{{invoice.unpaidBalance}}</td></tr>
+</table>
