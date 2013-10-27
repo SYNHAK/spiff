@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'bootstrap_toolkit',
     'south',
     'gravatar',
     #'webfinger',

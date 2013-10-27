@@ -19,3 +19,4 @@ stripe==1.7.7
 wellknown==0.2
 wsgiref==0.1.2
 xrd==0.1
+django-bootstrap-toolkit
