@@ -17,6 +17,7 @@ class SpaceConfig(models.Model):
     status = models.CharField(max_length=100, null=True, blank=True)
     lastChange = models.DateTimeField(auto_now_add=True)
     openSensor = models.ForeignKey(Sensor, null=True, blank=True)
+    motd = models.TextField(blank=True)
 
     def isOpen(self):
         if self.openSensor:
