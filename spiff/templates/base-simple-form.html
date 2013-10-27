@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div class="container">
+  {% block formPre %} {% endblock %}
+  <div class="row">
+    <div class="span12">
+      {% block form %}{% endblock %}
+    </div>
+  </div>
+  {% block formPost %}{% endblock %}
+</div>
+{% endblock %}

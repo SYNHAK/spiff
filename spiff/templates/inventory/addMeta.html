@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends "base-simple-form.html" %}
+{% load bootstrap_toolkit %}
 {% block extrahead %}
 <script type="text/javascript">
 $(function() {
@@ -8,11 +9,11 @@ $(function() {
 {% endblock %}
 
 {% block title %}Resource Metadata{% endblock %}
-{% block sectiontitle %}Add metadata for {{item.name}}{% endblock %}
+{% block pageTitle %}Add metadata for {{item.name}}{% endblock %}
 
-{% block content %}
+{% block form %}
 <form method="POST" action="{%url inventory:meta id=item.id%}">
-  {{metaForm.as_p}}
+  {{metaForm|as_bootstrap}}
   {% csrf_token %}
   <input type="submit" value="Save"/>
 </form>

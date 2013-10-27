@@ -1,163 +1,167 @@
 {% extends "base.html" %}
 
 {% block title %}{{instance.name}} - Resources{% endblock %}
-{% block sectiontitle %}{{instance.name}}{% endblock %}
+{% block pageTitle %}
+<a href="{% url inventory:qr id=instance.id size=10 %}"><img src="{% url inventory:qr id=instance.id size=2 %}"/></a>
+ {{instance.name}}
+{% endblock %}
 
 {% block content %}
-<div class="grid_8 alpha">
-  <h2>Metadata</h2>
-  <table>
-    <tr><th>Name</th><th>Value</th></tr>
-    {% if instance.metadata.all %}
-      {% for prop in instance.metadata.all %}
-      <tr>
-        <td>
-          {% if perms.inventory.can_change_metadata %}
-            <a href="{% url inventory:deleteMeta id=prop.id %}">[X]</a>
-            <a href="{% url inventory:meta id=instance.id name=prop.name%}">{{prop.name}}</a>
-          {% else %}
-            {{prop.name}}
-          {% endif %}
-        </td>
-        <td>
-          {% if prop.type == 0 %}
-          {{prop.value}}
-          {% endif %}
-          {% if prop.type == 1 %}
-          <a href="{{prop.value}}">{{prop.value}}</a>
-          {% endif %}
-          {% if prop.type == 2 %}
-          <img src="{{prop.value}}"/>
-          {% endif %}
-        </td>
+<div class="row">
+  <div class="span7">
+    <h2>Metadata</h2>
+    <table class="table table-hover">
+      {% if instance.metadata.all %}
+        {% for prop in instance.metadata.all %}
+        <tr>
+          <th>
+            {% if perms.inventory.can_change_metadata %}
+              <a href="{% url inventory:deleteMeta id=prop.id %}">[X]</a>
+              <a href="{% url inventory:meta id=instance.id name=prop.name%}">{{prop.name}}</a>
+            {% else %}
+              {{prop.name}}
+            {% endif %}
+          </th>
+          <td>
+            {% if prop.type == 0 %}
+            {{prop.value}}
+            {% endif %}
+            {% if prop.type == 1 %}
+            <a href="{{prop.value}}">{{prop.value}}</a>
+            {% endif %}
+            {% if prop.type == 2 %}
+            <img src="{{prop.value}}"/>
+            {% endif %}
+          </td>
+        {% endfor %}
+      {% else %}
+        <tr class="infobar"><td colspan="3">No metadata</td></tr>
+      {% endif %}
+      {% if perms.inventory.can_change_metadata %}
+      <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url inventory:meta id=instance.id%}">Add/modify
+            metadata</a></td></tr>
+      {% endif %}
+    </table>
+  </div>
+  <div class="span5">
+    <h2>Changelog</h2>
+    <table class="table table-striped table-hover">
+      <tr><th>Date</th><th>Who</th><th>What</th></tr>
+      {% for event in instance.changelog.all %}
+      <tr class="{% cycle 'even' 'odd' %}">
+          <td>{{event.stamp}}</td>
+          <td>{{event.member}}</td>
+          <td>
+            {% if event.property %}
+              {% if event.old %}
+                {% if event.new %}
+                  Changed {{event.property}} from {{event.old}} to {{event.new}}.
+                {% else %}
+                  Deleted {{event.property}} (was {{event.old}}).
+                {% endif %}
+              {% else %}
+                {% if event.new %}
+                Added {{event.property}}: {{event.new}}
+                {% else %}
+                  Did some property wizardry that spiff can't understand.
+                {% endif %}
+              {% endif %}
+            {% elif event.trained_member %}
+              {% if event.old %}
+                Promoted {{event.trained_member}} from Level {{event.old}} to Level
+                {{event.new}}.
+              {% elif event.trained_member == event.member %}
+                Used it for the first time.
+              {% else %}
+                {% if event.new and event.old %}
+                  Changed certification for {{event.trained_member}} from "{{event.old}}" to "{{event.new}}"
+                {% elif event.old %}
+                  Removed "{{event.old}}" certification from {{event.trained_member}}
+                {% else %}
+                  Granted "{{event.new}}" certification to {{event.trained_member}}
+                {% endif %}
+              {% endif %}
+            {% elif not event.old and not event.new and not event.trained_member %}
+              Added it to spiff
+            {% else %}
+              Did some wizardry that spiff can't understand.
+            {% endif %}
+          </td>
+        </tr>
       {% endfor %}
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="span6">
+    {% if instance.trainable %}
+    <h2>Skilled Users</h2>
+    <table class="table table-striped table-hover">
+      <tr><th>Name</th><th></th></tr>
+      {% if instance.users.all %}
+        {% for training in instance.trainings.all %}
+        <tr class="{% cycle 'even' 'odd' %}"><td><a
+              href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
+          <td>
+            {% if training.rank <= myTraining.rank and training != myTraining %}
+            <a href="{% url inventory:promote id=training.id %}">They are
+              better than me</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="2">Nobody!</td></tr>
+      {% endif %}
+      {% if not myTraining and perms.inventory.can_train %}
+      <tr><td colspan="2"><a href="{% url inventory:train id=instance.id %}">I have used this!</a></td></tr>
+      {% endif %}
+    </table>
     {% else %}
-      <tr class="infobar"><td colspan="3">No metadata</td></tr>
+    <p>You cannot train for this resource.</p>
     {% endif %}
-    {% if perms.inventory.can_change_metadata %}
-    <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url inventory:meta id=instance.id%}">Add/modify
-          metadata</a></td></tr>
-    {% endif %}
-  </table>
-</div>
-<div class="grid_4 omega barcode">
-  <h2>QR Code</h2>
-  <a href="{% url inventory:qr id=instance.id size=10 %}"><img src="{% url inventory:qr id=instance.id size=5 %}"/></a>
-</div>
-<div class="grid_8 alpha">
-  {% if instance.trainable %}
-  <h2>Skilled Users</h2>
-  <table>
-    <tr><th>Name</th><th></th></tr>
-    {% if instance.users.all %}
-      {% for training in instance.trainings.all %}
-      <tr class="{% cycle 'even' 'odd' %}"><td><a
-            href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
-        <td>
-          {% if training.rank <= myTraining.rank and training != myTraining %}
-          <a href="{% url inventory:promote id=training.id %}">They are
-            better than me</a>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    {% else %}
-      <tr><td colspan="2">Nobody!</td></tr>
-    {% endif %}
-    {% if not myTraining and perms.inventory.can_train %}
-    <tr><td colspan="2"><a href="{% url inventory:train id=instance.id %}">I have used this!</a></td></tr>
-    {% endif %}
-  </table>
-  {% else %}
-  <p>You cannot train for this resource.</p>
-  {% endif %}
-</div>
-<div class="grid_4 omega">
-  <h2>Related Events</h2>
-  <table>
-    <!-- <tr><th>Name</th></tr> -->
-    {% if instance.events.all %}
-      {% for event in instance.events.all %}
-      <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td></tr>
-      {% endfor %}
-    {% else %}
-      <tr class="infobar"><td colspan="1">No events</td></tr>
-    {% endif %}
-  </table>
-</div>
-<div class="grid_12 alpha omega">
-  {% if instance.trainable %}
-  <h2>Certified Users</h2>
-  <table>
-    <tr><th>Name</th><th>Comment</th></tr>
-    {% if instance.certifications.all %}
-      {% for cert in instance.certifications.all %}
-      <tr class="{% cycle 'even' 'odd' %}"><td>
-        {% if perms.inventory.certify %}
-        <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
+  </div>
+  <div class="span6">
+    {% if instance.trainable %}
+    <h2>Certified Users</h2>
+    <table class="table table-striped table-hover">
+      <tr><th>Name</th><th>Comment</th></tr>
+      {% if instance.certifications.all %}
+        {% for cert in instance.certifications.all %}
+        <tr class="{% cycle 'even' 'odd' %}"><td>
+          {% if perms.inventory.certify %}
+          <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
 
-        {% endif %}
-        <a
-            href="{{cert.member.get_absolute_url}}">{{cert.member}}</a></td>
-        <td>
-        {{ cert.comment }}
-        </td>
-      </tr>
-      {% endfor %}
-    {% endif %}
-    {% if perms.inventory.certify %}
-    <tr><td colspan="2"><a href="{% url inventory:certify id=instance.id %}">Certify someone</a></td></tr>
-    {% endif %}
-  </table>
-  {% endif %}
-</div>
-<div class="grid_12 alpha omega">
-  <h2>Changelog</h2>
-  <table>
-    <tr><th>Date</th><th>Who</th><th>What</th></tr>
-    {% for event in instance.changelog.all %}
-    <tr class="{% cycle 'even' 'odd' %}">
-        <td>{{event.stamp}}</td>
-        <td>{{event.member}}</td>
-        <td>
-          {% if event.property %}
-            {% if event.old %}
-              {% if event.new %}
-                Changed {{event.property}} from {{event.old}} to {{event.new}}.
-              {% else %}
-                Deleted {{event.property}} (was {{event.old}}).
-              {% endif %}
-            {% else %}
-              {% if event.new %}
-              Added {{event.property}}: {{event.new}}
-              {% else %}
-                Did some property wizardry that spiff can't understand.
-              {% endif %}
-            {% endif %}
-          {% elif event.trained_member %}
-            {% if event.old %}
-              Promoted {{event.trained_member}} from Level {{event.old}} to Level
-              {{event.new}}.
-            {% elif event.trained_member == event.member %}
-              Used it for the first time.
-            {% else %}
-              {% if event.new and event.old %}
-                Changed certification for {{event.trained_member}} from "{{event.old}}" to "{{event.new}}"
-              {% elif event.old %}
-                Removed "{{event.old}}" certification from {{event.trained_member}}
-              {% else %}
-                Granted "{{event.new}}" certification to {{event.trained_member}}
-              {% endif %}
-            {% endif %}
-          {% elif not event.old and not event.new and not event.trained_member %}
-            Added it to spiff
-          {% else %}
-            Did some wizardry that spiff can't understand.
           {% endif %}
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+          <a
+              href="{{cert.member.get_absolute_url}}">{{cert.member}}</a></td>
+          <td>
+          {{ cert.comment }}
+          </td>
+        </tr>
+        {% endfor %}
+      {% endif %}
+      {% if perms.inventory.certify %}
+      <tr><td colspan="2"><a href="{% url inventory:certify id=instance.id %}">Certify someone</a></td></tr>
+      {% endif %}
+    </table>
+    {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="span12">
+    <h2>Related Events</h2>
+    <table>
+      <!-- <tr><th>Name</th></tr> -->
+      {% if instance.events.all %}
+        {% for event in instance.events.all %}
+        <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td></tr>
+        {% endfor %}
+      {% else %}
+        <tr class="infobar"><td colspan="1">No events</td></tr>
+      {% endif %}
+    </table>
+  </div>
 </div>
 {% endblock %}
 

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block title %}Events{% endblock %}
-{% block sectiontitle %}All Events{% endblock %}
+{% block pageTitle %}All Events{% endblock %}
 
 {% block content %}
-<table>
+<table class="table table-striped">
   <tr><th>Name</th><th>Start</th><th>End</th></tr>
   {% for event in instances %}
     <tr><td><a href="{{event.get_absolute_url}}">{{event.name}}</a></td>
