@@ -73,6 +73,10 @@ class Invoice(models.Model):
     def get_absolute_url(self):
       return ("payment:viewInvoice", [], {"invoiceID": self.id})
 
+    @property
+    def isOverdue(self):
+      return self.dueDate < datetime.date.utcnow().replace(tzinfo=utc) and self.draft is False 
+
 class LineItem(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='items')
     name = models.TextField()
