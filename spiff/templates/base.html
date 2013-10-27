@@ -1,104 +1,15 @@
-{% load url from future %}
-{% load gravatar %}
-<html>
-<head>
-  <title>{% block title %}Spiff{% endblock %} - Spiff</title>
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/reset.css"/>
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/text.css"/>
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/960.css"/>
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/jquery-ui.css"/>
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/main.css"/>
-  <script type="text/javascript" src="{{STATIC_URL}}/js/jquery.js"></script>
-  <script type="text/javascript" src="{{STATIC_URL}}/js/jquery-ui.js"></script>
-  <link rel="openid2.provider" href="{{ROOT_URL}}{% url 'openid-provider-root' %}"/>
-  <link rel="openid.server" href="{{ROOT_URL}}{% url 'openid-provider-root' %}"/>
-  <meta http-equiv="X-XRDS-Location" content="{{ROOT_URL}}{% url 'openid-provider-xrds' %}"/>
-  <meta http-equiv="X-Yadis-Location" content="{{ROOT_URL}}{% url 'openid-provider-xrds' %}"/>
-  {% block extrahead %}
+{% extends "layout.html" %}
+
+{% block canvas %}
+<div class="container">
+  <div class="row">
+    <div class="span12">
+      <div class="page-header">
+        <h1>{% block pageTitle %}{% endblock %}<small>{% block pageSubtitle %}{% endblock %}</small></h1>
+      </div>
+    </div>
+  </div>
+  {%block content %}
   {% endblock %}
-</head>
-<body>
-  <div id="header" class="container_12">
-    <div id="title" class="grid_7">
-      <h1>{{site.name}}</h1>
-    </div>
-    <div id="epicenter" class="grid_3">
-      {% if user.is_anonymous %}
-      <p>Welcome! <a href="{% url 'django.contrib.auth.views.login' %}">Login</a>
-      or <a href="{% url 'spiff.local.views.register' %}">Register</a></p>
-      <p><a href="{% url 'django.contrib.auth.views.password_reset' %}">Forgot
-        your password?</a></p>
-      {% else %}
-      <a href="{{user.member.get_absolute_url}}">
-        {% gravatar user %}</a>
-      <p>Welcome, <a href="{{user.member.get_absolute_url}}">{{user.member.fullName}}!</a></p>
-        <p><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></p>
-        <p><a href="{% url 'django.contrib.auth.views.password_change' %}">Change your password</a></p>
-      {% endif %}
-    </div>
-    <br class="clear"/>
-    <div id="navbar" class="grid_9">
-      <ul>
-        <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'membership:index' %}">Members</a></li>
-        <li><a href="{% url 'inventory:index' %}">Resources</a></li>
-        <li><a href="{% url 'events:index' %}">Events</a></li>
-        <li><a href="{% url 'sensors:index' %}">Sensors</a></li>
-        {% if user.is_staff %}
-        <li><a href="{% url 'management:index' %}">Manage</a></li>
-        <li><a href="{% url 'admin:index' %}">Admin</a></li>
-        {% endif %}
-      </ul>
-    </div>
-    <div id="search" class="grid_3">
-      <form method="GET" action="{% url 'spiff.local.views.search' %}">
-        {{searchForm.as_p}}
-        <input type="submit" value="Search"/>
-      </form>
-    </div>
-    <br class="clear"/>
-    <div class="grid_12">
-      {% if messages %}
-      <div class="messages">
-        <ul>
-          {% for message in messages %}
-          <li class="message {{message.tags}}">{{message}}</li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-    </div>
-    <br class="clear"/>
-  </div>
-  <div id="content" class="container_12">
-    <div class="grid_12">
-      <h1>{% block sectiontitle %}Spiff{% endblock %}</h1>
-    </div>
-    <br class="clear"/>
-    <div class="grid_12">
-      {% block content %}
-      {% endblock %}
-    </div>
-  </div>
-  <div id="footer" class="container_12">
-    <div class="grid_3">
-      <ul>
-        <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'membership:index' %}">Members</a></li>
-        <li><a href="{% url 'inventory:index' %}">Resources</a></li>
-        {% if user.is_staff %}
-        <li><a href="{% url 'admin:index' %}">Admin</a></li>
-        {% endif %}
-      </ul>
-    </div>
-    <div class="grid_9">
-      <div id="copyright">
-        Powered by <a href="https://github.com/synhak/spiff">Spaceman Spiff</a>
-        | <a href="http://spiff.readthedocs.org">Documentation</a>
-      <br style="clear:both;"/>
-      </div>
-    </div>
-    <br class="clear"/>
-  </div>
-</body>
-</html>
+</div>
+{% endblock %}

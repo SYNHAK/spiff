@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+{% load bootstrap_toolkit %}
+{% load url from future %}
+{% load gravatar %}
+<html>
+<head>
+  <meta charset="utf-8">
+  {% bootstrap_stylesheet_tag %}
+  {% bootstrap_stylesheet_tag "responsive" %}
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/main.css"/>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  {% bootstrap_javascript_tag %}
+  {% block extra_head %}{% endblock %}
+  <title>{% block title %}Spiff{% endblock %} - Spiff</title>
+</head>
+<body>
+<div class="navbar navbar-top">
+  <div class="navbar-inner">
+    <a class="brand" href="{% url 'home' %}">{{site.name}}</a>
+    <ul class="nav">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="{% url 'membership:index' %}">Members</a></li>
+      <li><a href="{% url 'inventory:index' %}">Resources</a></li>
+      <li><a href="{% url 'events:index' %}">Events</a></li>
+      <li><a href="{% url 'sensors:index' %}">Sensors</a></li>
+      {% if user.is_staff %}
+      <li><a href="{% url 'management:index' %}">Manage</a></li>
+      <li><a href="{% url 'admin:index' %}">Admin</a></li>
+      {% endif %}
+    </ul>
+    <ul class="nav pull-right">
+      <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        {% if user.is_anonymous %}
+          <i class="icon-home"></i> Guest
+        {% else %}
+          {% gravatar user 24 %} {{user.member.fullName}}
+        {% endif %}
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        {% if user.is_anonymous %}
+        <li><a href="{% url 'django.contrib.auth.views.login' %}">Login</a></li>
+        <li><a href="{% url 'spiff.local.views.register' %}">Register</a></li>
+        <li><a href="{% url 'django.contrib.auth.views.password_reset' %}">Reset Password</a></li>
+        {% else %}
+          <li><a href="{% url 'home' %}">Dashboard</a></li>
+          <li><a href="{{user.member.get_absolute_url}}">View Profile</a></li>
+          <li><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
+          <li><a href="{% url 'django.contrib.auth.views.password_change' %}">Change Password</a></li>
+        {% endif %}
+      </ul>
+    </li>
+    </ul>
+  </div>
+</div>
+
+<div class="container">
+  {% bootstrap_messages %}
+  {% block messages %}{% endblock %}
+</div>
+
+{% block canvas %}{% endblock %}
+</body>
