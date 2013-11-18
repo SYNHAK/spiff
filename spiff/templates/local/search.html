@@ -6,7 +6,7 @@
 {% block content %}
 
 <form method="GET" 
-<form method="GET" action="{% url spiff.local.views.search %}">
+<form method="GET" action="{% url 'spiff.local.views.search' %}">
   {{searchForm.as_p}}
   <input type="submit" value="Search"/>
 </form>

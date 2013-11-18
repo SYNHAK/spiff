@@ -2,7 +2,7 @@
 
 {% block title %}{{instance.name}} - Resources{% endblock %}
 {% block pageTitle %}
-<a href="{% url inventory:qr id=instance.id size=10 %}"><img src="{% url inventory:qr id=instance.id size=2 %}"/></a>
+<a href="{% url 'inventory:qr' id=instance.id size=10 %}"><img src="{% url 'inventory:qr' id=instance.id size=2 %}"/></a>
  {{instance.name}}
 {% endblock %}
 
@@ -16,8 +16,8 @@
         <tr>
           <th>
             {% if perms.inventory.can_change_metadata %}
-              <a href="{% url inventory:deleteMeta id=prop.id %}">[X]</a>
-              <a href="{% url inventory:meta id=instance.id name=prop.name%}">{{prop.name}}</a>
+              <a href="{% url 'inventory:deleteMeta' id=prop.id %}">[X]</a>
+              <a href="{% url 'inventory:meta' id=instance.id name=prop.name%}">{{prop.name}}</a>
             {% else %}
               {{prop.name}}
             {% endif %}
@@ -38,7 +38,7 @@
         <tr class="infobar"><td colspan="3">No metadata</td></tr>
       {% endif %}
       {% if perms.inventory.can_change_metadata %}
-      <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url inventory:meta id=instance.id%}">Add/modify
+      <tr class="actionbar"><td colspan="3"><a class="action-add-metadata" href="{% url 'inventory:meta' id=instance.id%}">Add/modify
             metadata</a></td></tr>
       {% endif %}
     </table>
@@ -104,7 +104,7 @@
               href="{{training.member.get_absolute_url}}">{{training.member}}</a></td>
           <td>
             {% if training.rank <= myTraining.rank and training != myTraining %}
-            <a href="{% url inventory:promote id=training.id %}">They are
+            <a href="{% url 'inventory:promote' id=training.id %}">They are
               better than me</a>
             {% endif %}
           </td>
@@ -114,7 +114,7 @@
         <tr><td colspan="2">Nobody!</td></tr>
       {% endif %}
       {% if not myTraining and perms.inventory.can_train %}
-      <tr><td colspan="2"><a href="{% url inventory:train id=instance.id %}">I have used this!</a></td></tr>
+      <tr><td colspan="2"><a href="{% url 'inventory:train' id=instance.id %}">I have used this!</a></td></tr>
       {% endif %}
     </table>
     {% else %}
@@ -130,7 +130,7 @@
         {% for cert in instance.certifications.all %}
         <tr class="{% cycle 'even' 'odd' %}"><td>
           {% if perms.inventory.certify %}
-          <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
+          <a href="{% url 'inventory:uncertify' certID=cert.id %}">[X]</a>
 
           {% endif %}
           <a
@@ -142,7 +142,7 @@
         {% endfor %}
       {% endif %}
       {% if perms.inventory.certify %}
-      <tr><td colspan="2"><a href="{% url inventory:certify id=instance.id %}">Certify someone</a></td></tr>
+      <tr><td colspan="2"><a href="{% url 'inventory:certify' id=instance.id %}">Certify someone</a></td></tr>
       {% endif %}
     </table>
     {% endif %}

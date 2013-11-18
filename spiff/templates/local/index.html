@@ -68,7 +68,7 @@
             {% endif %}
               {{invoice.dueDate}}</td>
             <td>${{invoice.unpaidBalance}}</td>
-            <td><a href="{% url payment:pay invoiceID=invoice.id %}">Pay</a></td>
+            <td><a href="{% url 'payment:pay' invoiceID=invoice.id %}">Pay</a></td>
           </tr>
         {% endfor %}
       {% else %}
@@ -117,7 +117,7 @@
     <ul>
       {% if user.useropenid_set.all %}
         {% for id in user.useropenid_set.all %}
-          <li>{{id.display_id}} <a href="{% url spiff.local.views.unassociate_openid id=id.id %}">Remove</a></li>
+          <li>{{id.display_id}} <a href="{% url 'spiff.local.views.unassociate_openid' id=id.id %}">Remove</a></li>
         {% endfor %}
       {% else %}
         <li><em>None</em></li>
@@ -132,7 +132,7 @@
       {% if user.openid_set.all %}
         {% for id in user.openid_set.all %}
           {% for domain in id.trustedroot_set.all %}
-            <li>{{domain.trust_root}}<a href="{% url spiff.local.views.untrust_openid_root id=domain.id %}">Remove</a></li>
+            <li>{{domain.trust_root}}<a href="{% url 'spiff.local.views.untrust_openid_root' id=domain.id %}">Remove</a></li>
           {% endfor %}
         {% endfor %}
       {% else %}

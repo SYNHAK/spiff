@@ -3,7 +3,7 @@
 {% block sectiontitle %}Register{% endblock %}
 
 {% block content %}
-<form method="POST" action="{%url spiff.local.views.register%}">
+<form method="POST" action="{% url 'spiff.local.views.register' %}">
   {{userForm.as_p}}
   {{profileForm.as_p}}
   {% csrf_token %}

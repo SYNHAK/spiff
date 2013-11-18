@@ -11,11 +11,11 @@
     <li>End: {{instance.end}}</li>
     <li>Created by: <a href="{{instance.creator.get_absolute_url}}">{{instance.creator.fullName}}</a></li>
     {% for organizer in instance.organizers.all %}
-    <li>Organized by: <a href="{{organizer.member.get_absolute_url}}">{{organizer.member.fullName}}</a> <a href="{% url events:removeOrganizer id=instance.id userID=organizer.id %}">[X]</a></li>
+    <li>Organized by: <a href="{{organizer.member.get_absolute_url}}">{{organizer.member.fullName}}</a> <a href="{% url 'events:removeOrganizer' id=instance.id userID=organizer.id %}">[X]</a></li>
     {% endfor %}
     {% if perms.change_event or instance.creator == user %}
-    <li><a href="{% url events:edit id=instance.id %}">Edit Details</a></li>
-    <li><a href="{% url events:addOrganizer id=instance.id %}">Add organizer</a></li>
+    <li><a href="{% url 'events:edit' id=instance.id %}">Edit Details</a></li>
+    <li><a href="{% url 'events:addOrganizer' id=instance.id %}">Add organizer</a></li>
     {% endif %}
   </ul>
 </div>
@@ -31,7 +31,7 @@
     <tr><td><a
           href="{{member.get_absolute_url}}">{{member.fullName}}</a></td></tr>
   {% endfor %}
-  <tr class="actionbar"><td><a class="action-add-attendee" href="{% url events:attend id=instance.id %}">I'm attending!</a></td></tr>
+  <tr class="actionbar"><td><a class="action-add-attendee" href="{% url 'events:attend' id=instance.id %}">I'm attending!</a></td></tr>
   </table>
 </div>
 
@@ -44,7 +44,7 @@
     {% endfor %}
     {% if perms.events.can_reserve_resource %}
       {% if user == instance.creator.user or perms.can_change_event %}
-        <tr class="actionbar"><td><a class="action-add-resource" href="{% url events:addResource id=instance.id %}">Add a resource</a></td>
+        <tr class="actionbar"><td><a class="action-add-resource" href="{% url 'events:addResource' id=instance.id %}">Add a resource</a></td>
       {% endif %}
     {% endif %}
   </table>

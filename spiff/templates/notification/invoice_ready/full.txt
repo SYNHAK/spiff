@@ -19,4 +19,4 @@ Due date: {{invoice.dueDate}}
 
 Total: {{invoice.total}}
 
-You may view it online at http://{{current_site}}{% url payment:viewInvoice invoiceID=invoice.id %}
+You may view it online at http://{{current_site}}{% url 'payment:viewInvoice' invoiceID=invoice.id %}

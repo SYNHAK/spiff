@@ -4,7 +4,7 @@
 {% block sectiontitle %}Editing ranks for {{editUser.member.fullName}}{% endblock %}
 
 {% block content %}
-<form method="POST" action="{% url membership:editRank username=editUser.username%}">
+<form method="POST" action="{% url 'membership:editRank' username=editUser.username%}">
   {{rankForm.as_p}}
   {% csrf_token %}
   <input type="submit" value="Save"/>

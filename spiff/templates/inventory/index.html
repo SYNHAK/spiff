@@ -10,7 +10,7 @@
   {% endfor %}
 </ul>
 {% if perms.inventory.add_resource %}
-<a class="action-add-resource" href="{% url inventory:add %}">Add new resource</a>
+<a class="action-add-resource" href="{% url 'inventory:add' %}">Add new resource</a>
 {% endif %}
 {% endblock %}
 

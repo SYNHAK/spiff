@@ -24,7 +24,7 @@
 </div>
 <div class="row">
   <div class="span12">
-    <form method="POST" action="{% url membership:edit username=editUser.username%}">
+    <form method="POST" action="{% url 'membership:edit' username=editUser.username%}">
       {{userForm|as_bootstrap}}
       {{profileForm|as_bootstrap}}
       {% csrf_token %}

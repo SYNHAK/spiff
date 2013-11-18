@@ -10,7 +10,7 @@
   {% for member in instances %}
   <tr class="{% cycle 'odd' 'even' %}">
     <td>
-      <a href="{% url membership:view user__username=member.user.username %}">
+      <a href="{% url 'membership:view' user__username=member.user.username %}">
         {% gravatar member.user %} {{member.fullName}}
       </a>
     </td>

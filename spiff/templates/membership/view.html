@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block extra_head %}
-<link rel="openid2.local_id" href="{% url openid-provider-identity id=openid.openid %}"/>
+<link rel="openid2.local_id" href="{% url 'openid-provider-identity' id=openid.openid %}"/>
 {% endblock %}
 
 {% block content %}
@@ -24,7 +24,7 @@
         <a href="#">View</a>
       </li>
       <li>
-        <a href="{% url membership:edit username=instance.user.username %}">Edit Profile</a>
+        <a href="{% url 'membership:edit' username=instance.user.username %}">Edit Profile</a>
       </li>
       {% if user == instance.user %}
       <li>
@@ -70,7 +70,7 @@
         <li>{{group}}</li>
       {% endfor %}
       {% if perms.membership.can_change_member_rank %}
-        <li><a href="{% url membership:editRank username=instance.user.username %}">Modify Groups</a></li>
+        <li><a href="{% url 'membership:editRank' username=instance.user.username %}">Modify Groups</a></li>
       {% endif %}
     </ul>
     {% endif %}
@@ -82,7 +82,7 @@
       <table class="table table-hover table-striped">
         <tr><th>Date</th><th>Value</th><th>Method</th><th>Invoice</th></tr>
         {% for payment in instance.user.payments.all %}
-        <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td><a href="{% url payment:viewInvoice invoiceID=payment.invoice.id %}">#{{payment.invoice.id}}</a></td></tr>
+        <tr><td>{{payment.created}}</td><td>{{payment.value}}</td><td>{{payment.get_method_display}}</td><td><a href="{% url 'payment:viewInvoice' invoiceID=payment.invoice.id %}">#{{payment.invoice.id}}</a></td></tr>
         {% endfor %}
       </table>
       <h2>Recent Invoices</h2>
@@ -93,7 +93,7 @@
             <td>#{{invoice.id}}</td>
             <td>{{invoice.dueDate}}</td>
             <td>${{invoice.unpaidBalance}}</td>
-            <td><a href="{% url payment:addPayment invoiceID=invoice.id %}">Add Payment</a></td>
+            <td><a href="{% url 'payment:addPayment' invoiceID=invoice.id %}">Add Payment</a></td>
           </tr>
         {% endfor %}
       </table>
@@ -110,7 +110,7 @@
         {% for cert in instance.certifications.all %}
         <tr class="{% cycle 'even' 'odd' %}"><td>
           {% if perms.inventory.certify %}
-          <a href="{% url inventory:uncertify certID=cert.id %}">[X]</a>
+          <a href="{% url 'inventory:uncertify' certID=cert.id %}">[X]</a>
 
           {% endif %}
           <a
@@ -127,7 +127,7 @@
       <tr><th>Name</th><th>Level</th></tr>
       {% if instance.trainings.all %}
         {% for training in instance.trainings.all %}
-        <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url inventory:view id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
+        <tr class="{% cycle 'even' 'odd' %}"><td><a href="{% url 'inventory:view' id=training.resource.id %}">{{training.resource.name}}</a></td><td>{{training.rank}}</td></tr>
         {% endfor %}
       {% else %}
         <tr><td colspan="2">None :(</td></tr>

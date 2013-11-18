@@ -6,10 +6,10 @@
 {% block content %}
 <ul>
   {% if perms.auth.add_user %}
-  <li><a href="{% url management:createUser %}">Create User</a></li>
+  <li><a href="{% url 'management:createUser' %}">Create User</a></li>
   {% endif %}
   {% if perms.payment.add_invoice %}
-  <li><a href="{% url management:billUser %}">Bill User</a></li>
+  <li><a href="{% url 'management:billUser' %}">Bill User</a></li>
   {% endif %}
 </ul>
 {% endblock %}
