@@ -153,8 +153,8 @@ class Rank(models.Model):
   description = models.TextField(blank=True)
   monthlyDues = models.FloatField(default=0)
   group = models.OneToOneField(Group)
-  isActiveMembership = models.BooleanField()
-  isKeyholder = models.BooleanField()
+  isActiveMembership = models.BooleanField(default=False)
+  isKeyholder = models.BooleanField(default=False)
 
   class Meta:
     permissions = (
