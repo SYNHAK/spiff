@@ -114,6 +114,7 @@ class Member(models.Model):
   def billedForMonth(self, date=None):
     return len(self.getMembershipLineItemsForMonth(date)) > 0
 
+  @property
   def membershipExpiration(self):
     items = self.getMembershipLineItemsForMonth()
     if len(items) > 0:
