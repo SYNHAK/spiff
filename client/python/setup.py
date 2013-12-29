@@ -2,10 +2,10 @@
 
 from distutils.core import setup
 setup(name='Spiff',
-    version='0.1.2',
+    version='0.1.4',
     description="API to Spaceman Spiff",
-    author='Trever Fischer',
-    author_email='wm161@wm161.net',
+    author='Torrie Fischer',
+    author_email='tdfischer@hackerbots.net',
     url='http://github.com/synhak/spiff',
     py_modules=['spiff'],
     requires=['requests'],
