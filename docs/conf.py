@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Spiff'
-copyright = u'2012, Trever Fischer'
+copyright = u'2012, Torrie Fischer'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -190,7 +190,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'Spiff.tex', u'Spiff Documentation',
-   u'Trever Fischer', 'manual'),
+   u'Torrie Fischer', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -220,7 +220,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'spiff', u'Spiff Documentation',
-     [u'Trever Fischer'], 1)
+     [u'Torrie Fischer'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -234,7 +234,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'Spiff', u'Spiff Documentation',
-   u'Trever Fischer', 'Spiff', 'One line description of project.',
+   u'Torrie Fischer', 'Spiff', 'One line description of project.',
    'Miscellaneous'),
 ]
 

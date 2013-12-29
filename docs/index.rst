@@ -1,7 +1,7 @@
 Spaceman Spiff Manages Spaces
 =============================
 
-:Author: Trever Fischer <wm161@wm161.net>
+:Author: Torrie Fischer <tdfischer@hackerbots.net>
 :Contact: irc://chat.freenode.net/#synhak
 :Date: |today|
 :Version: |release|
