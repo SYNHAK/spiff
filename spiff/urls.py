@@ -1,12 +1,14 @@
 from django.conf.urls import patterns, include, url
 from spiff.api import v1_api
+from django.views.generic import RedirectView
+from django.core.urlresolvers import reverse_lazy
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'spiff.ui.views.index', name='home'),
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('ui:index'))),
     url(r'^ui/', include('spiff.ui.urls', namespace='ui')),
     url(r'^', include(v1_api.urls)),
     #$url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'local/login.html'}),
