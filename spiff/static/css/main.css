@@ -6,3 +6,9 @@ tr.invoice-total {
   font-size: xx-large;
   line-height: 1;
 }
+
+#errorModal pre {
+  font-size: x-small;
+  word-wrap: pre;
+  overflow: auto;
+}
