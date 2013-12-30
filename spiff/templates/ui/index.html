@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load bootstrap_toolkit %}
+{% load url from future %}
+<html ng-app="spiffApp">
+<head>
+  <meta charset="utf-8">
+  {% bootstrap_stylesheet_tag %}
+  {% bootstrap_stylesheet_tag "responsive" %}
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/main.css"/>
+  <script>var userID = 1;</script>
+
+  <script src="{{STATIC_URL}}/js/libs/jquery-1.10.2.min.js"></script>
+  <script src="{{STATIC_URL}}/js/libs/underscore-min.js"></script>
+  <script src="{{STATIC_URL}}/js/libs/angular.min.js"></script>
+  <script src="{{STATIC_URL}}/js/libs/angular-route.min.js"></script>
+  <script src="{{STATIC_URL}}/js/libs/restangular.min.js"></script>
+  <script src="{{STATIC_URL}}/js/libs/spiff.js"></script>
+  <script src="{{STATIC_URL}}/js/ui/application.js"></script>
+  <script src="{{STATIC_URL}}/js/ui/controllers.js"></script>
+  {% bootstrap_javascript_tag %}
+  {% block extra_head %}{% endblock %}
+  <title>Spiff</title>
+</head>
+<body>
+{% verbatim %}
+<div class="navbar navbar-top" ng-controller="SpiffCtrl">
+  <div class="navbar-inner">
+    <a class="brand" href="{% url 'home' %}">{{spaceAPI.space}}</a>
+    <ul class="nav">
+      <li><a href="#">Home</a></li>
+    </ul>
+    <ul class="nav pull-right" id="epicenter">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <i class="icon-home"></i>
+          {{user.firstName}} {{user.lastName}}
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <li ng-if="user.isAnonymous"><a href="#">Login</a></li>
+          <li ng-if="user.isAnonymous"><a href="#">Register</a></li>
+          <li ng-if="user.isAnonymous"><a href="#">Reset Password</a></li>
+          <li ng-if="!user.isAnonymous"><a href="#">Dashboard</a></li>
+          <li ng-if="!user.isAnonymous"><a href="#">View Profile</a></li>
+          <li ng-if="!user.isAnonymous"><a href="#">Logout</a></li>
+          <li ng-if="!user.isAnonymous"><a href="#">Change Password</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="container" id="canvas" ng-view>
+</div>
+<div id="errorModal" class="modal hide fade">
+  <div class="modal-header">
+    <h3>Spiff had an issue with what you did.</h3>
+  </div>
+  <div class="modal-body">
+    Something weird happened. Spiff said "<code id="message"></code>".
+    <pre id="traceback"></pre>
+  </div>
+</div>
+{% endverbatim %}
+</body>

@@ -1,0 +1,58 @@
+{% verbatim %}
+<h1>Invoice #{{invoice.id}}</h1>
+<ul>
+    <li>To: {{invoice.user.firstName}} {{invoice.user.lastName}}</li>
+    <li>Created: {{invoice.created}}</li>
+    <li>Due date: {{invoice.dueDate}}</li>
+</ul>
+
+<div class="alert alert-info" ng-if="!invoice.open">
+  This invoice has been marked as closed.
+</div>
+
+<table class="table table-striped table-hover">
+  <tr><th>Item</th><th>Unit Price</th><th>Quantity</th><th>Total Price</th></tr>
+    <tr ng-repeat="line in invoice.items">
+      <td>{{line.name}}</td>
+      <td>${{line.unitPrice}}</td>
+      <td>{{line.quantity}}</td>
+      <td>${{line.totalPrice}}</td>
+    </tr>
+    <tr class="line-item-discount" ng-repeat="discount in line.discounts">
+      <td>{{discount.description}}</td>
+      <td>-${{discount.value}}</td>
+      <td>1</td>
+      <td>-${{discount.value}}</td>
+    </tr>
+  <tr class="invoice-total">
+    <th colspan="3">Subtotal:</th>
+    <td>${{invoice.total}}</td>
+  </tr>
+</table>
+<div ng-if="invoice.payments.length">
+  <h2>Payments</h2>
+  <table class="table table-striped table-hover">
+    <tr>
+      <th>Method</th>
+      <th>Date</th>
+      <th>Value</th>
+    </tr>
+    <tr ng-repeat="payment in invoice.payments">
+      <td>{{payment.method}}</td>
+      <td>{{payment.created}}</td>
+      <td>${{payment.value}}</td>
+    </tr>
+    <tr class="invoice-total">
+      <th colspan="2">Paid Total:</th>
+      <td>${{invoice.paidBalance}}</td>
+    </tr>
+  </table>
+</div>
+
+<table class="table invoice-summary table-bordered table-hover">
+  <tr class="invoice-total"><th>Subtotal</th><td>${{invoice.total}}</td></tr>
+  <tr class="invoice-total"><th>Payments</th><td>${{invoice.paidBalance}}</td></tr>
+  <tr class="invoice-total"><th>Grand Total</th><td>${{invoice.unpaidBalance}}</td></tr>
+</table>
+{% endverbatim %}
+

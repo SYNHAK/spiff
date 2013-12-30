@@ -1,0 +1,42 @@
+{% verbatim %}
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Your Membership</h1>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="span4">
+    <h2>Current Membership</h2>
+    <ul>
+      <li>Member since: {{user.created}}</li>
+      <li>Expiration date: {{user.membershipExpiration}}</li>
+    </ul>
+    <h2>Groups</h2>
+    <ul>
+      <li ng-repeat="group in user.groups">{{group.name}}
+      <span ng-if="group.rank.monthlyDues">(${{group.rank.monthlyDues}}/mo)</span>
+      </li>
+    </ul>
+  </div>
+  <div class="span8">
+    <h2>Account Activity</h2>
+    <div ng-if="user.outstandingBalance" class="alert">You have an
+      outstanding balance of ${{user.outstandingBalance}}</div>
+    
+    <table class="table table-striped table-hover">
+      <tr>
+        <th>Invoice</th>
+        <th>Due Date</th>
+        <th colspan="2">Total Unpaid</th>
+      </tr>
+      <tr ng-repeat="invoice in invoices">
+        <td><a href="#/invoices/{{invoice.id}}">{{invoice.id}}</a></td>
+        <td>{{invoice.dueDate}}</td>
+        <td>{{invoice.unpaidBalance}}</td>
+        <td><a href="#/invoices/{{invoice.id}}/pay">Pay</a></td>
+      </tr>
+  </div>
+</div>
+{% endverbatim %}
