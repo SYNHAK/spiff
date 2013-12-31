@@ -1,17 +1,54 @@
 var spiffControllers = angular.module('spiffControllers', ['restangular', 'spiffApp', 'spiff']);
 
-spiffControllers.controller('SpiffCtrl', function($scope, Spiff) {
-  $scope.space = Spiff.spaceAPI;
-  $scope.user = Spiff.currentUser.$object;
+spiffControllers.controller('EpicenterCtrl', function($scope, Spiff) {
+  $scope.showLogin = function() {
+    $('#loginModal').modal('show');
+  };
+
+  $scope.hideLogin = function() {
+    $('#loginModal').modal('hide');
+  };
+
+  $scope.login = function() {
+    var username = $('#username').val();
+    var password = $('#password').val();
+    Spiff.login(username, password).then(function() {
+      $scope.hideLogin()
+    });
+  };
+
+  $scope.logout = function() {
+    Spiff.logout();
+  };
+
+  $scope.$on('loginRequired', function() {
+    $scope.showLogin();
+  });
 });
 
-spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff) {
-  Spiff.currentUser.then(function(user) {
-    $scope.user = user;
-    $scope.invoices = [];
-    _.each(user.invoices, function(invoice) {
-      $scope.invoices.push(Restangular.oneUrl('invoice', invoice).get().$object);
-    });
+spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff, $location) {
+  $scope.$watch('Spiff.currentUser', function(user) {
+    if (user != null) {
+      $scope.user = user;
+      $scope.invoices = [];
+      _.each(user.invoices, function(invoice) {
+        $scope.invoices.push(Restangular.oneUrl('invoice', invoice).get().$object);
+      });
+    } else {
+      $location.url("/welcome");
+    }
+  });
+});
+
+spiffControllers.controller('AnonDashCtrl', function($scope, $rootScope, $scope, Spiff, $location) {
+  $scope.showLogin = function() {
+    $rootScope.$broadcast('loginRequired');
+  }
+
+  $scope.$watch('Spiff.currentUser', function(user) {
+    if (user != null) {
+      $location.url('/');
+    }
   });
 });
 
@@ -45,7 +82,6 @@ spiffControllers.controller('InvoiceCtrl', function($scope, Restangular, $routeP
       $('#payInvoiceModal').modal('hide');
       $('#payInvoiceModal').reset();
     }).finally(function() {
-      console.log('fin');
       $('#payInvoiceModal :input').attr('disabled', false);
     });
   };

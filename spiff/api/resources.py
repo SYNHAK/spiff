@@ -4,10 +4,14 @@ from spiff.payment.models import Invoice, LineItem, Payment
 from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
-from tastypie.exceptions import BadRequest
+from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 import stripe
 from django.conf import settings
 from spiff.notification_loader import notification
+from tastypie.utils import trailing_slash
+from django.conf.urls import url
+from django.contrib.auth import authenticate, login, logout
+from tastypie.http import HttpUnauthorized
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('api.resources.InvoiceResource', 'invoice')
@@ -102,11 +106,54 @@ class MemberResource(ModelResource):
   membershipExpiration = fields.DateTimeField('membershipExpiration', null=True)
   invoices = fields.ToManyField(InvoiceResource, 'user__invoices', null=True)
 
-  def obj_get(self, **kwargs):
+  def obj_get(self, bundle, **kwargs):
     if kwargs['pk'] == 'self':
-      return kwargs['bundle'].request.user.member
+      if bundle.request.user.is_anonymous():
+        raise ImmediateHttpResponse(response=HttpUnauthorized());
+      else:
+        return bundle.request.user.member
     else:
       return Member.objects.get(pk=kwargs['pk'])
 
   class Meta:
     queryset = Member.objects.all()
+
+  def override_urls(self):
+    return [
+      url(r'^(?P<resource_name>%s)/login%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('login'), name='login'),
+      url(r'^(?P<resource_name>%s)/logout%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('logout'), name='logout')
+    ]
+
+  def login(self, request, **kwargs):
+    self.method_check(request, allowed=['post'])
+    data = self.deserialize(request, request.body,
+        format=request.META.get('CONTENT_TYPE', 'application/json'))
+
+    if 'username' in data and 'password' in data:
+      username = data['username']
+      password = data['password']
+    else:
+      username = None
+      password = None
+
+    user = authenticate(username=username, password=password)
+    if user:
+      if user.is_active:
+        login(request, user)
+        return self.create_response(request, {'success': True})
+      else:
+        raise ImmediateHttpResponse(response=HttpForbidden())
+    else:
+      raise ImmediateHttpResponse(response=HttpUnauthorized())
+
+  def logout(self, request, **kwargs):
+    self.method_check(request, allowed=['get'])
+    if request.user and request.user.is_authenticated():
+      logout(request)
+      return self.create_response(request, {'success': True})
+    else:
+      return self.create_response(request, {'success': False})

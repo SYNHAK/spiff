@@ -23,32 +23,7 @@
 </head>
 <body>
 {% verbatim %}
-<div class="navbar navbar-top" ng-controller="SpiffCtrl">
-  <div class="navbar-inner">
-    <a class="brand" href="{% url 'home' %}">{{spaceAPI.space}}</a>
-    <ul class="nav">
-      <li><a href="#">Home</a></li>
-    </ul>
-    <ul class="nav pull-right" id="epicenter">
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <i class="icon-home"></i>
-          {{user.firstName}} {{user.lastName}}
-          <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-          <li ng-if="user.isAnonymous"><a href="#">Login</a></li>
-          <li ng-if="user.isAnonymous"><a href="#">Register</a></li>
-          <li ng-if="user.isAnonymous"><a href="#">Reset Password</a></li>
-          <li ng-if="!user.isAnonymous"><a href="#">Dashboard</a></li>
-          <li ng-if="!user.isAnonymous"><a href="#">View Profile</a></li>
-          <li ng-if="!user.isAnonymous"><a href="#">Logout</a></li>
-          <li ng-if="!user.isAnonymous"><a href="#">Change Password</a></li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-</div>
+<div ng-include="'partials/epicenter.html'"></div>
 <div class="container" id="canvas" ng-view>
 </div>
 <div id="errorModal" class="modal hide fade">
