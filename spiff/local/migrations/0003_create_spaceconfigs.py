@@ -7,8 +7,12 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
+        from django.db import transaction
+        prevCommit = transaction.get_autocommit()
+        transaction.set_autocommit(True)
         for s in orm['sites.Site'].objects.all():
           orm['local.SpaceConfig'].objects.get_or_create(site=s)
+        transaction.set_autocommit(prevCommit)
 
     def backwards(self, orm):
         pass
