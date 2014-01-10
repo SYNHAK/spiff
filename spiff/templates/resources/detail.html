@@ -1,0 +1,20 @@
+{% verbatim %}
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>{{resource.name}}</h1>
+    </div>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr ng-repeat="meta in resource.metadata">
+        <td>{{meta.name}}</td>
+        <td>{{meta.value}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endverbatim %}
+

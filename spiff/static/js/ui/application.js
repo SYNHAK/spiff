@@ -18,7 +18,16 @@ spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
     when('/invoices/:invoiceID', {
       templateUrl: 'invoices/detail.html',
       controller: 'InvoiceCtrl'
-    }).otherwise({
+    }).
+    when('/resources', {
+      templateUrl: 'resources/index.html',
+      controller: 'ResourceListCtrl'
+    }).
+    when('/resources/:resourceID', {
+      templateUrl: 'resources/detail.html',
+      controller: 'ResourceCtrl'
+    }).
+    otherwise({
       redirectTo: '/'
     });
 

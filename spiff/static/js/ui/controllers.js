@@ -52,6 +52,14 @@ spiffControllers.controller('AnonDashCtrl', function($scope, $rootScope, $scope,
   });
 });
 
+spiffControllers.controller('ResourceListCtrl', function($scope, Restangular) {
+  $scope.resources = Restangular.all('resource').getList().$object;
+});
+
+spiffControllers.controller('ResourceCtrl', function($scope, Restangular, $routeParams) {
+  $scope.resource = Restangular.one('resource', $routeParams.resourceID).get().$object;
+});
+
 spiffControllers.controller('InvoiceCtrl', function($scope, Restangular, $routeParams) {
   $scope.invoice = Restangular.one('invoice', $routeParams.invoiceID).get().$object;
   $scope.showPayDialog = function() {

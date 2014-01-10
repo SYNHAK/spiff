@@ -1,3 +1,4 @@
+from spiff.inventory.models import Resource, Metadata
 from spiff.membership.models import Member, Rank
 from django.contrib.auth.models import Group
 from spiff.payment.models import Invoice, LineItem, Payment
@@ -12,6 +13,22 @@ from tastypie.utils import trailing_slash
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from tastypie.http import HttpUnauthorized
+
+class ResourceMetadataResource(ModelResource):
+  name = fields.CharField('name')
+  value = fields.CharField('value')
+  resource = fields.ToOneField('api.resources.ResourceResource', 'resource')
+
+  class Meta:
+    queryset = Metadata.objects.all()
+
+class ResourceResource(ModelResource):
+  name = fields.CharField('name')
+  metadata = fields.ToManyField(ResourceMetadataResource, 'metadata', full=True)
+
+  class Meta:
+    queryset = Resource.objects.all()
+    resource_name = 'resource'
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('api.resources.InvoiceResource', 'invoice')

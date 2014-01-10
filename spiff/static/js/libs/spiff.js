@@ -32,6 +32,17 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     return member;
   });
 
+  RestangularProvider.setResponseExtractor(function(response, operation, what, url) {
+    var newResponse;
+    if (operation == 'getList') {
+      newResponse = response.objects;
+      newResponse.meta = response.meta;
+    } else {
+      newResponse = response;
+    }
+    return newResponse;
+  });
+
   this.$get = function(Restangular, $q, $rootScope) {
     var scope = $rootScope.$new();
     $rootScope.Spiff = scope;
