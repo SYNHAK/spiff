@@ -29,6 +29,7 @@ Spiff.provider('Spiff', function(RestangularProvider) {
   RestangularProvider.addElementTransformer('member', true, function(member) {
     member.addRestangularMethod('login', 'post', 'login');
     member.addRestangularMethod('logout', 'get', 'logout');
+    member.addRestangularMethod('search', 'get', 'search');
     return member;
   });
 

@@ -1,6 +1,7 @@
-from spiff.inventory.models import Resource, Metadata
+from spiff.inventory.models import Resource, Metadata, Change, Certification
+from django.db.models import Q
 from spiff.membership.models import Member, Rank
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from spiff.payment.models import Invoice, LineItem, Payment
 from tastypie import fields
 from tastypie.resources import ModelResource
@@ -135,15 +136,40 @@ class MemberResource(ModelResource):
   class Meta:
     queryset = Member.objects.all()
 
-  def override_urls(self):
+  def prepend_urls(self):
     return [
       url(r'^(?P<resource_name>%s)/login%s$' %
         (self._meta.resource_name, trailing_slash()),
         self.wrap_view('login'), name='login'),
       url(r'^(?P<resource_name>%s)/logout%s$' %
         (self._meta.resource_name, trailing_slash()),
-        self.wrap_view('logout'), name='logout')
+        self.wrap_view('logout'), name='logout'),
+      url(r'^(?P<resource_name>%s)/search%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('search'), name='search')
     ]
+
+  def search(self, request, **kwargs):
+    self.method_check(request, allowed=['get'])
+    self.is_authenticated(request)
+    self.throttle_check(request)
+
+    name = request.GET['fullName'].split(' ')
+    query = Q()
+    if len(name) == 1:
+      query &= Q(first_name__icontains=name[0]) | Q(last_name__icontains=name[0])
+    else:
+      query &= Q(first_name__icontains=name[0]) | Q(last_name__icontains=' '.join(name[1:]))
+      firstName, lastName = request.GET['fullName'].split(' ', 1)
+    users = User.objects.filter(query)
+    objects = []
+    for u in users:
+      bundle = self.build_bundle(obj=u.member, request=request)
+      bundle = self.full_dehydrate(bundle)
+      objects.append(bundle)
+
+    object_list = {'objects': objects}
+    return self.create_response(request, object_list)
 
   def login(self, request, **kwargs):
     self.method_check(request, allowed=['post'])
