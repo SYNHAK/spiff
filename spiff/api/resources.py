@@ -21,7 +21,53 @@ class ResourceMetadataResource(ModelResource):
   resource = fields.ToOneField('api.resources.ResourceResource', 'resource')
 
   class Meta:
+    authorization = Authorization()
     queryset = Metadata.objects.all()
+
+  def obj_create(self, bundle, **kwargs):
+    bundle = super(ResourceMetadataResource, self).obj_create(
+      bundle, **kwargs)
+    bundle.obj.resource.logChange(
+      member=bundle.request.user.member,
+      property=bundle.obj.name,
+      new=bundle.obj.value)
+    return bundle
+
+  def obj_update(self, bundle, **kwargs):
+    oldVal = bundle.obj.value
+    oldName = bundle.obj.name
+    bundle = super(ResourceMetadataResource, self).obj_update(
+      bundle, **kwargs)
+    bundle.obj.resource.logChange(
+      member=bundle.request.user.member,
+      property=bundle.obj.name,
+      new=bundle.obj.value,
+      old=oldVal)
+    return bundle
+
+  def obj_delete(self, bundle, **kwargs):
+    oldMeta = Metadata.objects.get(pk=kwargs['pk'])
+    oldName = oldMeta.name
+    oldValue = oldMeta.value
+    oldMember = bundle.request.user.member
+    bundle = super(ResourceMetadataResource, self).obj_delete(
+      bundle, **kwargs)
+    oldMeta.resource.logChange(
+      member=oldMember,
+      property=oldName,
+      old=oldValue,
+      new=None)
+    return bundle
+
+class ChangelogResource(ModelResource):
+  member = fields.ToOneField('api.resources.MemberResource', 'member')
+  old = fields.CharField('old', null=True)
+  new = fields.CharField('new', null=True)
+  property = fields.CharField('property', null=True)
+  stamp = fields.DateTimeField('stamp')
+
+  class Meta:
+    queryset = Change.objects.all()
 
 class ResourceResource(ModelResource):
   name = fields.CharField('name')
