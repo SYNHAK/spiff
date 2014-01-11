@@ -15,6 +15,15 @@ from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from tastypie.http import HttpUnauthorized
 
+class TrainingResource(ModelResource):
+  member = fields.ToOneField('api.resources.MemberResource', 'member', full=True)
+  resource = fields.ToOneField('api.resources.ResourceResource', 'resource')
+  rank = fields.CharField('comment', blank=True)
+
+  class Meta:
+    authorization = Authorization()
+    queryset = Certification.objects.all()
+
 class ResourceMetadataResource(ModelResource):
   name = fields.CharField('name')
   value = fields.CharField('value')
@@ -76,6 +85,46 @@ class ResourceResource(ModelResource):
   class Meta:
     queryset = Resource.objects.all()
     resource_name = 'resource'
+
+  def prepend_urls(self):
+    return [
+      url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/changelog%s$" %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('get_changelog'), name="api_get_changelog"),
+      url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/metadata%s$" %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('get_metadata'), name="api_get_metadata"),
+      url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/training%s$" %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('get_training'), name="api_get_training"),
+    ]
+
+  def get_training(self, request, **kwargs):
+    try:
+      bundle = self.build_bundle(data={'pk': kwargs['pk']}, request=request)
+      obj = self.cached_obj_get(bundle=bundle, **self.remove_api_resource_names(kwargs))
+    except ObjectDoesNotExist:
+      return HttpGone()
+
+    return TrainingResource().get_list(request, resource_id=obj.pk)
+
+  def get_metadata(self, request, **kwargs):
+    try:
+      bundle = self.build_bundle(data={'pk': kwargs['pk']}, request=request)
+      obj = self.cached_obj_get(bundle=bundle, **self.remove_api_resource_names(kwargs))
+    except ObjectDoesNotExist:
+      return HttpGone()
+
+    return ResourceMetadataResource().get_list(request, resource_id=obj.pk)
+
+  def get_changelog(self, request, **kwargs):
+    try:
+      bundle = self.build_bundle(data={'pk': kwargs['pk']}, request=request)
+      obj = self.cached_obj_get(bundle=bundle, **self.remove_api_resource_names(kwargs))
+    except ObjectDoesNotExist:
+      return HttpGone()
+
+    return ChangelogResource().get_list(request, resource_id=obj.pk)
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('api.resources.InvoiceResource', 'invoice')
