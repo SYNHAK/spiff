@@ -10,13 +10,12 @@ to: 15fvBnRowyDshudNRKAiBYhTyKEUwnnywQ
 
 .. raw:: html
 
-  <a href="http://bittip.it/" class="bittip-button" default-amount="1"
-  default_currency="usd" request="count" url="github.com/SYNHAK/spiff"
-  donation-message="Thank%20you%20for%20enabling%20hackers%20around%20the%20planet."
-  donation-address="15fvBnRowyDshudNRKAiBYhTyKEUwnnywQ"></a>
-  <script>(function() {var s = document.createElement('script');var t =
-  document.getElementsByTagName('script')[0];s.type = 'text/javascript';s.async =
-  true;var url; if (window.location.protocol == 'https:'){url =
-  'https://bitcoinsberlin.com/wp-content/uploads/2013/01/button-loader.js'} else {
-  url = 'http://bittip.it/cdn/button-loader.js';};s.src =
-  url;t.parentNode.insertBefore(s, t);})();</script> 
+  <div class="bitcoin-button" data-address="15fvBnRowyDshudNRKAiBYhTyKEUwnnywQ" data-info="transactions" data-message="Support spiff's development"></div>
+  <script type="text/javascript">
+  var bitcoinwidget_init = { autoload: true, host: "//bitcoinwidget.appspot.com" };
+  (function() {
+  var x = document.createElement("script"); x.type="text/javascript"; x.async=true;
+  x.src = "//bitcoinwidget.appspot.com/js/bitcoinwidget.js";
+  var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(x,s);
+  })();
+  </script>
