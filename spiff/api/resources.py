@@ -16,8 +16,8 @@ from django.contrib.auth import authenticate, login, logout
 from tastypie.http import HttpUnauthorized
 
 class TrainingResource(ModelResource):
-  member = fields.ToOneField('api.resources.MemberResource', 'member', full=True)
-  resource = fields.ToOneField('api.resources.ResourceResource', 'resource')
+  member = fields.ToOneField('spiff.api.resources.MemberResource', 'member', full=True)
+  resource = fields.ToOneField('spiff.api.resources.ResourceResource', 'resource')
   rank = fields.CharField('comment', blank=True)
 
   class Meta:
@@ -27,7 +27,7 @@ class TrainingResource(ModelResource):
 class ResourceMetadataResource(ModelResource):
   name = fields.CharField('name')
   value = fields.CharField('value')
-  resource = fields.ToOneField('api.resources.ResourceResource', 'resource')
+  resource = fields.ToOneField('spiff.api.resources.ResourceResource', 'resource')
 
   class Meta:
     authorization = Authorization()
@@ -69,7 +69,7 @@ class ResourceMetadataResource(ModelResource):
     return bundle
 
 class ChangelogResource(ModelResource):
-  member = fields.ToOneField('api.resources.MemberResource', 'member')
+  member = fields.ToOneField('spiff.api.resources.MemberResource', 'member')
   old = fields.CharField('old', null=True)
   new = fields.CharField('new', null=True)
   property = fields.CharField('property', null=True)
@@ -127,7 +127,7 @@ class ResourceResource(ModelResource):
     return ChangelogResource().get_list(request, resource_id=obj.pk)
 
 class PaymentResource(ModelResource):
-  invoice = fields.ToOneField('api.resources.InvoiceResource', 'invoice')
+  invoice = fields.ToOneField('spiff.api.resources.InvoiceResource', 'invoice')
   value = fields.FloatField('value')
 
   class Meta:
@@ -177,7 +177,7 @@ class PaymentResource(ModelResource):
     return bundle
 
 class RankResource(ModelResource):
-  group = fields.ToOneField('api.resources.GroupResource', 'group')
+  group = fields.ToOneField('spiff.api.resources.GroupResource', 'group')
 
   class Meta:
     queryset = Rank.objects.all()
@@ -198,7 +198,7 @@ class LineItemResource(ModelResource):
     querySet = LineItem.objects.all()
 
 class InvoiceResource(ModelResource):
-  user = fields.ToOneField('api.resources.MemberResource', 'user__member', null=True, full=True)
+  user = fields.ToOneField('spiff.api.resources.MemberResource', 'user__member', null=True, full=True)
   unpaidBalance = fields.FloatField('unpaidBalance')
   paidBalance = fields.FloatField('paidBalance')
   total = fields.FloatField('total')
