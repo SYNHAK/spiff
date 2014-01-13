@@ -7,8 +7,11 @@ Spaceman Spiff Manages Spaces
 :Version: |release|
 :Copyright: Public Domain
 
-Spiff is a Django application that helps you manage a hackerspace. It is
-made available to the public under the AGPL.
+Spiff is a Django API server that helps you manage a hackerspace. It comes with
+a builtin web interface for end users, but is also exceptionally machine
+friendly.
+
+It is made available to the public under the AGPL.
 
 Dependencies
 ============
