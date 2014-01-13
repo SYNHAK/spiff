@@ -13,7 +13,7 @@ from spiff.notification_loader import notification
 from tastypie.utils import trailing_slash
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
-from tastypie.http import HttpUnauthorized
+from tastypie.http import HttpUnauthorized, HttpForbidden
 
 class TrainingResource(ModelResource):
   member = fields.ToOneField('spiff.api.resources.MemberResource', 'member', full=True)
@@ -34,6 +34,8 @@ class ResourceMetadataResource(ModelResource):
     queryset = Metadata.objects.all()
 
   def obj_create(self, bundle, **kwargs):
+    if bundle.request.user.is_anonymous():
+      raise ImmediateHttpResponse(response=HttpUnauthorized());
     bundle = super(ResourceMetadataResource, self).obj_create(
       bundle, **kwargs)
     bundle.obj.resource.logChange(
@@ -43,6 +45,8 @@ class ResourceMetadataResource(ModelResource):
     return bundle
 
   def obj_update(self, bundle, **kwargs):
+    if bundle.request.user.is_anonymous():
+      raise ImmediateHttpResponse(response=HttpUnauthorized());
     oldVal = bundle.obj.value
     oldName = bundle.obj.name
     bundle = super(ResourceMetadataResource, self).obj_update(
@@ -55,6 +59,8 @@ class ResourceMetadataResource(ModelResource):
     return bundle
 
   def obj_delete(self, bundle, **kwargs):
+    if bundle.request.user.is_anonymous():
+      raise ImmediateHttpResponse(response=HttpUnauthorized());
     oldMeta = Metadata.objects.get(pk=kwargs['pk'])
     oldName = oldMeta.name
     oldValue = oldMeta.value
