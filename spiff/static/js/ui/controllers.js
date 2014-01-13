@@ -1,6 +1,6 @@
 var spiffControllers = angular.module('spiffControllers', ['restangular', 'spiffApp', 'spiff']);
 
-spiffControllers.controller('EpicenterCtrl', function($scope, Spiff) {
+spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
   $scope.showLogin = function() {
     $('#loginModal').modal('show');
   };
@@ -23,6 +23,11 @@ spiffControllers.controller('EpicenterCtrl', function($scope, Spiff) {
 
   $scope.$on('loginRequired', function() {
     $scope.showLogin();
+  });
+
+  $http.get('/status.json').then(function (api) {
+    console.log(api.data);
+    $scope.spaceAPI = api.data;
   });
 });
 
