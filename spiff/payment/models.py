@@ -129,7 +129,7 @@ class Payment(models.Model):
     )
     user = models.ForeignKey(User, related_name='payments')
     value = models.FloatField()
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(default=STATUS_PENDING, choices=STATUS)
     transactionID = models.TextField(blank=True, null=True)
     method = models.IntegerField(choices=METHODS)
