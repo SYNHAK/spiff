@@ -8,6 +8,7 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
 import models
+from spiff.payment.models import Payment
 
 class MemberTest(TestCase):
   def testUserCreation(self):
@@ -22,15 +23,3 @@ class RankTest(TestCase):
     self.assertIsNotNone(g.rank)
     self.assertEqual(g.rank.group, g)
     g.delete()
-
-class PaymentTest(TestCase):
-  def setUp(self):
-    self.user = User.objects.create_user('test', 'test@example.com', 'test')
-
-  def tearDown(self):
-    self.user.delete()
-
-  def testCreation(self):
-    p = models.DuePayment.objects.create(member=self.user.member, value=1)
-    self.assertEqual(p.value, 1)
-    self.assertEqual(len(self.user.member.payments.all()), 1)
