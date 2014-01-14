@@ -62,7 +62,7 @@ class ResourceMetadataResource(ModelResource):
     return bundle
 
 class ChangelogResource(ModelResource):
-  member = fields.ToOneField('spiff.membership.v1_api.MemberResource', 'member')
+  member = fields.ToOneField('spiff.membership.v1_api.MemberResource', 'member', full=True)
   old = fields.CharField('old', null=True)
   new = fields.CharField('new', null=True)
   property = fields.CharField('property', null=True)

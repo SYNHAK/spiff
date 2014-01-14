@@ -1,3 +1,4 @@
+{% verbatim %}
 <table class="table table-hover">
   <tr>
     <th>Date</th>
@@ -6,7 +7,7 @@
   </tr>
   <tr ng-repeat="log in changelog">
     <td>{{log.date}}</td>
-    <td>{{log.member}}</td>
+    <td>{{log.member.firstName}} {{log.member.lastName}}</td>
     <td ng-if="log.property && log.old && log.new">
       Changed {{log.property}} from {{log.old}} to {{log.new}}
     </td>
@@ -18,3 +19,4 @@
     </td>
   </tr>
 </table>
+{% endverbatim %}
