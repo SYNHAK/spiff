@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test.client import Client
-from spiff import membership, inventory
+from spiff import membership, inventory, sensors, local
 from django.contrib.auth.models import User, Permission
 import json
 import functools
@@ -82,7 +82,37 @@ class SpaceAPITest(ClientTestMixin):
   def setUp(self):
     self.setupClient()
 
-  def testAPI(self):
+  def getAPI(self):
     response = self.client.get('/status.json')
     self.assertEqual(response.status_code, 200)
-    data = json.loads(response.content)
+    return json.loads(response.content)
+
+  def testAPIStatus(self):
+    response = self.client.get('/status.json')
+    self.assertEqual(response.status_code, 200)
+
+  def testMissingDoorSensorSensor(self):
+    data = self.getAPI()
+    self.assertFalse(data['open'])
+
+  def testDoorSensor(self):
+    conf = local.models.SpaceConfig.objects.all()[0]
+    sensor = sensors.models.Sensor.objects.create(
+      name='door',
+      description='Door Test Sensor',
+      type=sensors.models.SENSOR_TYPE_BOOLEAN,
+    )
+    conf.openSensor = sensor
+    conf.save()
+    value = sensors.models.SensorValue.objects.create(
+      sensor=sensor,
+      value="true"
+    )
+    data = self.getAPI()
+    self.assertTrue(data['open'])
+    value = sensors.models.SensorValue.objects.create(
+      sensor=sensor,
+      value="false"
+    )
+    data = self.getAPI()
+    self.assertFalse(data['open'])
