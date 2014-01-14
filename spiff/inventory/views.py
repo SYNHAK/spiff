@@ -11,7 +11,6 @@ from django.contrib.auth.decorators import permission_required
 from spiff.views import ObjectView
 from cStringIO import StringIO
 import models
-import qrcode
 import forms
 
 @permission_required('inventory.can_train')
@@ -75,22 +74,6 @@ def train(request, id):
   messages.info(request, "Duly Noted.")
   return HttpResponseRedirect(reverse('inventory:view',
     kwargs={'id': resource.id}))
-
-@cache_control(public=True, private=False, no_cache=False, no_transform=False, must_revalidate=False, proxy_revalidate=False, max_age=86400)
-def qrCode(request, id, size=10):
-  site = get_current_site(request)
-  base = "%s://%s"%(request.META['wsgi.url_scheme'], site.domain)
-  if (request.META['wsgi.url_scheme'] == 'http' and request.META['SERVER_PORT'] != '80') or (request.META['wsgi.url_scheme'] == 'https' and request.META['SERVER_PORT'] != '443'):
-    base = "%s:%s"%(base, request.META['SERVER_PORT'])
-  img = qrcode.make("%s%s"%(base,
-    reverse('inventory:view', kwargs={'id': id})),
-    box_size=size,
-    border=0
-  )
-  buf = StringIO()
-  img.save(buf, "PNG")
-  return HttpResponse(buf.getvalue(), content_type="image/png")
-
 
 @permission_required('inventory.add_resource')
 def addResource(request):
