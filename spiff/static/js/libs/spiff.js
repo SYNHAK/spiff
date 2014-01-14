@@ -78,7 +78,7 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     scope.logout = function() {
       return Restangular.all('member').logout().then(function() {
         console.log('logged out');
-        scope.currentUser = null;
+        scope.refreshUser();
       });
     };
     scope.currentUser = null;
