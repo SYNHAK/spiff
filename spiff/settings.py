@@ -210,6 +210,10 @@ GREETINGS = (
   "Hello!",
 )
 
+WELCOME_MESSAGE = """
+Spiff is a tool for managing hackerspaces.
+"""
+
 try:
   from local_settings import *
 except ImportError:

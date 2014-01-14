@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.sites.models import get_current_site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -5,6 +6,7 @@ from spiff.local.models import SpaceConfig, SpaceContact, SpaceFeed
 from spiff.membership.models import Rank
 from spiff.sensors.models import SENSOR_TYPES, Sensor
 import json
+import random
 
 def spaceapi(request):
   meta = {}
@@ -32,6 +34,9 @@ def spaceapi(request):
   meta['lon'] = spaceConfig.lon
   meta['status'] = spaceConfig.status
   meta['lastchange'] = str(spaceConfig.lastChange)
+  meta['motd'] = spaceConfig.motd
+  meta['x-spiff-welcome'] = settings.WELCOME_MESSAGE
+  meta['x-spiff-greeting'] = random.choice(settings.GREETINGS)
 
   contacts = {}
   for c in SpaceContact.objects.filter(space=spaceConfig):
