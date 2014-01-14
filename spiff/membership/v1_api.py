@@ -34,15 +34,6 @@ class MemberResource(ModelResource):
   membershipExpiration = fields.DateTimeField('membershipExpiration', null=True)
   invoices = fields.ToManyField('spiff.payment.v1_api.InvoiceResource', 'user__invoices', null=True)
 
-  def obj_get(self, bundle, **kwargs):
-    if kwargs['pk'] == 'self':
-      if bundle.request.user.is_anonymous():
-        raise ImmediateHttpResponse(response=HttpUnauthorized());
-      else:
-        return bundle.request.user.member
-    else:
-      return Member.objects.get(pk=kwargs['pk'])
-
   class Meta:
     queryset = models.Member.objects.all()
     authorization = DjangoAuthorization()
@@ -50,7 +41,7 @@ class MemberResource(ModelResource):
   def self(self, request, **kwargs):
     self.method_check(request, allowed=['get'])
     self.throttle_check(request)
-    return self.create_response(request, {'objects': [request.user.member]})
+    return self.get_detail(request, pk=request.user.member.id)
 
   def has_permission(self, request, permission_name, **kwargs):
     if request.user.has_perm(permission_name):
