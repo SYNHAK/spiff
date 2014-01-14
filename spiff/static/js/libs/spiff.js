@@ -17,11 +17,6 @@ Spiff.provider('SpaceAPI', function() {
   }
 });
 
-Spiff.controller('SpiffAuthCtrl', function($scope, Spiff) {
-  $scope.user = Spiff.currentUser;
-  $scope.checkPermission = Spiff.checkPermission;
-});
-
 Spiff.directive('checkPermission', function(Spiff, $rootScope) {
   return {
     link: function(scope, element, attrs) {
