@@ -9,7 +9,7 @@ coverage erase
 coverage run ./manage.py test $@
 ret=$?
 if [ $ret -eq 0 ];then
-    coverage report -m --include=\* --omit=\*/migrations/\*,settings.py,local_settings.py,manage.py,bulkops.py,*/site-packages/*
+    coverage report -m --include=\* --omit=\*/migrations/\*,spiff/settings.py,spiff/local_settings.py,manage.py,*/site-packages/*
 fi
 exit $ret
 
