@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.conf.urls import url
 from django.contrib.auth.models import Group, User
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
 from tastypie import fields
 from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import ImmediateHttpResponse
@@ -51,6 +52,10 @@ class MemberResource(ModelResource):
     self.throttle_check(request)
     return self.create_response(request, {'objects': [request.user.member]})
 
+  def has_permission(self, request, permission_name, **kwargs):
+    if request.user.has_perm(permission_name):
+      return HttpResponse(status=204)
+    return HttpResponse(status=403)
 
   def prepend_urls(self):
     return [
@@ -65,7 +70,10 @@ class MemberResource(ModelResource):
         self.wrap_view('search'), name='search'),
       url(r'^(?P<resource_name>%s)/self%s$' %
         (self._meta.resource_name, trailing_slash()),
-        self.wrap_view('self'), name='self')
+        self.wrap_view('self'), name='self'),
+      url(r'^(?P<resource_name>%s)/self/has_permission/(?P<permission_name>.*)%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('has_permission'), name='self_has_permission')
     ]
 
   def search(self, request, **kwargs):
