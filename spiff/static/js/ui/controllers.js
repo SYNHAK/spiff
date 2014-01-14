@@ -33,14 +33,14 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
 
 spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff, $location) {
   $scope.$watch('Spiff.currentUser', function(user) {
-    if (user != null) {
+    if (user != null && !user.isAnonymous) {
       $scope.user = user;
       $scope.invoices = [];
       _.each(user.invoices, function(invoice) {
         $scope.invoices.push(Restangular.oneUrl('invoice', invoice).get().$object);
       });
     } else {
-      $location.url("/welcome");
+      $location.url('/welcome');
     }
   });
 });
@@ -51,7 +51,7 @@ spiffControllers.controller('AnonDashCtrl', function($scope, $rootScope, $scope,
   }
 
   $scope.$watch('Spiff.currentUser', function(user) {
-    if (user != null) {
+    if (user && !user.isAnonymous) {
       $location.url('/');
     }
   });

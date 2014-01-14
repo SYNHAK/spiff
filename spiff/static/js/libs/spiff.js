@@ -19,6 +19,19 @@ Spiff.provider('SpaceAPI', function() {
 
 Spiff.controller('SpiffAuthCtrl', function($scope, Spiff) {
   $scope.user = Spiff.currentUser;
+  $scope.checkPermission = Spiff.checkPermission;
+});
+
+Spiff.directive('checkPermission', function(Spiff, $rootScope) {
+  return {
+    link: function(scope, element, attrs) {
+      scope.$watch('Spiff.currentUser', function(user) {
+        Spiff.checkPermission(attrs.if_has_permission).then(function (result) {
+          scope.hasPermission = result;
+        });
+      });
+    },
+  };
 });
 
 Spiff.provider('Spiff', function(RestangularProvider) {
@@ -44,7 +57,7 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     return newResponse;
   });
 
-  this.$get = function(Restangular, $q, $rootScope) {
+  this.$get = function(Restangular, $q, $rootScope, $http) {
     var scope = $rootScope.$new();
     $rootScope.Spiff = scope;
 
@@ -73,6 +86,17 @@ Spiff.provider('Spiff', function(RestangularProvider) {
       });
     };
     scope.currentUser = null;
+
+    scope.checkPermission = function(perm) {
+      var member = Restangular.one('member', 'self');
+      var ret = $q.defer();
+      $http.get(member.getRestangularUrl()+'/has_permission/'+perm).success(function() {
+        ret.resolve(true);
+      }).error(function() {
+        ret.resolve(false);
+      });
+      return ret.promise;
+    }
 
     return scope;
   }

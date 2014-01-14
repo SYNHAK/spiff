@@ -11,7 +11,13 @@
     <h2>Metadata</h2>
     <table class="table table-hover">
       <tr ng-repeat="meta in metadata">
-        <th><a ng-click="deleteMetadata(meta)">[X]</a> <a ng-click="editMetadata(meta.name)">{{meta.name}}</a></th>
+        <th>
+          <span check-permission="'inventory.del_metadata'">
+            <a ng-if='hasPermission' ng-click="deleteMetadata(meta)">
+              [X]
+            </a>
+          </span>
+          <a ng-click="editMetadata(meta.name)">{{meta.name}}</a></th>
         <td>{{meta.value}}</td>
       </tr>
       <tr>

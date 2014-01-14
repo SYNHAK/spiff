@@ -13,12 +13,12 @@
           <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <li ng-if="!Spiff.currentUser"><a ng-click="showLogin()">Login</a></li>
-          <li ng-if="!Spiff.currentUser"><a href="#">Register</a></li>
-          <li ng-if="!Spiff.currentUser"><a href="#">Reset Password</a></li>
-          <li ng-if="Spiff.currentUser"><a href="#/members/me">View Profile</a></li>
-          <li ng-if="Spiff.currentUser"><a href="#" ng-click="logout()">Logout</a></li>
-          <li ng-if="Spiff.currentUser"><a href="#">Change Password</a></li>
+          <li ng-if="Spiff.currentUser.isAnonymous"><a ng-click="showLogin()">Login</a></li>
+          <li ng-if="Spiff.currentUser.isAnonymous"><a href="#">Register</a></li>
+          <li ng-if="Spiff.currentUser.isAnonymous"><a href="#">Reset Password</a></li>
+          <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#/members/me">View Profile</a></li>
+          <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#" ng-click="logout()">Logout</a></li>
+          <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#">Change Password</a></li>
         </ul>
       </li>
     </ul>
