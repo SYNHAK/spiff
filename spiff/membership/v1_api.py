@@ -113,8 +113,8 @@ class MemberResource(ModelResource):
 
   def logout(self, request, **kwargs):
     self.method_check(request, allowed=['get'])
+    success = False
     if request.user and request.user.is_authenticated():
       logout(request)
-      return self.create_response(request, {'success': True})
-    else:
-      return self.create_response(request, {'success': False})
+      success = True
+    return self.create_response(request, {'success': success})
