@@ -4,17 +4,20 @@
     <div class="page-header">
       <h1>Members</h1>
     </div>
-    <ul class="thumbnails">
-      <li ng-repeat="member in members">
-        <a href="#/members/{{member.id}}">
-          <div class="thumbnail">
-              <h3>
-                <gravatar-image gravatar-email="member.email"></gravatar-image>
-                {{member.firstName}} {{member.lastName}}</h3>
-          </div>
-        </a>
-      </li>
-    </ul>
+    <div ng-repeat="group in groups">
+      <h2>{{group.name}}
+      <ul class="thumbnails">
+        <li ng-repeat="member in group.members">
+          <a href="#/members/{{member.id}}">
+            <div class="thumbnail">
+                <h3>
+                  <gravatar-image gravatar-email="member.email"></gravatar-image>
+                  {{member.firstName}} {{member.lastName}}</h3>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 {% endverbatim %}

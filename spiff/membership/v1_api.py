@@ -20,6 +20,24 @@ class RankResource(ModelResource):
 class GroupResource(ModelResource):
   rank = fields.ToOneField(RankResource, 'rank', full=True)
 
+  def prepend_urls(self):
+    return [
+      url(r'^(?P<resource_name>%s)/(?P<group_id>.*)/members%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('get_members'), name='get_members'),
+    ]
+
+  def get_members(self, request, group_id, **kwargs):
+    group = Group.objects.get(pk=group_id)
+    users = User.objects.filter(groups=group)
+    objects = []
+    for u in users:
+      bundle = MemberResource().build_bundle(obj=u.member, request=request)
+      bundle = MemberResource().full_dehydrate(bundle)
+      objects.append(bundle)
+    object_list = {'objects': objects}
+    return self.create_response(request, object_list)
+
   class Meta:
     queryset = Group.objects.all()
 

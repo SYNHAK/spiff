@@ -61,6 +61,17 @@ spiffControllers.controller('AnonDashCtrl', function($scope, $rootScope, $scope,
 });
 
 spiffControllers.controller('MemberListCtrl', function($scope, Restangular) {
+  $scope.groups = []
+  Restangular.all('group').getList().then(function (groups) {
+    _.each(groups, function(group) {
+      group.members = [];
+      $scope.groups.push(group);
+      group.getMembers().then(function (members) {
+        console.log(members);
+        group.members = members.objects;
+      });
+    });
+  });
   $scope.members = Restangular.all('member').getList().$object;
 });
 
