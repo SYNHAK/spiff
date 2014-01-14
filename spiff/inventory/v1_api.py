@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from tastypie import fields
-from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
@@ -12,7 +12,7 @@ class TrainingResource(ModelResource):
   rank = fields.CharField('comment', blank=True)
 
   class Meta:
-    authorization = Authorization()
+    authorization = DjangoAuthorization()
     queryset = models.Certification.objects.all()
 
 class ResourceMetadataResource(ModelResource):
@@ -21,12 +21,10 @@ class ResourceMetadataResource(ModelResource):
   resource = fields.ToOneField('spiff.inventory.v1_api.ResourceResource', 'resource')
 
   class Meta:
-    authorization = Authorization()
+    authorization = DjangoAuthorization()
     queryset = models.Metadata.objects.all()
 
   def obj_create(self, bundle, **kwargs):
-    if bundle.request.user.is_anonymous():
-      raise ImmediateHttpResponse(response=HttpUnauthorized());
     bundle = super(ResourceMetadataResource, self).obj_create(
       bundle, **kwargs)
     bundle.obj.resource.logChange(
@@ -36,8 +34,6 @@ class ResourceMetadataResource(ModelResource):
     return bundle
 
   def obj_update(self, bundle, **kwargs):
-    if bundle.request.user.is_anonymous():
-      raise ImmediateHttpResponse(response=HttpUnauthorized());
     oldVal = bundle.obj.value
     oldName = bundle.obj.name
     bundle = super(ResourceMetadataResource, self).obj_update(

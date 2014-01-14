@@ -1,5 +1,5 @@
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import ImmediateHttpResponse
 from spiff.notification_loader import notification
 import stripe
@@ -13,7 +13,7 @@ class PaymentResource(ModelResource):
 
   class Meta:
     queryset = models.Payment.objects.all()
-    authorization = Authorization()
+    authorization = DjangoAuthorization()
     always_return_data = True
 
   def obj_create(self, bundle, **kwargs):

@@ -3,7 +3,7 @@ from django.conf.urls import url
 from django.contrib.auth.models import Group, User
 from django.contrib.auth import authenticate, login, logout
 from tastypie import fields
-from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.resources import ModelResource
@@ -44,6 +44,7 @@ class MemberResource(ModelResource):
 
   class Meta:
     queryset = models.Member.objects.all()
+    authorization = DjangoAuthorization()
 
   def self(self, request, **kwargs):
     self.method_check(request, allowed=['get'])
