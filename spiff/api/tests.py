@@ -1,8 +1,25 @@
 from django.test import TestCase
 from django.test.client import Client
 from spiff import membership, inventory
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 import json
+import functools
+
+def withPermission(perm):
+  def wrapIt(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+      self.grantPermission(perm)
+      return func(self, *args, **kwargs)
+    return wrapper
+  return wrapIt
+
+def withLogin(func):
+  @functools.wraps(func)
+  def wrapper(self, *args, **kwargs):
+    self.login()
+    return func(self, *args, **kwargs)
+  return wrapper
 
 class APITestMixin(TestCase):
   def setupAPI(self):
