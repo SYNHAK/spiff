@@ -12,3 +12,8 @@ tr.invoice-total {
   word-wrap: pre;
   overflow: auto;
 }
+
+.qr div {
+  display: inline-block;
+  vertical-align: middle;
+}

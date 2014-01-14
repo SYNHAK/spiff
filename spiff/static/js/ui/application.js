@@ -1,6 +1,7 @@
 var spiffApp = angular.module('spiffApp', [
   'restangular',
   'spiffControllers',
+  'spiffDirectives',
   'spiff',
   'ngRoute'
 ]);
