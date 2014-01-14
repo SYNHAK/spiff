@@ -14,93 +14,6 @@ import models
 import qrcode
 import forms
 
-def view(request, id):
-  resource = models.Resource.objects.get(pk=id)
-  training = None
-  if not request.user.is_anonymous():
-    try:
-      training = request.user.member.trainings.get(resource=resource)
-    except models.TrainingLevel.DoesNotExist:
-      pass
-  return render_to_response('inventory/view.html', {'item':resource, 'myTraining': training},
-      context_instance=RequestContext(request))
-
-class InventoryView(ObjectView):
-  model = models.Resource
-  template_name = 'inventory/view.html'
-  index_template_name = 'inventory/index.html'
-
-  def get_context_data(self, request, instance, instances, **kwargs):
-    cxt = super(InventoryView, self).get_context_data(request, instance,
-        instances, **kwargs)
-    if instance:
-      cxt['myTraining'] = None
-      if not request.user.is_anonymous():
-        try:
-          cxt['myTraining'] = request.user.member.trainings.get(resource=instance)
-        except models.TrainingLevel.DoesNotExist:
-          pass
-    return cxt
-
-@permission_required('inventory.can_change_metadata')
-def deleteMeta(request, id):
-  meta = models.Metadata.objects.get(pk=id)
-  resource = meta.resource
-  oldValue = meta.value
-  resource.logChange(
-      member=request.user.member,
-      old=meta.value,
-      new=None,
-      property=meta.name)
-  meta.delete()
-  messages.info(request, "Metadata removed.")
-  return HttpResponseRedirect(reverse('inventory:view',
-    kwargs={'id': resource.id}))
-
-@permission_required('inventory.can_change_metadata')
-def addMeta(request, id, name=None):
-  """
-  Allows you to add/modify metadata on a resource.
-  """
-  resource = models.Resource.objects.get(pk=id)
-  if request.method == 'POST':
-    form = forms.MetadataForm(request.POST, initial={'name': name})
-  else:
-    try:
-      oldMeta = models.Metadata.objects.get(resource=resource, name=name)
-      form = forms.MetadataForm(instance=oldMeta)
-    except models.Metadata.DoesNotExist:
-      form = forms.MetadataForm(initial={'name': name})
-  if form.is_valid():
-    try:
-      meta = models.Metadata.objects.get(
-        resource=resource,
-        name = form.cleaned_data['name']
-      )
-      created = False
-    except models.Metadata.DoesNotExist:
-      meta = models.Metadata.objects.create(resource=resource,
-          name=form.cleaned_data['name'], type=form.cleaned_data['type'])
-      created = True
-    if created:
-      oldValue = None
-    else:
-      oldValue = meta.value
-    meta.value = form.cleaned_data['value']
-    meta.save()
-    messages.info(request, "Metadata saved.")
-    resource.logChange(
-        member=request.user.member,
-        old=oldValue,
-        new=meta.value,
-        property=meta.name)
-
-    return HttpResponseRedirect(reverse('inventory:view',
-      kwargs={'id': resource.id}))
-  return render_to_response('inventory/addMeta.html', {'item':resource,
-    'metaForm': form},
-      context_instance=RequestContext(request))
-
 @permission_required('inventory.can_train')
 def promoteTraining(request, id):
   """
@@ -142,35 +55,6 @@ def uncertify(request, certID):
   messages.info(request, "Certification removed.")
   return HttpResponseRedirect(reverse('inventory:view', 
     kwargs={'id': resource.id}))
-
-@permission_required('inventory.certify')
-def certify(request, id):
-  """
-  Certifies a user for the given resource
-  """
-  resource = models.Resource.objects.get(pk=id)
-  if request.method == 'POST':
-    form = forms.CertificationForm(request.POST)
-  else:
-    form = forms.CertificationForm()
-  if form.is_valid():
-    certification = models.Certification.objects.create(
-      member=form.cleaned_data['member'],
-      resource=resource,
-      comment=form.cleaned_data['comment']
-    )
-    messages.info(request, "User certified!")
-    resource.logChange(
-      member=request.user.member,
-      trained_member=certification.member,
-      old=None,
-      new=form.cleaned_data['comment'],
-    )
-    return HttpResponseRedirect(reverse('inventory:view',
-    kwargs={'id': resource.id}))
-  return render_to_response('inventory/certify.html', {'item': resource,
-  'form': form},
-  context_instance=RequestContext(request))
 
 @permission_required('inventory.can_train')
 def train(request, id):
