@@ -27,7 +27,6 @@ class Member(models.Model):
   hidden = models.BooleanField(default=False)
 
   def isAnonymous(self):
-    print 'check anon', self.user_id, get_anonymous_user().id
     return self.user_id == get_anonymous_user().id
 
   class Meta:
