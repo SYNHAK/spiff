@@ -5,6 +5,10 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
     $('#loginModal').modal('show');
   };
 
+  $scope.enterAdmin = function() {
+    $('#adminModal').modal('show');
+  };
+
   $scope.hideLogin = function() {
     $('#loginModal').modal('hide');
   };

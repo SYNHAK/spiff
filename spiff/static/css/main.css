@@ -42,6 +42,10 @@ tr.invoice-total {
   margin: 0;
 }
 
+#footer button.btn {
+  margin: 10px 0;
+}
+
 #footer .SYN {
   color: #F56F22;
 }

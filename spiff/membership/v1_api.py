@@ -44,6 +44,8 @@ class MemberResource(ModelResource):
     return self.get_detail(request, pk=request.user.member.id)
 
   def has_permission(self, request, permission_name, **kwargs):
+    if permission_name == 'is_superuser' and request.user.is_superuser:
+      return HttpResponse(status=204)
     if request.user.has_perm(permission_name):
       return HttpResponse(status=204)
     return HttpResponse(status=403)
