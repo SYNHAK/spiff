@@ -26,6 +26,10 @@ class Member(models.Model):
   stripeID = models.TextField()
   hidden = models.BooleanField(default=False)
 
+  def isAnonymous(self):
+    print 'check anon', self.user_id, get_anonymous_user().id
+    return self.user_id == get_anonymous_user().id
+
   class Meta:
     permissions = (
       ('can_view_hidden_members', 'Can view hidden members'),
@@ -220,6 +224,9 @@ def create_rank(sender, instance, created, **kwargs):
 post_save.connect(create_rank, sender=Group)
 
 class AnonymousUser(User):
+  def is_anonymous(self):
+    return True
+
   class Meta:
     proxy = True
 

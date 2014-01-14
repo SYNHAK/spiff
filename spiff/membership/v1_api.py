@@ -26,7 +26,7 @@ class GroupResource(ModelResource):
 class MemberResource(ModelResource):
   firstName = fields.CharField(attribute='user__first_name')
   lastName = fields.CharField(attribute='user__last_name')
-  isAnonymous = fields.BooleanField(attribute='user__is_anonymous')
+  isAnonymous = fields.BooleanField(attribute='isAnonymous')
   email = fields.CharField(attribute='user__email')
   groups = fields.ToManyField(GroupResource, 'user__groups', null=True,
       full=True)
