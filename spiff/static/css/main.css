@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Sofia);
+
 tr.invoice-total th {
   text-align: right;
 }
@@ -16,4 +18,43 @@ tr.invoice-total {
 .qr div {
   display: inline-block;
   vertical-align: middle;
+}
+
+.login-or {
+  text-align: center;
+  font-size: x-large;
+  font-weight: bold;
+  font-style: italic;
+  margin: 0.5em 0;
+  font-family: 'Sofia', cursive;
+}
+
+.login-or:before, .login-or:after {
+  content: "-"
+}
+
+#footer {
+  font-size: x-small;
+  border-top: 1px solid #ddd;
+}
+
+#footer p {
+  margin: 0;
+}
+
+#footer .SYN {
+  color: #F56F22;
+}
+
+#footer .HAK {
+  color: #0066D6;
+}
+
+#footer .synhak-link {
+  color: #000;
+  font-weight: bold;
+}
+
+#footer .heart {
+  color: #f00 !important;
 }

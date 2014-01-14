@@ -14,6 +14,8 @@
   <script src="{{STATIC_URL}}/js/libs/underscore-min.js"></script>
   <script src="{{STATIC_URL}}/js/libs/angular.min.js"></script>
   <script src="{{STATIC_URL}}/js/libs/angular-route.min.js"></script>
+  <script src="{{STATIC_URL}}/js/libs/md5-service.js"></script>
+  <script src="{{STATIC_URL}}/js/libs/gravatar-directive.js"></script>
   <script src="{{STATIC_URL}}/js/libs/restangular.min.js"></script>
   <script src="{{STATIC_URL}}/js/libs/spiff.js"></script>
   <script src="{{STATIC_URL}}/js/ui/controllers.js"></script>
@@ -27,6 +29,18 @@
 {% verbatim %}
 <div ng-include="'partials/epicenter.html'"></div>
 <div class="container" id="canvas" ng-view>
+</div>
+<div class="container" id="footer">
+  <div class="row">
+    <div class="span12">
+      <p class="text-muted"><a href="https://github.com/SYNHAK/spiff">Spaceman Spiff Manages Spaces.</a> | <a href="https://spiff.readthedocs.org/">Documentation</a></p>
+      <p class="text-muted">Spiff is a side-effect of <a class="synhak-link" href="https://synhak.org"><span class="SYN">SYN</span>/<span class="HAK">HAK</span></a>.</p>
+      <p class="text-muted">Made with <span class="heart">❤</span> by hackers for hackers.</p>
+      <p></p>
+    </div>
+    <div class="span4">
+    </div>
+  </div>
 </div>
 <div id="errorModal" class="modal hide fade">
   <div class="modal-header">
