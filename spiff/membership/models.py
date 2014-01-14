@@ -241,7 +241,8 @@ def get_anonymous_user():
         email='anonymous@example.com',
         password='',
         first_name='Guest',
-        last_name='McGuesterson'
+        last_name='McGuesterson',
+        hidden=True
       )
       user.set_unusable_password()
       user.save()

@@ -81,6 +81,7 @@ class MemberResource(ModelResource):
     else:
       query &= Q(first_name__icontains=name[0]) | Q(last_name__icontains=' '.join(name[1:]))
       firstName, lastName = request.GET['fullName'].split(' ', 1)
+    query &= Q(hidden=False)
     users = User.objects.filter(query)
     objects = []
     for u in users:
