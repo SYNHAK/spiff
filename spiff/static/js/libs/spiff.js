@@ -61,22 +61,23 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     var scope = $rootScope.$new();
     $rootScope.Spiff = scope;
 
+    scope.refreshUser = function() {
+      return Restangular.one('member', 'self').get().then(function(user) {
+        scope.currentUser = user;
+      });
+    }
+
     scope.login = function(username, password) {
       if (password === undefined) {
-        return Restangular.one('member', 'self').get().then(function(user) {
-          scope.currentUser = user;
-        }, function(reason) {
-          scope.currentUser = null;
+        return scope.refreshUser();
+      } else {
+        return Restangular.all('member').login({
+          username: username,
+          password: password
+        }).then(function(user) {
+          scope.refreshUser();
         });
       }
-      return Restangular.all('member').login({
-        username: username,
-        password: password
-      }).then(function(user) {
-        Restangular.one('member', 'self').get().then(function(user) {
-          scope.currentUser = user;
-        });
-      });
     };
 
     scope.logout = function() {
