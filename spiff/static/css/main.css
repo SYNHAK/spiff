@@ -62,3 +62,7 @@ tr.invoice-total {
 #footer .heart {
   color: #f00 !important;
 }
+
+#welcome-page {
+  background: url(../logo.png) no-repeat top right;
+}
