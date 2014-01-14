@@ -3,7 +3,7 @@ Installation
 
 Since Spiff is written with Django, the `Django installation docs`_ may be a helpful primer.
 
-.. _`Django installation docs`: https://docs.djangoproject.com/en/1.4/topics/install/
+.. _`Django installation docs`: https://docs.djangoproject.com/en/1.6/topics/install/
 
 In Brief
 --------
@@ -47,7 +47,7 @@ Leaving HOST and PORT empty uses 'localhost' at the default mysql port.
 
 Please refer to the `Django MySQL docs`_ for more details.
 
-.. _`Django MySQL docs`: https://docs.djangoproject.com/en/1.4/ref/databases/#mysql-notes
+.. _`Django MySQL docs`: https://docs.djangoproject.com/en/1.6/ref/databases/#mysql-notes
 
 Apache
 ``````
@@ -84,6 +84,6 @@ In /etc/httpd/conf.d/synhak.org.conf:
 That is all you need. You may then access spiff at
 http://your-space.org/auth/
 
-Other information for using Django with mod_wsgi can be found at the `Django mod_wsgi howto guide`.
+Other information for using Django with mod_wsgi can be found at the `Django mod_wsgi howto guide`_.
 
-.. _`Django mod_wsgi howto guide`: https://docs.djangoproject.com/en/1.4/howto/deployment/wsgi/modwsgi/
+.. _`Django mod_wsgi howto guide`: https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/modwsgi/

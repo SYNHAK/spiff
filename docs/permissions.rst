@@ -16,7 +16,7 @@ ranks for each membership level in your hackerspace.
     documented. See the `Django auth reference`_ for information about
     how permissions work inside Django.
 
-.. _`Django auth reference`: https://docs.djangoproject.com/en/1.4/topics/auth/
+.. _`Django auth reference`: https://docs.djangoproject.com/en/1.6/topics/auth/
 
 auth.change\_user
 ~~~~~~~~~~~~~~~~~~~~~~
