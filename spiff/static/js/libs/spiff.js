@@ -21,9 +21,13 @@ Spiff.directive('checkPermission', function(Spiff, $rootScope) {
   return {
     link: function(scope, element, attrs) {
       scope.$watch('Spiff.currentUser', function(user) {
-        Spiff.checkPermission(attrs.if_has_permission).then(function (result) {
-          scope.hasPermission = result;
-        });
+        if (attrs.checkPermission != undefined) {
+          Spiff.checkPermission(scope.$eval(attrs.checkPermission)).then(function (result) {
+            scope.hasPermission = result;
+          });
+        } else {
+          scope.hasPermission = false;
+        }
       });
     },
   };
