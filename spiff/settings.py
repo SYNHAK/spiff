@@ -140,7 +140,10 @@ INSTALLED_APPS = (
     'spiff.sensors',
     'spiff.payment',
     'spiff.management',
+    'django_nose',
 )
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 WEBFINGER_HANDLER = 'spiff.local.webfinger.handle'
 
