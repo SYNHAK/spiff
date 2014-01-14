@@ -23,18 +23,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 import datetime
 
-def index(request):
-  now = datetime.datetime.utcnow()
-  events = Event.objects.filter(end__gte=now)
-  if request.user.is_anonymous():
-    return render_to_response('local/index_anonymous.html',
-        {'events': events},
-        context_instance=RequestContext(request))
-  else:
-    return render_to_response('local/index.html',
-        {'events': events},
-        context_instance=RequestContext(request))
-
 def register(request):
   fields = Field.objects.filter(required=True)
   if request.method == 'POST':
