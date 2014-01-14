@@ -3,7 +3,9 @@ var spiffApp = angular.module('spiffApp', [
   'spiffControllers',
   'spiffDirectives',
   'spiff',
-  'ngRoute'
+  'ngRoute',
+  'ui-gravatar',
+  'md5'
 ]);
 
 spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {

@@ -9,8 +9,9 @@
     <ul class="nav pull-right" id="epicenter">
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown">
-          <i class="icon-home"></i>
-          {{spiff.user.firstName}} {{spiff.user.lastName}}
+          <i class="icon-home" ng-if="Spiff.currentUser.isAnonymous"></i>
+          <gravatar-image ng-if="!Spiff.currentUser.isAnonymous" gravatar-email="Spiff.currentUser.email" gravatar-size="14"></gravatar-image>
+          {{Spiff.currentUser.firstName}} {{Spiff.currentUser.lastName}}
           <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
