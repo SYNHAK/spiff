@@ -9,7 +9,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^status.json$', 'spiff.api.views.spaceapi'),
-    url(r'^$', RedirectView.as_view(url=reverse_lazy('ui:index'))),
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('ui:index')), name='root'),
     url(r'^ui/', include('spiff.ui.urls', namespace='ui')),
     url(r'^', include(v1_api.urls)),
     #$url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'local/login.html'}),

@@ -1,7 +1,9 @@
-from django.http import HttpResponse
 from django.contrib.sites.models import get_current_site
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from spiff.local.models import SpaceConfig, SpaceContact, SpaceFeed
 from spiff.membership.models import Rank
+from spiff.sensors.models import SENSOR_TYPES, Sensor
 import json
 
 def spaceapi(request):
@@ -12,7 +14,7 @@ def spaceapi(request):
   base = "%s://%s"%(request.META['wsgi.url_scheme'], site.domain)
   if (request.META['wsgi.url_scheme'] == 'http' and request.META['SERVER_PORT'] != '80') or (request.META['wsgi.url_scheme'] == 'https' and request.META['SERVER_PORT'] != '443'):
     base = "%s:%s"%(base, request.META['SERVER_PORT'])
-  meta['x-spiff-url'] = "%s%s"%(base, reverse('ui:index'))
+  meta['x-spiff-url'] = "%s%s"%(base, reverse('root'))
 
   spaceConfig = SpaceConfig.objects.get(site=site)
 

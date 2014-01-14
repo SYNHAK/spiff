@@ -21,13 +21,17 @@ def withLogin(func):
     return func(self, *args, **kwargs)
   return wrapper
 
-class APITestMixin(TestCase):
+class ClientTestMixin(TestCase):
+  def setupClient(self):
+    self.client = Client()
+
+class APITestMixin(ClientTestMixin):
   def setupAPI(self):
     self.user = User.objects.create_user('test', 'test@example.com', 'test')
     self.user.first_name = 'Test'
     self.user.last_name = 'McTesterson'
     self.user.save()
-    self.client = Client()
+    self.setupClient()
 
   def grantPermission(self, permissionName):
     appName, name = permissionName.split('.', 1)
@@ -74,3 +78,11 @@ class APITestMixin(TestCase):
     self.assertIn('objects', ret)
     return ret
 
+class SpaceAPITest(ClientTestMixin):
+  def setUp(self):
+    self.setupClient()
+
+  def testAPI(self):
+    response = self.client.get('/status.json')
+    self.assertEqual(response.status_code, 200)
+    data = json.loads(response.content)
