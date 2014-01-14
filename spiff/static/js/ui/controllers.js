@@ -56,6 +56,15 @@ spiffControllers.controller('AnonDashCtrl', function($scope, $rootScope, $scope,
   });
 });
 
+spiffControllers.controller('MemberListCtrl', function($scope, Restangular) {
+  $scope.members = Restangular.all('member').getList().$object;
+});
+
+spiffControllers.controller('MemberCtrl', function($scope, Restangular, $routeParams) {
+  var member = Restangular.one('member', $routeParams.memberID);
+  $scope.member = member.get().$object;
+});
+
 spiffControllers.controller('ResourceListCtrl', function($scope, Restangular) {
   $scope.resources = Restangular.all('resource').getList().$object;
 });

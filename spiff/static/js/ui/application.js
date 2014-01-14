@@ -30,6 +30,14 @@ spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
       templateUrl: 'resources/detail.html',
       controller: 'ResourceCtrl'
     }).
+    when('/members', {
+      templateUrl: 'members/index.html',
+      controller: 'MemberListCtrl'
+    }).
+    when('/members/:memberID', {
+      templateUrl: 'members/detail.html',
+      controller: 'MemberCtrl'
+    }).
     otherwise({
       redirectTo: '/'
     });
