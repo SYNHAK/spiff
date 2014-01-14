@@ -26,7 +26,6 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
   });
 
   $http.get('/status.json').then(function (api) {
-    console.log(api.data);
     $scope.spaceAPI = api.data;
   });
 });
@@ -81,14 +80,12 @@ spiffControllers.controller('ResourceCtrl', function($scope, Restangular, $route
 
   $scope.refreshChangelog = function() {
     resource.getList('changelog').then(function(log) {
-      console.log(log[0]);
       $scope.changelog = log;
     });
   }
 
   $scope.refreshTrainings = function() {
     resource.getList('training').then(function(trainings) {
-      console.log(trainings[0]);
       $scope.trainings = trainings;
     });
   }
