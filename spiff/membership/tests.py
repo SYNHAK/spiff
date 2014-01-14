@@ -9,7 +9,14 @@ from django.test import TestCase
 from django.contrib.auth.models import User, Group
 import models
 from spiff.payment.models import Payment
-from spiff.api.tests import APITestMixin, withPermission, withLogin
+from spiff.api.tests import ClientTestMixin, APITestMixin, withPermission, withLogin
+
+class AnonymousUserMiddlewareTest(APITestMixin):
+  def setUp(self):
+    self.setupClient()
+
+  def testFetchAnon(self):
+    user = self.getAPI('/v1/member/self/')
 
 class MemberTest(TestCase):
   def testUserCreation(self):
@@ -17,6 +24,24 @@ class MemberTest(TestCase):
     self.assertIsNotNone(u.member)
     self.assertEqual(u.member.user, u)
     u.delete()
+
+  def testCreateAnonUser(self):
+    userCount = len(User.objects.all())
+    memberCount = len(models.Member.objects.all())
+    user = models.get_anonymous_user()
+    newUserCount = len(User.objects.all())
+    newMemberCount = len(models.Member.objects.all())
+    self.assertNotEqual(userCount, newUserCount)
+    self.assertNotEqual(memberCount, newMemberCount)
+
+  def testRecreateAnonMember(self):
+    user = models.get_anonymous_user()
+    user.member.delete()
+    member = None
+    with self.assertRaises(models.Member.DoesNotExist):
+      member = User.objects.get(id=user.pk).member
+    user = models.get_anonymous_user()
+    self.assertEqual(user.member.user_id, user.id)
 
 class RankTest(TestCase):
   def testGroupCreation(self):

@@ -14,6 +14,9 @@ from django.template import Context
 
 stripe.api_key = settings.STRIPE_KEY
 
+if not hasattr(settings, 'ANONYMOUS_USER_ID'):
+  settings.ANONYMOUS_USER_ID = 0
+
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
   user = models.OneToOneField(User)
@@ -215,3 +218,30 @@ def create_rank(sender, instance, created, **kwargs):
     Rank.objects.get_or_create(group=instance)
 
 post_save.connect(create_rank, sender=Group)
+
+class AnonymousUser(User):
+  class Meta:
+    proxy = True
+
+def get_anonymous_user():
+  if settings.ANONYMOUS_USER_ID == 0:
+    try:
+      user = AnonymousUser.objects.get(
+        username='anonymous'
+      )
+    except AnonymousUser.DoesNotExist:
+      user = AnonymousUser.objects.create(
+        username='anonymous',
+        email='anonymous@example.com',
+        password=''
+      )
+      user.set_unusable_password()
+      user.save()
+  else:
+    user = User.objects.get(settings.ANONYMOUS_USER_ID)
+  try:
+    member = user.member
+  except Member.DoesNotExist:
+    user.member, created = Member.objects.get_or_create(user=user)
+    user.save()
+  return user
