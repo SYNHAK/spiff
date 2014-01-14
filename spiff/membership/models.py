@@ -239,7 +239,9 @@ def get_anonymous_user():
       user = AnonymousUser.objects.create(
         username='anonymous',
         email='anonymous@example.com',
-        password=''
+        password='',
+        first_name='Guest',
+        last_name='McGuesterson'
       )
       user.set_unusable_password()
       user.save()
