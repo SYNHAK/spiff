@@ -66,7 +66,6 @@ class APITestMixin(ClientTestMixin):
     self.assertEqual(ret.status_code, status)
     if len(ret.content):
       ret = json.loads(ret.content)
-      self.assertIn('objects', ret)
     else:
       ret = None
     return ret
@@ -75,7 +74,6 @@ class APITestMixin(ClientTestMixin):
     ret = self.getAPIRaw(endpoint, struct)
     self.assertEqual(ret.status_code, status)
     ret = json.loads(ret.content)
-    self.assertIn('objects', ret)
     return ret
 
 class SpaceAPITest(ClientTestMixin):
