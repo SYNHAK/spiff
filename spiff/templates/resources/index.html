@@ -4,8 +4,14 @@
     <div class="page-header">
       <h1>Resources</h1>
     </div>
-    <ul>
-      <li ng-repeat="resource in resources"><a href="#/resources/{{resource.id}}">{{resource.name}}</a></li>
+    <ul class="thumbnails">
+      <li ng-repeat="resource in resources">
+        <a href="#/resources/{{resource.id}}">
+          <div class="thumbnail">
+              <h3><span class="qr" qr-code></span>{{resource.name}}</h3>
+          </div>
+        </a>
+      </li>
     </ul>
   </div>
 </div>
