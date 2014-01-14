@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User, Group
 import models
 from spiff.payment.models import Payment
-from spiff.api.tests import APITestMixin
+from spiff.api.tests import APITestMixin, withPermission, withLogin
 
 class MemberTest(TestCase):
   def testUserCreation(self):
@@ -87,3 +87,13 @@ class MemberAPITest(APITestMixin):
     response = self.getAPIRaw('/v1/member/logout/')
     self.assertTrue(response.cookies.has_key('sessionid'))
     self.assertNotEqual(session, response.cookies.has_key('sessionid'))
+
+  def testMissingPermission(self):
+    response = self.postAPIRaw('/v1/member/self/has_permission/not.a_permission/')
+    self.assertEqual(response.status_code, 403)
+
+  @withPermission('membership.add_member')
+  @withLogin
+  def testHasPermission(self):
+    response = self.postAPIRaw('/v1/member/self/has_permission/membership.add_member/')
+    self.assertEqual(response.status_code, 204)

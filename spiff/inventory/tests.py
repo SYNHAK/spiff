@@ -6,7 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
-from spiff.api.tests import APITestMixin
+from spiff.api.tests import APITestMixin, withPermission, withLogin 
 import models
 
 class ResourceTestMixin(TestCase):
@@ -57,11 +57,23 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       'type': 0
     }, status=401)
 
-  def testCreateMeta(self):
+  @withLogin
+  def testUnpermissionedCreateMeta(self):
     meta = self.getMeta()
     self.assertEqual(len(meta['objects']), 0)
 
-    self.login()
+    self.postAPI('/v1/metadata/',{
+      'resource': '/v1/resource/%s/'%(self.resource.id),
+      'name': 'api-meta',
+      'value': 'api-meta-test',
+      'type': 0
+    }, status=401)
+
+  @withLogin
+  @withPermission('inventory.add_metadata')
+  def testCreateMeta(self):
+    meta = self.getMeta()
+    self.assertEqual(len(meta['objects']), 0)
 
     self.postAPI('/v1/metadata/',{
       'resource': '/v1/resource/%s/'%(self.resource.id),
