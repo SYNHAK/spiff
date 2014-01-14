@@ -12,6 +12,16 @@ class APITestMixin(TestCase):
     self.user.save()
     self.client = Client()
 
+  def grantPermission(self, appName, model):
+    perm = Permission.objects.find(
+      name=name,
+      content_type__app_label=appName,
+      model=model
+    )
+    self.user.user_permissions.add(perm)
+    self.user.save()
+    return perm
+
   def login(self):
     self.client.login(username='test', password='test')
 
