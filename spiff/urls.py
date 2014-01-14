@@ -8,7 +8,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^status.json$', 'spiff.local.views.spaceapi'),
+    url(r'^status.json$', 'spiff.api.views.spaceapi'),
     url(r'^$', RedirectView.as_view(url=reverse_lazy('ui:index'))),
     url(r'^ui/', include('spiff.ui.urls', namespace='ui')),
     url(r'^', include(v1_api.urls)),
