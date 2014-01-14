@@ -8,7 +8,7 @@ from django.conf import settings
 from tastypie import fields
 
 class PaymentResource(ModelResource):
-  invoice = fields.ToOneField('spiff.api.resources.InvoiceResource', 'invoice')
+  invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')
   value = fields.FloatField('value')
 
   class Meta:
