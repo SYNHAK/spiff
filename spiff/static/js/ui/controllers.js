@@ -60,6 +60,15 @@ spiffControllers.controller('AnonDashCtrl', function($scope, $rootScope, $scope,
   });
 });
 
+spiffControllers.controller('SensorListCtrl', function($scope, Restangular) {
+  $scope.sensors = Restangular.all('sensor').getList().$object;
+});
+
+spiffControllers.controller('SensorCtrl', function($scope, Restangular, $routeParams) {
+  var sensor = Restangular.one('sensor', $routeParams.sensorID);
+  $scope.sensor = sensor.get().$object;
+});
+
 spiffControllers.controller('MemberListCtrl', function($scope, Restangular) {
   $scope.groups = []
   Restangular.all('group').getList().then(function (groups) {

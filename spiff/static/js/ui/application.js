@@ -38,6 +38,14 @@ spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
       templateUrl: 'members/detail.html',
       controller: 'MemberCtrl'
     }).
+    when('/sensors', {
+      templateUrl: 'sensors/index.html',
+      controller: 'SensorListCtrl',
+    }).
+    when('/sensors/:sensorID', {
+      templateUrl: 'sensors/detail.html',
+      controller: 'SensorCtrl',
+    }).
     otherwise({
       redirectTo: '/'
     });
