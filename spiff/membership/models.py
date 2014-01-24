@@ -19,7 +19,7 @@ if not hasattr(settings, 'ANONYMOUS_USER_ID'):
 
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
-  user = models.OneToOneField(User)
+  user = models.OneToOneField(User, related_name='member')
   created = models.DateTimeField(editable=False, auto_now_add=True)
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
   fields = models.ManyToManyField('Field', through='FieldValue')
@@ -242,10 +242,12 @@ def get_anonymous_user():
         password='',
         first_name='Guest',
         last_name='McGuesterson',
-        hidden=True
       )
       user.set_unusable_password()
       user.save()
+      member = Member.objects.get(user=user)
+      member.hidden = True
+      member.save()
   else:
     user = User.objects.get(settings.ANONYMOUS_USER_ID)
   try:
@@ -254,3 +256,5 @@ def get_anonymous_user():
     user.member, created = Member.objects.get_or_create(user=user)
     user.save()
   return user
+
+post_save.connect(create_member, sender=AnonymousUser)
