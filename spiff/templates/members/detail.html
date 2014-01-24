@@ -40,7 +40,7 @@
       <li ng-repeat="group in member.groups">
         {{group.name}}
       </li>
-      <li><a href="#">Modify Groups</a></li>
+      <li><button class="btn btn-primary" ng-click="showModifyGroups()">Modify Groups</button></li>
     </ul>
   </div>
   <div class="span8">
@@ -74,5 +74,26 @@
     </table>
   </div>
 </div>
-{% endverbatim %}
 
+<div class="modal hide fade" id="modifyGroupsModal">
+  <div class="modal-header">
+    <h3>Modify Groups</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal" id="groups-form">
+      <div class="control-group" ng-repeat="group in availableGroups">
+        <label class="control-label" for="group-{{group.id}}">
+          {{group.name}}
+        </label>
+        <div class="controls">
+          <input type="checkbox" value="{{group.id}}" id="group-{{group.id}}" ng-checked="group.active">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" ng-click="saveGroups()">Save</button>
+    <button class="btn" ng-click="hideModifyGroups()">Close</button>
+  </div>
+</div>
+{% endverbatim %}
