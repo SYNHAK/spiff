@@ -4,9 +4,15 @@
     <a class="brand" href="#/">{{spaceAPI.space}}</a>
     <ul class="nav">
       <li><a href="#/">Home</a></li>
-      <li><a href="#/resources">Resources</a></li>
-      <li><a href="#/members">Members</a></li>
-      <li><a href="#/sensors">Sensors</a></li>
+      <li check-permission="'inventory.list_resource'">
+        <a ng-if="hasPermission" href="#/resources">Resources</a>
+      </li>
+      <li check-permission="'membership.list_member'">
+        <a ng-if="hasPermission" href="#/members">Members</a>
+      </li>
+      <li check-permission="'sensors.list_sensor'">
+        <a ng-if="hasPermission" href="#/sensors">Sensors</a>
+      </li>
     </ul>
     <ul class="nav pull-right" id="epicenter">
       <li class="dropdown">
