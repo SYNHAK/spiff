@@ -38,12 +38,12 @@ class PaymentResource(ModelResource):
         card = cardData,
         description = 'Payment from %s for invoice %s'%(bundle.request.user.member.fullName, invoice.id)
       )
-      payment = Payment.objects.create(
+      payment = models.Payment.objects.create(
         user = bundle.request.user,
         value = balance,
-        status = Payment.STATUS_PAID,
+        status = models.Payment.STATUS_PAID,
         transactionID = charge.id,
-        method = Payment.METHOD_STRIPE,
+        method = models.Payment.METHOD_STRIPE,
         invoice = invoice
       )
       if notification:
