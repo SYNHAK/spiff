@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from tastypie import fields
-from tastypie.authorization import DjangoAuthorization
+from spiff.api import SpiffAuthorization
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
@@ -12,7 +12,7 @@ class TrainingResource(ModelResource):
   rank = fields.CharField('comment', blank=True)
 
   class Meta:
-    authorization = DjangoAuthorization()
+    authorization = SpiffAuthorization()
     queryset = models.Certification.objects.all()
 
 class ResourceMetadataResource(ModelResource):
@@ -21,7 +21,7 @@ class ResourceMetadataResource(ModelResource):
   resource = fields.ToOneField('spiff.inventory.v1_api.ResourceResource', 'resource')
 
   class Meta:
-    authorization = DjangoAuthorization()
+    authorization = SpiffAuthorization()
     queryset = models.Metadata.objects.all()
 
   def obj_create(self, bundle, **kwargs):
@@ -70,6 +70,7 @@ class ChangelogResource(ModelResource):
 
   class Meta:
     queryset = models.Change.objects.all()
+    authorization = SpiffAuthorization()
 
 class ResourceResource(ModelResource):
   name = fields.CharField('name')
@@ -78,6 +79,7 @@ class ResourceResource(ModelResource):
   class Meta:
     queryset = models.Resource.objects.all()
     resource_name = 'resource'
+    authorization = SpiffAuthorization()
 
   def prepend_urls(self):
     return [

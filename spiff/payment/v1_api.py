@@ -1,11 +1,11 @@
 from tastypie.resources import ModelResource
-from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import ImmediateHttpResponse
 from spiff.notification_loader import notification
 import stripe
 import models
 from django.conf import settings
 from tastypie import fields
+from spiff.api import SpiffAuthorization
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')
@@ -13,7 +13,7 @@ class PaymentResource(ModelResource):
 
   class Meta:
     queryset = models.Payment.objects.all()
-    authorization = DjangoAuthorization()
+    authorization = SpiffAuthorization()
     always_return_data = True
 
   def obj_create(self, bundle, **kwargs):
@@ -65,6 +65,7 @@ class LineItemResource(ModelResource):
 
   class Meta:
     querySet = models.LineItem.objects.all()
+    authorization = SpiffAuthorization()
 
 class InvoiceResource(ModelResource):
   user = fields.ToOneField('spiff.membership.v1_api.MemberResource', 'user__member', null=True, full=True)
@@ -76,3 +77,4 @@ class InvoiceResource(ModelResource):
 
   class Meta:
     queryset = models.Invoice.objects.all()
+    authorization = SpiffAuthorization()

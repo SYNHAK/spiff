@@ -4,18 +4,21 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from tastypie import fields
-from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
+from tastypie.exceptions import Unauthorized
 import models
+from spiff.api import SpiffAuthorization
+
 
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
 
   class Meta:
     queryset = models.Rank.objects.all()
+    authorization = SpiffAuthorization()
 
 class GroupResource(ModelResource):
   rank = fields.ToOneField(RankResource, 'rank', full=True)
@@ -40,6 +43,7 @@ class GroupResource(ModelResource):
 
   class Meta:
     queryset = Group.objects.all()
+    authorization = SpiffAuthorization()
 
 class MemberResource(ModelResource):
   firstName = fields.CharField(attribute='user__first_name')
@@ -54,7 +58,7 @@ class MemberResource(ModelResource):
 
   class Meta:
     queryset = models.Member.objects.all()
-    authorization = DjangoAuthorization()
+    authorization = SpiffAuthorization()
 
   def self(self, request, **kwargs):
     self.method_check(request, allowed=['get'])

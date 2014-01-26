@@ -1,6 +1,6 @@
 from tastypie import fields
-from tastypie.authorization import DjangoAuthorization
 from tastypie.resources import ModelResource
+from spiff.api import SpiffAuthorization
 import models
 
 class SensorResource(ModelResource):
@@ -12,4 +12,4 @@ class SensorResource(ModelResource):
 
   class Meta:
     queryset = models.Sensor.objects.all()
-    authorization = DjangoAuthorization()
+    authorization = SpiffAuthorization()
