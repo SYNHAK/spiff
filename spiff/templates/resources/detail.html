@@ -54,11 +54,11 @@
   </div>
 </div>
 <div id="metadataEditorModal" class="modal hide fade">
-  <div class="modal-header">
-    <h3>Edit Metadata</h3>
-  </div>
-  <div class="modal-body">
-    <form class="form-horizontal" id="metadataForm">
+  <form class="form-horizontal" id="metadataForm" ng-submit="saveMetadata()">
+    <div class="modal-header">
+      <h3>Edit Metadata</h3>
+    </div>
+    <div class="modal-body">
       <input type="hidden" id="meta-id">
       <div class="control-group">
         <label class="control-label" for="meta-name">
@@ -76,19 +76,19 @@
           <input type="text" id="meta-value">
         </div>
       </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-success" ng-click="saveMetadata()">Save</button>
-    <button class="btn" ng-click="closeEditor()">Cancel</button>
-  </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-success">Save</button>
+      <button class="btn" ng-click="closeEditor()">Cancel</button>
+    </div>
+  </form>
 </div>
 <div id="trainingModal" class="modal hide fade">
-  <div class="modal-header">
-    <h3>Add Training</h3>
-  </div>
-  <div class="modal-body">
-    <form class="form-horizontal" id="trainingForm">
+  <form class="form-horizontal" id="trainingForm" ng-submit="saveTraining()">
+    <div class="modal-header">
+      <h3>Add Training</h3>
+    </div>
+    <div class="modal-body">
       <div class="control-group">
         <label class="control-label" for="training-user">
           User:
@@ -106,25 +106,25 @@
           <input type="text" id="training-rank">
         </div>
       </div>
-    </form>
-    <p ng-if="training.pendingUsers.length > 0">Users to train:</p>
-    <ul id="selected-users">
-      <li ng-repeat="user in training.pendingUsers">
-        <a ng-click="forgetUser(user)">
-          <span ng-if="user.fullName">
-            <i class="icon-ok"></i>{{user.fullName}}
-          </span>
-          <span ng-if="!user.fullName">
-            {{user.searchName}}
-          </span>
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-success" ng-click="saveTraining()">Save</button>
-    <button class="btn" ng-click="closeTraining()">Close</button>
-  </div>
+      <p ng-if="training.pendingUsers.length > 0">Users to train:</p>
+      <ul id="selected-users">
+        <li ng-repeat="user in training.pendingUsers">
+          <a ng-click="forgetUser(user)">
+            <span ng-if="user.fullName">
+              <i class="icon-ok"></i>{{user.fullName}}
+            </span>
+            <span ng-if="!user.fullName">
+              {{user.searchName}}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-success">Save</button>
+      <button class="btn" ng-click="closeTraining()">Close</button>
+    </div>
+  </form>
 </div>
 {% endverbatim %}
 
