@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'django_openid_auth',
     'openid_provider',
     'notification',
+    'spiff.api',
     'spiff.membership',
     'spiff.inventory',
     'spiff.local',
