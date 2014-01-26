@@ -7,16 +7,7 @@ import inspect
 from south.signals import post_migrate
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
-
-v1_api = Api(api_name='v1')
-for app in map(lambda x:'%s.v1_api'%(x), settings.INSTALLED_APPS):
-  try:
-    appAPI = importlib.import_module(app)
-  except ImportError:
-    continue
-  for name, cls in inspect.getmembers(appAPI):
-    if inspect.isclass(cls) and issubclass(cls, Resource) and hasattr(cls, 'Meta'):
-      v1_api.register(cls())
+from tastypie.authorization import DjangoAuthorization
 
 def add_view_permissions(sender, **kwargs):
   """
@@ -38,3 +29,29 @@ def add_view_permissions(sender, **kwargs):
 
 # check for all our view permissions after a syncdb
 post_migrate.connect(add_view_permissions)
+
+class SpiffAuthorization(DjangoAuthorization):
+  def read_list(self, object_list, bundle):
+    ret = super(SpiffAuthorization, self).read_list(object_list, bundle)
+    klass = self.base_checks(bundle.request, object_list.model)
+    permName = '%s.list_%s' % (klass._meta.app_label, klass._meta.module_name)
+    if not bundle.request.user.has_perm(permName):
+      return []
+    return ret
+
+  def read_detail(self, object_list, bundle):
+    if super(SpiffAuthorization, self).read_detail(object_list, bundle):
+      klass = self.base_checks(bundle.request, bundle.obj.__class__)
+      permName = '%s.view_%s' % (klass._meta.app_label, klass._meta.module_name)
+      return bundle.request.user.has_perm(permName)
+    return False
+
+v1_api = Api(api_name='v1')
+for app in map(lambda x:'%s.v1_api'%(x), settings.INSTALLED_APPS):
+  try:
+    appAPI = importlib.import_module(app)
+  except ImportError, e:
+    continue
+  for name, cls in inspect.getmembers(appAPI):
+    if inspect.isclass(cls) and issubclass(cls, Resource) and hasattr(cls, 'Meta'):
+      v1_api.register(cls())
