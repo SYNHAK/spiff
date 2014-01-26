@@ -81,6 +81,10 @@ Spiff.provider('Spiff', function(RestangularProvider) {
           password: password
         }).then(function(user) {
           scope.refreshUser();
+          return user;
+        }, function(reason) {
+          scope.$broadcast('loginFailed');
+          return reason;
         });
       }
     };

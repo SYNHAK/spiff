@@ -16,8 +16,17 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
   $scope.login = function() {
     var username = $('#username').val();
     var password = $('#password').val();
-    Spiff.login(username, password).then(function() {
-      $scope.hideLogin()
+    Spiff.login(username, password).then(function(user) {
+      if (user.status >= 300 || user.status < 200) {
+        if (user.status == 401) {
+          $('#loginModal #error-msg').text("Incorrect username or password");
+          $('#loginModal #error-msg').removeClass("hide");
+        }
+        $('#loginModal').effect('shake');
+      } else {
+        $('#loginModal #error-msg').addClass("hide");
+        $scope.hideLogin()
+      }
     });
   };
 
@@ -25,7 +34,7 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
     Spiff.logout();
   };
 
-  $scope.$on('loginRequired', function() {
+  Spiff.$on('loginRequired', function() {
     $scope.showLogin();
   });
 
