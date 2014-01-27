@@ -51,6 +51,13 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     return member;
   });
 
+  RestangularProvider.addElementTransformer('member', false, function(member) {
+    member.addRestangularMethod('getStripeCards', 'get', 'stripeCards');
+    member.addRestangularMethod('addStripeCard', 'post', 'stripeCards');
+    member.addRestangularMethod('removeStripeCard', 'remove', 'stripeCards');
+    return member;
+  });
+
   RestangularProvider.setResponseExtractor(function(response, operation, what, url) {
     var newResponse;
     if (operation == 'getList') {

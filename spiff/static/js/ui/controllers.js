@@ -52,10 +52,51 @@ spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff
         $scope.invoices.push(Restangular.oneUrl('invoice', invoice).get().$object);
       });
 
+
+      $scope.stripeCards = null;
+      $scope.refreshCards = function() {
+        return user.getStripeCards().then(function (cards) {
+          var cardList = [];
+          _.each(cards.cards, function(c) {
+            cardList.push(c);
+          });
+          $scope.stripeCards = cardList;
+        });
+      }
+
+      $scope.refreshCards();
+
       $scope.startUnsubscribe = function(subscription) {
         $('#subscriptionUnsubscribeModal .subscription-name').text(subscription.plan.name);
         $('#subscriptionUnsubscribeModal .subscription-name').data('id', subscription.id);
         $('#subscriptionUnsubscribeModal').modal('show');
+      }
+
+      $scope.addPaymentCard = function() {
+        $('#paymentCardModal').modal('show');
+      }
+
+      $scope.saveCard = function() {
+        var card = $('#card_num').val();
+        var cvc = $('#cvc').val();
+        var month = $('#exp_month').val();
+        var year = $('#exp_year').val();
+        console.log(user);
+        user.addStripeCard({
+          card: card,
+          cvc: cvc,
+          exp_month: month,
+          exp_year: year
+        }).then(function(cardData) {
+          $('#paymentCardModal').modal('hide');
+          $scope.refreshCards();
+        });
+      }
+
+      $scope.removeCard = function(card) {
+        user.one('stripeCards', card.id).remove().then(function() {
+          $scope.refreshCards();
+        });
       }
 
       $scope.hideUnsubscribe  = function() {

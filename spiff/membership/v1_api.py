@@ -11,7 +11,7 @@ from tastypie.utils import trailing_slash
 from tastypie.exceptions import Unauthorized
 import models
 from spiff.api import SpiffAuthorization
-
+import json
 
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
@@ -46,7 +46,7 @@ class GroupResource(ModelResource):
     authorization = SpiffAuthorization()
 
 class MemberResource(ModelResource):
-  firstName = fields.CharField(attribute='user__first_name')
+  firstName = fields.CharField(attribute='user__first_name', null=True)
   lastName = fields.CharField(attribute='user__last_name')
   isAnonymous = fields.BooleanField(attribute='isAnonymous')
   email = fields.CharField(attribute='user__email')
@@ -56,6 +56,8 @@ class MemberResource(ModelResource):
   membershipExpiration = fields.DateTimeField('membershipExpiration', null=True)
   invoices = fields.ToManyField('spiff.payment.v1_api.InvoiceResource', 'user__invoices', null=True)
   subscriptions = fields.ToManyField('spiff.subscription.v1_api.SubscriptionResource', 'user__subscriptions', null=True, full=True)
+  stripeCards = fields.ListField(attribute='stripeCards', default=[],
+      readonly=True)
 
   class Meta:
     queryset = models.Member.objects.all()
@@ -87,10 +89,47 @@ class MemberResource(ModelResource):
       url(r'^(?P<resource_name>%s)/self%s$' %
         (self._meta.resource_name, trailing_slash()),
         self.wrap_view('self'), name='self'),
+      url(r'^(?P<resource_name>%s)/(?P<id>.*)/stripeCards/(?P<stripeCardID>.*)%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('stripeCard'), name='self'),
+      url(r'^(?P<resource_name>%s)/(?P<id>.*)/stripeCards%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('stripeCards'), name='self'),
       url(r'^(?P<resource_name>%s)/self/has_permission/(?P<permission_name>.*)%s$' %
         (self._meta.resource_name, trailing_slash()),
         self.wrap_view('has_permission'), name='self_has_permission')
     ]
+
+  def stripeCards(self, request, **kwargs):
+    self.method_check(request, allowed=['post', 'get'])
+    self.is_authenticated(request)
+    self.throttle_check(request)
+    member = models.Member.objects.get(pk=kwargs['id'])
+
+    if request.method == 'POST':
+      cardData = json.loads(request.body)
+      newCard = {}
+      newCard['number'] = cardData['card']
+      newCard['exp_month'] = cardData['exp_month']
+      newCard['exp_year'] = cardData['exp_year']
+      newCard['cvc'] = cardData['cvc']
+      member.addStripeCard(newCard)
+
+      return self.create_response(request, {'success': True})
+    else:
+      return self.create_response(request, {'cards': member.stripeCards})
+
+  def stripeCard(self, request, **kwargs):
+    self.method_check(request, allowed=['delete'])
+    self.is_authenticated(request)
+    self.throttle_check(request)
+
+    cardID = kwargs['stripeCardID']
+
+    member = models.Member.objects.get(pk=kwargs['id'])
+    member.removeStripeCard(cardID)
+
+    return self.create_response(request, {'success': True})
 
   def search(self, request, **kwargs):
     self.method_check(request, allowed=['get'])
