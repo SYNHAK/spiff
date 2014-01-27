@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.core.exceptions import ObjectDoesNotExist
 from tastypie import fields
 from spiff.api import SpiffAuthorization
 from tastypie.http import HttpUnauthorized, HttpForbidden
