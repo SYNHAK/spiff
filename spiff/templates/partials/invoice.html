@@ -2,8 +2,8 @@
 <h1>Invoice #{{invoice.id}}</h1>
 <ul>
     <li>To: {{invoice.user.firstName}} {{invoice.user.lastName}}</li>
-    <li>Created: {{invoice.created}}</li>
-    <li>Due date: {{invoice.dueDate}}</li>
+    <li>Created: {{invoice.created|date:longDate}}</li>
+    <li>Due date: {{invoice.dueDate|date:longDate}}</li>
 </ul>
 
 <div class="alert alert-info" ng-if="!invoice.open">
@@ -39,7 +39,7 @@
     </tr>
     <tr ng-repeat="payment in invoice.payments">
       <td>{{payment.method}}</td>
-      <td>{{payment.created}}</td>
+      <td>{{payment.created|date:medium}}</td>
       <td>${{payment.value}}</td>
     </tr>
     <tr class="invoice-total">

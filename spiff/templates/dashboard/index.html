@@ -13,8 +13,8 @@
   <div class="span4">
     <h2>Current Membership</h2>
     <ul>
-      <li>Member since: {{user.created}}</li>
-      <li>Expiration date: {{user.membershipExpiration}}</li>
+      <li>Member since: {{user.created|date:longDate}}</li>
+      <li>Expiration date: {{user.membershipExpiration|date:longDate}}</li>
     </ul>
     <h2>Groups</h2>
     <ul>
