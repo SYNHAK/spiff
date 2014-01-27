@@ -13,7 +13,7 @@ class InvoiceManager(models.Manager):
 
     def unpaid(self):
         ids = []
-        for i in self.filter(open=True):
+        for i in self.allOpen():
             if i.unpaidBalance > 0:
                 ids.append(i.id)
         return self.filter(id__in=ids, draft=False)
@@ -173,6 +173,10 @@ class Payment(models.Model):
     def save(self, *args, **kwargs):
         if not self.id and not self.created:
             self.created = datetime.datetime.utcnow().replace(tzinfo=utc)
+            notification.send(
+              [self.user],
+              "payment_received",
+              {'user': self.user, 'payment': self})
         super(Payment, self).save(*args, **kwargs)
         if self.invoice.unpaidBalance == 0:
             self.invoice.open = False
