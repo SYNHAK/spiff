@@ -19,7 +19,7 @@ class SubscriptionPlanResource(ModelResource):
   periodCost = fields.FloatField('periodCost')
 
   class Meta:
-    querySet = models.SubscriptionPlan.objects.all()
+    queryset = models.SubscriptionPlan.objects.all()
     authorization = SpiffAuthorization()
 
 class SubscriptionResource(ModelResource):
@@ -30,6 +30,17 @@ class SubscriptionResource(ModelResource):
   'plan', full=True)
 
   class Meta:
-    querySet = models.Subscription.objects.all()
+    queryset = models.Subscription.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
 
+  def obj_create(self, bundle, **kwargs):
+    bundle = self.full_hydrate(bundle)
+    m2m = self.hydrate_m2m(bundle)
+    plan = m2m.obj.plan
+    subscription = models.Subscription.objects.create(
+      user = bundle.request.user,
+      plan = plan,
+    )
+    bundle.obj = subscription
+    return bundle

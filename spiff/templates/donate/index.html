@@ -1,0 +1,20 @@
+{% verbatim %}
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Donate!</h1>
+    </div>
+    <ul class="thumbnails">
+      <li ng-repeat="plan in plans">
+        <div class="thumbnail" class="donation-plan-tile">
+          <h3>{{plan.name}}</h3>
+          <p>${{plan.value}} {{plan.period.name}}</p>
+          <button class="btn btn-block" ng-click="startSubscription(plan)">Subscribe</button>
+        </div>
+      </li>
+    </ul>
+    <form class="form-horizontal">
+    </form>
+  </div>
+</div>
+{% endverbatim %}

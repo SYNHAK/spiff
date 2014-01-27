@@ -1,5 +1,15 @@
 var spiffControllers = angular.module('spiffControllers', ['restangular', 'spiffApp', 'spiff']);
 
+spiffControllers.controller('DonateCtrl', function($scope, Restangular) {
+  $scope.plans = Restangular.all('donationplan').getList().$object;
+
+  $scope.startSubscription = function(plan) {
+    Restangular.all('subscription').post({
+      plan: '/v1/subscriptionplan/'+plan.id+'/'
+    });
+  };
+});
+
 spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
   $scope.showLogin = function() {
     $('#loginModal').modal('show');

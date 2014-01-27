@@ -46,6 +46,10 @@ spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
       templateUrl: 'sensors/detail.html',
       controller: 'SensorCtrl',
     }).
+    when('/donate', {
+      templateUrl: 'donate/index.html',
+      controller: 'DonateCtrl',
+    }).
     otherwise({
       redirectTo: '/'
     });
