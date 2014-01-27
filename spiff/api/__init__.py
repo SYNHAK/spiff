@@ -5,6 +5,7 @@ from tastypie.resources import Resource
 import importlib
 import inspect
 from south.signals import post_migrate
+from django.db.models.signals import post_syncdb
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 from tastypie.authorization import DjangoAuthorization
@@ -30,6 +31,7 @@ def add_view_permissions(sender, **kwargs):
 
 # check for all our view permissions after a syncdb
 post_migrate.connect(add_view_permissions)
+post_syncdb.connect(add_view_permissions)
 
 class SpiffAuthorization(DjangoAuthorization):
   def read_list(self, object_list, bundle):
