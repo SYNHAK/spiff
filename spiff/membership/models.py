@@ -11,6 +11,7 @@ from django.conf import settings
 from spiff.payment.models import LineItem, Invoice
 from django.template.loader import get_template
 from django.template import Context
+from spiff.payment.models import SubscriptionPlan
 
 stripe.api_key = settings.STRIPE_KEY
 
@@ -202,6 +203,31 @@ class FieldValue(models.Model):
 
   def __unicode__(self):
     return "%s: %s = %s"%(self.member.fullName, self.field.name, self.value)
+
+class RankSubscriptionPlan(SubscriptionPlan):
+    rank = models.ForeignKey(Rank, related_name='subscriptions')
+    member = models.ForeignKey(Member, related_name='rankSubscriptions',
+        blank=True, null=True)
+    quantity = models.IntegerField(default=1)
+
+    def createLineItems(self, subscription, processDate):
+      targetMember = self.member
+      if targetMember is None:
+        targetMember = subscription.user.member
+      planOwner = subscription.user
+      startOfMonth, endOfMonth = monthRange(processDate)
+
+      print "Processing subscription of %s dues for %s, billing to %s"%(self.rank, self.member, subscription.user)
+
+      return [RankLineItem(
+        rank = self.rank,
+        member = targetMember,
+        activeFromDate = startOfMonth,
+        activeToDate = endOfMonth
+      ),]
+
+    def __unicode__(self):
+      return "%sx%s for %s, %s"%(self.rank, self.quantity, self.member, self.period)
 
 class RankLineItem(LineItem):
     rank = models.ForeignKey(Rank)
