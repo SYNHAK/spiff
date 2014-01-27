@@ -46,12 +46,16 @@ class SpiffAuthorization(DjangoAuthorization):
       return bundle.request.user.has_perm(permName)
     return False
 
+def find_api_classes(module, superclass, test=lambda x: True):
+  for app in map(lambda x:'%s.%s'%(x, module), settings.INSTALLED_APPS):
+    try:
+      appAPI = importlib.import_module(app)
+    except ImportError, e:
+      continue
+    for name, cls in inspect.getmembers(appAPI):
+      if inspect.isclass(cls) and issubclass(cls, superclass) and not cls is superclass and test(cls):
+        yield cls
+
 v1_api = Api(api_name='v1')
-for app in map(lambda x:'%s.v1_api'%(x), settings.INSTALLED_APPS):
-  try:
-    appAPI = importlib.import_module(app)
-  except ImportError, e:
-    continue
-  for name, cls in inspect.getmembers(appAPI):
-    if inspect.isclass(cls) and issubclass(cls, Resource) and hasattr(cls, 'Meta'):
-      v1_api.register(cls())
+for api in find_api_classes('v1_api', Resource, lambda x:hasattr(x, 'Meta')):
+  v1_api.register(api())
