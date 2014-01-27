@@ -8,6 +8,7 @@ from south.signals import post_migrate
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 from tastypie.authorization import DjangoAuthorization
+from spiff.api.plugins import find_api_classes
 
 def add_view_permissions(sender, **kwargs):
   """
@@ -45,16 +46,6 @@ class SpiffAuthorization(DjangoAuthorization):
       permName = '%s.view_%s' % (klass._meta.app_label, klass._meta.module_name)
       return bundle.request.user.has_perm(permName)
     return False
-
-def find_api_classes(module, superclass, test=lambda x: True):
-  for app in map(lambda x:'%s.%s'%(x, module), settings.INSTALLED_APPS):
-    try:
-      appAPI = importlib.import_module(app)
-    except ImportError, e:
-      continue
-    for name, cls in inspect.getmembers(appAPI):
-      if inspect.isclass(cls) and issubclass(cls, superclass) and not cls is superclass and test(cls):
-        yield cls
 
 v1_api = Api(api_name='v1')
 for api in find_api_classes('v1_api', Resource, lambda x:hasattr(x, 'Meta')):
