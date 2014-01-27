@@ -51,6 +51,17 @@ spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff
       _.each(user.invoices, function(invoice) {
         $scope.invoices.push(Restangular.oneUrl('invoice', invoice).get().$object);
       });
+
+      $scope.startUnsubscribe = function(subscription) {
+        $('#subscriptionUnsubscribeModal .subscription-name').text(subscription.plan.name);
+        $('#subscriptionUnsubscribeModal .subscription-name').data('id', subscription.id);
+        $('#subscriptionUnsubscribeModal').modal('show');
+      }
+
+      $scope.hideUnsubscribe  = function() {
+        $('#subscriptionUnsubscribeModal').modal('hide');
+      }
+
     } else if (user && user.isAnonymous) {
       $location.url('/welcome');
     }
