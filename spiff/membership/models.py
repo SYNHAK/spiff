@@ -12,7 +12,6 @@ from spiff.payment.models import LineItem, Invoice
 from spiff.subscription.models import SubscriptionPlan
 from django.template.loader import get_template
 from django.template import Context
-import spiff.api
 
 stripe.api_key = settings.STRIPE_KEY
 
@@ -27,6 +26,28 @@ class Member(models.Model):
   fields = models.ManyToManyField('Field', through='FieldValue')
   stripeID = models.TextField()
   hidden = models.BooleanField(default=False)
+
+  @property
+  def stripeCards(self):
+    customer = self.stripeCustomer()
+    if 'cards' in customer:
+      return customer.cards.data
+    return []
+
+  def addStripeCard(self, cardData):
+    customer = self.stripeCustomer()
+    return customer.cards.create(
+      card = cardData
+    )
+
+  def setDefaultStripeCard(self, cardID):
+    customer = self.stripeCustomer()
+    customer.default_card = cardID
+    customer.save()
+
+  def removeStripeCard(self, cardID):
+    customer = self.stripeCustomer()
+    customer.cards.retrieve(cardID).delete()
 
   def isAnonymous(self):
     return self.user_id == get_anonymous_user().id
@@ -70,6 +91,11 @@ class Member(models.Model):
       )
       self.stripeID = customer.id
       self.save()
+      return self.stripeCustomer()
+    if 'deleted' in customer:
+      self.stripeID = ""
+      self.save()
+      return self.stripeCustomer()
     return customer
 
   def serialize(self):

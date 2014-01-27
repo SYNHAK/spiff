@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import utc
 import datetime
+import stripe
 
 from spiff.notification_loader import notification
 
@@ -46,16 +47,36 @@ class Invoice(models.Model):
         ('view_other_invoices', 'Can view invoices assigned to other users'),
       )
 
+    def chargeStripe(self):
+      stripeCustomer = self.user.member.stripeCustomer()
+      charge = stripe.Charge.create(
+        amount = int(self.unpaidBalance*100),
+        currency = 'usd',
+        description = 'Payment from %s for invoice %s'%(self.user.member.fullName, self.id),
+        customer = stripeCustomer.id
+      )
+      payment = Payment.objects.create(
+        user = self.user,
+        value = self.unpaidBalance,
+        status = Payment.STATUS_PAID,
+        transactionID = charge.id,
+        method = Payment.METHOD_STRIPE,
+        invoice = self
+      )
+
     def save(self, *args, **kwargs):
       if self.pk and notification:
         current = Invoice.objects.get(pk=self.pk)
         if current.draft == True or current.open == False:
           if self.draft == False and self.open == True and self.unpaidBalance > 0:
-            notification.send(
-              [self.user],
-              "invoice_ready",
-              {'user': self.user, 'invoice': self},
-            ) 
+            try:
+              self.chargeStripe()
+            except stripe.error.CardError, e:
+              print "Failed to charge stripe", e
+              notification.send(
+                [self.user],
+                "card_failed",
+                {'user': self.user, 'invoice': self})
       super(Invoice, self).save(*args, **kwargs)
 
     @property
