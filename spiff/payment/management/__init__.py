@@ -6,7 +6,13 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
   notification.NoticeType.create(
     'invoice_ready',
     _('Invoice Ready'),
-    _('An invoice has been added to your account')
+    _('An invoice has been posted to your account')
+  )
+
+  notification.NoticeType.create(
+    'card_failed',
+    _('Card Charge Unsuccessful'),
+    _('An attempt was made to charge your card, but it failed')
   )
 
   notification.NoticeType.create(
