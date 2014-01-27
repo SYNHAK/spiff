@@ -35,12 +35,12 @@
       <tr>
         <th>Invoice</th>
         <th>Due Date</th>
-        <th colspan="2">Total Unpaid</th>
+        <th colspan="2">Unpaid Balance</th>
       </tr>
       <tr ng-repeat="invoice in invoices">
         <td><a href="#/invoices/{{invoice.id}}">{{invoice.id}}</a></td>
-        <td>{{invoice.dueDate}}</td>
-        <td>{{invoice.unpaidBalance}}</td>
+        <td>{{invoice.dueDate|date}}</td>
+        <td>${{invoice.unpaidBalance}}</td>
         <td><a href="#/invoices/{{invoice.id}}/pay">Pay</a></td>
       </tr>
   </div>
