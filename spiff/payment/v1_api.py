@@ -31,30 +31,27 @@ class PaymentResource(ModelResource):
     balance = float(bundle.data['value'])
     if balance > invoice.unpaidBalance:
       raise ImmediateHttpResponse(response=self.error_response("You can't pay more than $%s!"%(invoice.unpaidBalance)))
-    try:
-      charge = stripe.Charge.create(
-        amount = int(balance*100),
-        currency = 'usd',
-        card = cardData,
-        description = 'Payment from %s for invoice %s'%(bundle.request.user.member.fullName, invoice.id)
+    charge = stripe.Charge.create(
+      amount = int(balance*100),
+      currency = 'usd',
+      card = cardData,
+      description = 'Payment from %s for invoice %s'%(bundle.request.user.member.fullName, invoice.id)
+    )
+    payment = models.Payment.objects.create(
+      user = bundle.request.user,
+      value = balance,
+      status = models.Payment.STATUS_PAID,
+      transactionID = charge.id,
+      method = models.Payment.METHOD_STRIPE,
+      invoice = invoice
+    )
+    if notification:
+      notification.send(
+        [bundle.request.user],
+        'payment_received',
+        {'user': bundle.request.user, 'payment': payment}
       )
-      payment = models.Payment.objects.create(
-        user = bundle.request.user,
-        value = balance,
-        status = models.Payment.STATUS_PAID,
-        transactionID = charge.id,
-        method = models.Payment.METHOD_STRIPE,
-        invoice = invoice
-      )
-      if notification:
-        notification.send(
-          [bundle.request.user],
-          'payment_received',
-          {'user': bundle.request.user, 'payment': payment}
-        )
-      bundle.obj = payment
-    except stripe.CardError, e:
-      raise e
+    bundle.obj = payment
     return bundle
 
 class LineItemResource(ModelResource):

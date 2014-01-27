@@ -9,9 +9,10 @@ import datetime
 import stripe
 from django.conf import settings
 from spiff.payment.models import LineItem, Invoice
+from spiff.subscription.models import SubscriptionPlan
 from django.template.loader import get_template
 from django.template import Context
-from spiff.payment.models import SubscriptionPlan
+import spiff.api
 
 stripe.api_key = settings.STRIPE_KEY
 
@@ -209,6 +210,9 @@ class RankSubscriptionPlan(SubscriptionPlan):
     member = models.ForeignKey(Member, related_name='rankSubscriptions',
         blank=True, null=True)
     quantity = models.IntegerField(default=1)
+
+    def calculatePeriodCost(self):
+      return self.rank.monthlyDues * self.quantity
 
     def createLineItems(self, subscription, processDate):
       targetMember = self.member

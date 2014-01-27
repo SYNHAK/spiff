@@ -8,51 +8,45 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Subscription'
-        db.create_table(u'payment_subscription', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='subscriptions', to=orm['auth.User'])),
-            ('active', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('plan', self.gf('django.db.models.fields.related.ForeignKey')(related_name='subscriptions', to=orm['payment.SubscriptionPlan'])),
-            ('lastProcessed', self.gf('django.db.models.fields.DateTimeField')(default=None, null=True, blank=True)),
-        ))
-        db.send_create_signal(u'payment', ['Subscription'])
-
         # Adding model 'SubscriptionPeriod'
-        db.create_table(u'payment_subscriptionperiod', (
+        db.create_table(u'subscription_subscriptionperiod', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('dayOfMonth', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('monthOfYear', self.gf('django.db.models.fields.IntegerField')(default=0)),
         ))
-        db.send_create_signal(u'payment', ['SubscriptionPeriod'])
+        db.send_create_signal(u'subscription', ['SubscriptionPeriod'])
 
         # Adding model 'SubscriptionPlan'
-        db.create_table(u'payment_subscriptionplan', (
+        db.create_table(u'subscription_subscriptionplan', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('period', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['payment.SubscriptionPeriod'])),
+            ('period', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['subscription.SubscriptionPeriod'])),
         ))
-        db.send_create_signal(u'payment', ['SubscriptionPlan'])
+        db.send_create_signal(u'subscription', ['SubscriptionPlan'])
 
+        # Adding model 'Subscription'
+        db.create_table(u'subscription_subscription', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='subscriptions', to=orm['auth.User'])),
+            ('active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('plan', self.gf('django.db.models.fields.related.ForeignKey')(related_name='subscriptions', to=orm['subscription.SubscriptionPlan'])),
+            ('lastProcessed', self.gf('django.db.models.fields.DateTimeField')(default=None, null=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+        ))
+        db.send_create_signal(u'subscription', ['Subscription'])
 
-        # Changing field 'Payment.created'
-        db.alter_column(u'payment_payment', 'created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
 
     def backwards(self, orm):
-        # Deleting model 'Subscription'
-        db.delete_table(u'payment_subscription')
-
         # Deleting model 'SubscriptionPeriod'
-        db.delete_table(u'payment_subscriptionperiod')
+        db.delete_table(u'subscription_subscriptionperiod')
 
         # Deleting model 'SubscriptionPlan'
-        db.delete_table(u'payment_subscriptionplan')
+        db.delete_table(u'subscription_subscriptionplan')
 
+        # Deleting model 'Subscription'
+        db.delete_table(u'subscription_subscription')
 
-        # Changing field 'Payment.created'
-        db.alter_column(u'payment_payment', 'created', self.gf('django.db.models.fields.DateTimeField')())
 
     models = {
         u'auth.group': {
@@ -91,65 +85,28 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'payment.invoice': {
-            'Meta': {'object_name': 'Invoice'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'draft': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'dueDate': ('django.db.models.fields.DateField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'open': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'invoices'", 'to': u"orm['auth.User']"})
-        },
-        u'payment.linediscountitem': {
-            'Meta': {'object_name': 'LineDiscountItem'},
-            'description': ('django.db.models.fields.TextField', [], {}),
-            'flatRate': ('django.db.models.fields.FloatField', [], {'default': '0'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'invoice': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'discounts'", 'to': u"orm['payment.Invoice']"}),
-            'lineItem': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'discounts'", 'to': u"orm['payment.LineItem']"}),
-            'percent': ('django.db.models.fields.FloatField', [], {'default': '0'})
-        },
-        u'payment.lineitem': {
-            'Meta': {'object_name': 'LineItem'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'invoice': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'items'", 'to': u"orm['payment.Invoice']"}),
-            'name': ('django.db.models.fields.TextField', [], {}),
-            'quantity': ('django.db.models.fields.FloatField', [], {'default': '1'}),
-            'unitPrice': ('django.db.models.fields.FloatField', [], {'default': '0'})
-        },
-        u'payment.payment': {
-            'Meta': {'object_name': 'Payment'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'invoice': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'payments'", 'to': u"orm['payment.Invoice']"}),
-            'method': ('django.db.models.fields.IntegerField', [], {}),
-            'status': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'transactionID': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'payments'", 'to': u"orm['auth.User']"}),
-            'value': ('django.db.models.fields.FloatField', [], {})
-        },
-        u'payment.subscription': {
+        u'subscription.subscription': {
             'Meta': {'object_name': 'Subscription'},
             'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'lastProcessed': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'plan': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'subscriptions'", 'to': u"orm['payment.SubscriptionPlan']"}),
+            'plan': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'subscriptions'", 'to': u"orm['subscription.SubscriptionPlan']"}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'subscriptions'", 'to': u"orm['auth.User']"})
         },
-        u'payment.subscriptionperiod': {
+        u'subscription.subscriptionperiod': {
             'Meta': {'object_name': 'SubscriptionPeriod'},
             'dayOfMonth': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'monthOfYear': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
-        u'payment.subscriptionplan': {
+        u'subscription.subscriptionplan': {
             'Meta': {'object_name': 'SubscriptionPlan'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'period': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['payment.SubscriptionPeriod']"})
+            'period': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['subscription.SubscriptionPeriod']"})
         }
     }
 
-    complete_apps = ['payment']
+    complete_apps = ['subscription']

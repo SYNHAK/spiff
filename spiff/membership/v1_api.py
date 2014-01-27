@@ -55,6 +55,7 @@ class MemberResource(ModelResource):
   outstandingBalance = fields.FloatField('outstandingBalance')
   membershipExpiration = fields.DateTimeField('membershipExpiration', null=True)
   invoices = fields.ToManyField('spiff.payment.v1_api.InvoiceResource', 'user__invoices', null=True)
+  subscriptions = fields.ToManyField('spiff.subscription.v1_api.SubscriptionResource', 'user__subscriptions', null=True, full=True)
 
   class Meta:
     queryset = models.Member.objects.all()
