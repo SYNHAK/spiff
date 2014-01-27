@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'openid_provider',
     'notification',
     'spiff.api',
+    'spiff.donations',
     'spiff.membership',
     'spiff.inventory',
     'spiff.local',
