@@ -9,40 +9,6 @@ class Command(BaseCommand):
   def handle(self, *args, **options):
     stripe.api_key = settings.STRIPE_KEY
     ranks = Rank.objects.filter(monthlyDues__gt=0)
-    plans = stripe.Plan.all()['data']
-    deletedPlans = []
-    for plan in plans:
-      isGone = True
-      for rank in ranks:
-        if str(rank.id) == str(plan.id):
-          isGone = False
-          break
-      if isGone:
-        print "Removing plan %s"%(plan.name)
-        plan.delete()
-    for rank in ranks:
-      exists = False
-      for plan in plans:
-        if str(rank.id) == str(plan.id):
-          if plan.amount != int(rank.monthlyDues*100):
-            print "Plan", plan.name, "does not match rank", rank, ", deleting."
-            plan.delete()
-          else:
-            exists = True
-            if plan.name != rank.group.name:
-              print "Syncing plan", plan.name, 'with rank', rank
-              plan.name = rank.group.name
-              plan.save()
-            break
-      if not exists:
-        print "Creating plan for", rank
-        plan = stripe.Plan.create(
-          amount = int(rank.monthlyDues*100),
-          interval = 'month',
-          name = rank.group.name,
-          currency = 'usd',
-          id = rank.id
-        )
     members = Member.objects.all()
     validCustomers = []
     for member in members:
