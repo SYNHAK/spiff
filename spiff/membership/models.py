@@ -127,12 +127,19 @@ class Member(models.Model):
       return items[0].activeToDate
     return None
 
-  def getMembershipLineItemsForMonth(self, date=None):
+  def getMembershipLineItemsForMonth(self, rank=None, date=None):
     monthStart, monthEnd = monthRange(date)
-    billedMonths = self.rankLineItems.filter(
-      activeFromDate__gte=monthStart,
-      activeToDate__lte=monthEnd
-    )
+    if rank is None:
+      billedMonths = self.rankLineItems.filter(
+        activeFromDate__gte=monthStart,
+        activeToDate__lte=monthEnd,
+      )
+    else:
+      billedMonths = self.rankLineItems.filter(
+        activeFromDate__gte=monthStart,
+        activeToDate__lte=monthEnd,
+        rank=rank,
+      )
     return billedMonths
 
   def paidForMonth(self, date=None):
