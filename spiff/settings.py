@@ -142,7 +142,6 @@ INSTALLED_APPS = (
     'spiff.sensors',
     'spiff.payment',
     'spiff.management',
-    'spiff.ui',
     'django_nose',
 )
 
