@@ -3,3 +3,4 @@ virtualenv
 *.swp
 local_settings.py
 .coverage
+/static
