@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 from spiff.api import v1_api
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
+from django.templatetags.static import static
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -9,8 +10,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^status.json$', 'spiff.api.views.spaceapi'),
-    url(r'^$', RedirectView.as_view(url=reverse_lazy('ui:index')), name='root'),
-    url(r'^ui/', include('spiff.ui.urls', namespace='ui')),
+    url(r'^$', RedirectView.as_view(url=static('index.html')), name='root'),
     url(r'^', include(v1_api.urls)),
 
     #$url(r'^sensors/', include('spiff.sensors.urls', namespace='sensors')),

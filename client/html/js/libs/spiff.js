@@ -45,16 +45,20 @@ Spiff.provider('Spiff', function(RestangularProvider) {
   });
 
   RestangularProvider.addElementTransformer('member', true, function(member) {
-    member.addRestangularMethod('login', 'post', 'login');
-    member.addRestangularMethod('logout', 'get', 'logout');
-    member.addRestangularMethod('search', 'get', 'search');
+    if (member.addRestangularMethod) {
+      member.addRestangularMethod('login', 'post', 'login');
+      member.addRestangularMethod('logout', 'get', 'logout');
+      member.addRestangularMethod('search', 'get', 'search');
+    }
     return member;
   });
 
   RestangularProvider.addElementTransformer('member', false, function(member) {
-    member.addRestangularMethod('getStripeCards', 'get', 'stripeCards');
-    member.addRestangularMethod('addStripeCard', 'post', 'stripeCards');
-    member.addRestangularMethod('removeStripeCard', 'remove', 'stripeCards');
+    if (member.addRestangularMethod) {
+      member.addRestangularMethod('getStripeCards', 'get', 'stripeCards');
+      member.addRestangularMethod('addStripeCard', 'post', 'stripeCards');
+      member.addRestangularMethod('removeStripeCard', 'remove', 'stripeCards');
+    }
     return member;
   });
 

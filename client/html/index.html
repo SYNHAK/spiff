@@ -1,34 +1,29 @@
 <!DOCTYPE html>
-{% load bootstrap_toolkit %}
-{% load url from future %}
 <html ng-app="spiffApp">
 <head>
   <meta charset="utf-8">
-  {% bootstrap_stylesheet_tag %}
-  {% bootstrap_stylesheet_tag "responsive" %}
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/main.css"/>
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/ui-lightness/jquery-ui-1.10.4.custom.css"/>
-  <script>var userID = 1;</script>
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css"/>
+  <link rel="stylesheet" type="text/css" href="css/main.css"/>
+  <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.10.4.custom.css"/>
+  <script src="lib/jquery/jquery.js"></script>
+  <script src="lib/bootstrap/bootstrap.js"></script>
+  <script src="lib/jquery-ui/jquery-ui.js"></script>
+  <script src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
+  <script src="lib/underscore/underscore.js"></script>
+  <script src="lib/angular/angular.js"></script>
+  <script src="lib/angular-route/angular-route.js"></script>
+  <script src="lib/angularjs-gravatar/gravatar-directive.js"></script>
+  <script src="lib/restangular/restangular.js"></script>
 
-  <script src="{{STATIC_URL}}/js/libs/jquery-1.10.2.min.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/jquery-ui-1.10.4.custom.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/jquery-qrcode.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/underscore-min.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/angular.min.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/angular-route.min.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/md5-service.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/gravatar-directive.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/restangular.min.js"></script>
-  <script src="{{STATIC_URL}}/js/libs/spiff.js"></script>
-  <script src="{{STATIC_URL}}/js/ui/controllers.js"></script>
-  <script src="{{STATIC_URL}}/js/ui/directives.js"></script>
-  <script src="{{STATIC_URL}}/js/ui/application.js"></script>
-  {% bootstrap_javascript_tag %}
-  {% block extra_head %}{% endblock %}
+  <script src="js/libs/md5-service.js"></script>
+  <script src="js/libs/spiff.js"></script>
+  <script src="js/ui/controllers.js"></script>
+  <script src="js/ui/directives.js"></script>
+  <script src="js/ui/application.js"></script>
+
   <title>Spiff</title>
 </head>
 <body>
-{% verbatim %}
 <div ng-include="'partials/epicenter.html'"></div>
 <div class="container" id="canvas" ng-view>
 </div>
@@ -59,10 +54,10 @@
       bug!</em> Please report it on github:</p>
     <div class="well"><a
       href="https://github.com/SYNHAK/spiff/issues/new">https://github.com/SYNHAK/spiff/issues/new</a></div>
-    {% endverbatim %}
+    <!-- {% endverbatim %}
     <a href="{% url 'admin:index' %}" class="btn btn-block btn-large btn-warning">Ok, I
       understand.</a>
-    {% verbatim %}
+    {% verbatim %} -->
     <button onClick="$('#adminModal').modal('hide')" class="btn btn-block
       btn-large">Nevermind</button>
   </div>
@@ -77,5 +72,4 @@
     <pre id="traceback"></pre>
   </div>
 </div>
-{% endverbatim %}
 </body>

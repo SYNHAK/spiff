@@ -1,4 +1,3 @@
-{% verbatim %}
 <h1>Invoice #{{invoice.id}}</h1>
 <ul>
     <li>To: {{invoice.user.firstName}} {{invoice.user.lastName}}</li>
@@ -54,5 +53,4 @@
   <tr class="invoice-total"><th>Payments</th><td>${{invoice.paidBalance}}</td></tr>
   <tr class="invoice-total"><th>Grand Total</th><td>${{invoice.unpaidBalance}}</td></tr>
 </table>
-{% endverbatim %}
 
