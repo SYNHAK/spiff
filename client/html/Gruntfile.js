@@ -26,14 +26,24 @@ module.exports = function(grunt) {
       install: {
         options: {
           targetDir: "build/lib",
-          cleanTargetDir: true
         }
+      }
+    },
+    watch: {
+      bower: {
+        files: ['bower.js'],
+        tasks: ['bower', 'uglify:deps']
+      },
+      scripts: {
+        files: ['app/js/*.js'],
+        tasks: ['uglify:app'],
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-bower-task');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.registerTask('default', ['bower', 'uglify:deps', 'uglify:app']);
 
 };
