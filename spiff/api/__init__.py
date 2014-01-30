@@ -34,20 +34,64 @@ post_migrate.connect(add_view_permissions)
 post_syncdb.connect(add_view_permissions)
 
 class SpiffAuthorization(DjangoAuthorization):
-  def read_list(self, object_list, bundle):
-    ret = super(SpiffAuthorization, self).read_list(object_list, bundle)
-    klass = self.base_checks(bundle.request, object_list.model)
-    permName = '%s.list_%s' % (klass._meta.app_label, klass._meta.module_name)
-    if not bundle.request.user.has_perm(permName):
-      return []
+  def check_perm(self, request, model, name):
+    klass = self.base_checks(request, model.__class__)
+    permName = '%s.%s_%s' % (model.__class__._meta.app_label, name,
+        model.__class__._meta.module_name)
+    return request.user.has_perm(permName)
+
+  def check_list(self, object_list, bundle, op, perm=None):
+    func = getattr(super(SpiffAuthorization, self), '%s_list'%(op))
+    permitted = func(object_list, bundle)
+    ret = []
+    if perm is not None:
+      for obj in permitted:
+        if self.check_perm(bundle.request, obj, perm):
+          ret.append(obj)
     return ret
 
-  def read_detail(self, object_list, bundle):
-    if super(SpiffAuthorization, self).read_detail(object_list, bundle):
-      klass = self.base_checks(bundle.request, bundle.obj.__class__)
-      permName = '%s.view_%s' % (klass._meta.app_label, klass._meta.module_name)
-      return bundle.request.user.has_perm(permName)
+  def check_detail(self, object_list, bundle, op, perm=None):
+    func = getattr(super(SpiffAuthorization, self), '%s_detail'%(op))
+    if func(object_list, bundle):
+      if perm is not None:
+        return self.check_perm(bundle.request, bundle.obj, perm)
+      return True
     return False
+
+  def read_list(self, object_list, bundle):
+    return self.check_list(object_list, bundle, 'read', 'list')
+
+  def read_detail(self, object_list, bundle):
+    return self.check_detail(object_list, bundle, 'read', 'view')
+
+  def create_list(self, object_list, bundle):
+    return self.check_list(object_list, bundle, 'create')
+
+  def create_detail(self, object_list, bundle):
+    return self.check_detail(object_list, bundle, 'create')
+
+  def update_list(self, object_list, bundle):
+    return self.check_list(object_list, bundle, 'update')
+
+  def update_detail(self, object_list, bundle):
+    return self.check_detail(object_list, bundle, 'update')
+
+  def delete_list(self, object_list, bundle):
+    return self.check_list(object_list, bundle, 'delete')
+
+  def delete_detail(self, object_list, bundle):
+    return self.check_detail(object_list, bundle, 'delete')
+
+class OwnedObjectAuthorization(SpiffAuthorization):
+  def __init__(self, attrName):
+    self._attr = attrName
+
+  def check_perm(self, request, model, name):
+    if getattr(model, self._attr) != request.user:
+      return super(OwnedObjectAuthorization, self).check_perm(request,
+          model.__class__, '%s_others'%(name))
+    return super(OwnedObjectAuthorization, self).check_perm(request,
+        model.__class__, name)
 
 v1_api = Api(api_name='v1')
 for api in find_api_classes('v1_api', Resource, lambda x:hasattr(x, 'Meta')):

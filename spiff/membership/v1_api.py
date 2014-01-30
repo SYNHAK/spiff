@@ -45,6 +45,12 @@ class GroupResource(ModelResource):
     queryset = Group.objects.all()
     authorization = SpiffAuthorization()
 
+class SelfMemberAuthorization(SpiffAuthorization):
+  def check_perm(self, request, model, name):
+    if request.user.pk == model.pk:
+      return True
+    return super(SelfMemberAuthorization, self).check_perm(request, model, name)
+
 class MemberResource(ModelResource):
   firstName = fields.CharField(attribute='user__first_name', null=True)
   lastName = fields.CharField(attribute='user__last_name')
@@ -61,7 +67,7 @@ class MemberResource(ModelResource):
 
   class Meta:
     queryset = models.Member.objects.all()
-    authorization = SpiffAuthorization()
+    authorization = SelfMemberAuthorization()
 
   def self(self, request, **kwargs):
     self.method_check(request, allowed=['get'])
