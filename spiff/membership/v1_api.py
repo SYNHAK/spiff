@@ -13,6 +13,23 @@ import models
 from spiff.api import SpiffAuthorization
 import json
 
+class FieldResource(ModelResource):
+  name = fields.CharField('name')
+  description = fields.CharField('description')
+  required = fields.BooleanField('required')
+  public = fields.BooleanField('public')
+  protected = fields.BooleanField('protected')
+
+  class Meta:
+    queryset = models.Field.objects.all()
+    authorization = SpiffAuthorization()
+
+class FieldValueResource(ModelResource):
+  field = fields.ToOneField(FieldResource, 'field', full=True)
+  value = fields.CharField('value')
+  member = fields.ToOneField('spiff.membership.v1_api.MemberResource',
+  'member')
+
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
 
