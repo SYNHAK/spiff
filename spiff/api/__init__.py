@@ -34,7 +34,7 @@ post_migrate.connect(add_view_permissions)
 post_syncdb.connect(add_view_permissions)
 
 class SpiffAuthorization(DjangoAuthorization):
-  def check_perm(self, request, model, name):
+  def check_perm(self, request, model, name, op):
     klass = self.base_checks(request, model.__class__)
     permName = '%s.%s_%s' % (model.__class__._meta.app_label, name,
         model.__class__._meta.module_name)
@@ -46,7 +46,7 @@ class SpiffAuthorization(DjangoAuthorization):
     ret = []
     if perm is not None:
       for obj in permitted:
-        if self.check_perm(bundle.request, obj, perm):
+        if self.check_perm(bundle.request, obj, perm, op):
           ret.append(obj)
     return ret
 
@@ -54,7 +54,7 @@ class SpiffAuthorization(DjangoAuthorization):
     func = getattr(super(SpiffAuthorization, self), '%s_detail'%(op))
     if func(object_list, bundle):
       if perm is not None:
-        return self.check_perm(bundle.request, bundle.obj, perm)
+        return self.check_perm(bundle.request, bundle.obj, perm, op)
       return True
     return False
 
@@ -86,12 +86,12 @@ class OwnedObjectAuthorization(SpiffAuthorization):
   def __init__(self, attrName):
     self._attr = attrName
 
-  def check_perm(self, request, model, name):
+  def check_perm(self, request, model, name, op):
     if getattr(model, self._attr) != request.user:
       return super(OwnedObjectAuthorization, self).check_perm(request,
-          model.__class__, '%s_others'%(name))
+          model.__class__, '%s_others'%(name), op)
     return super(OwnedObjectAuthorization, self).check_perm(request,
-        model.__class__, name)
+        model.__class__, name, op)
 
 v1_api = Api(api_name='v1')
 for api in find_api_classes('v1_api', Resource, lambda x:hasattr(x, 'Meta')):

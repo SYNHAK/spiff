@@ -63,10 +63,11 @@ class GroupResource(ModelResource):
     authorization = SpiffAuthorization()
 
 class SelfMemberAuthorization(SpiffAuthorization):
-  def check_perm(self, request, model, name):
+  def check_perm(self, request, model, name, op):
     if request.user.pk == model.pk:
       return True
-    return super(SelfMemberAuthorization, self).check_perm(request, model, name)
+    return super(SelfMemberAuthorization, self).check_perm(request, model, name,
+        op)
 
 class MemberResource(ModelResource):
   username = fields.CharField(attribute='user__username')
