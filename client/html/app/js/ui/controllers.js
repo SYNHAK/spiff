@@ -219,7 +219,42 @@ spiffControllers.controller('ResourceListCtrl', function($scope, Restangular) {
   $scope.resources = Restangular.all('resource').getList().$object;
 });
 
-spiffControllers.controller('ResourceCtrl', function($scope, Restangular, $routeParams) {
+var ResourceMetadataEditCtrl = function($scope, $modalInstance, Restangular, resource, currentMetadata) {
+  $scope.d = {};
+
+  if (currentMetadata) {
+    $scope.d.name = currentMetadata.name;
+    $scope.d.value = currentMetadata.value;
+  }
+
+  $scope.save = function() {
+    var value = $scope.d.value;
+    var name = $scope.d.name;
+
+    if (currentMetadata) {
+      Restangular.one('metadata', currentMetadata.id).patch({
+        value: value,
+        name: name,
+        type: 0
+      }).then(function(meta) {
+        $modalInstance.close();
+      });
+    } else {
+      Restangular.all('metadata').post({
+        resource: '/v1/resource/'+resource.id+'/',
+        value: value,
+        name: name,
+        type: 0
+      }).then(function(meta) {
+        $modalInstance.close();
+      });
+    }
+  }
+
+  $scope.close = function() {$modalInstance.close()};
+}
+
+spiffControllers.controller('ResourceCtrl', function($scope, Restangular, $routeParams, $modal) {
   var resource = Restangular.one('resource', $routeParams.resourceID);
 
   $scope.refreshResource = function() {
@@ -312,17 +347,22 @@ spiffControllers.controller('ResourceCtrl', function($scope, Restangular, $route
   };
 
   $scope.editMetadata = function(metaName) {
-    $('#metadataEditorModal form')[0].reset();
-    $('#metadataEditorModal #meta-id').val(-1);
+    var current = null;
     if (metaName != null) {
-      var meta = _.findWhere($scope.metadata, {name: metaName});
-      console.log(meta);
-      $('#metadataEditorModal #meta-name').val(meta.name);
-      $('#metadataEditorModal #meta-value').val(meta.value);
-      $('#metadataEditorModal #meta-id').val(meta.id);
+      current = _.findWhere($scope.metadata, {name: metaName});
     }
-    $('#metadataEditorModal :input').attr('disabled', false);
-    $('#metadataEditorModal').modal('show');
+    var modal = $modal.open({
+      templateUrl: 'resources/modal/edit-metadata.html',
+      controller: ResourceMetadataEditCtrl,
+      resolve: {
+        resource: function() {return resource},
+        currentMetadata: function() {return current}
+      }
+    });
+    modal.result.then(function() {
+      $scope.refreshMetadata();
+      $scope.refreshChangelog();
+    });
   };
 
   $scope.deleteMetadata = function(meta) {
@@ -332,39 +372,6 @@ spiffControllers.controller('ResourceCtrl', function($scope, Restangular, $route
     });
   }
 
-  $scope.saveMetadata = function() {
-    $('#metadataEditorModal :input').attr('disabled', true);
-    var id = $('#metadataEditorModal #meta-id').val();
-    var value = $('#metadataEditorModal #meta-value').val();
-    var name = $('#metadataEditorModal #meta-name').val();
-
-    if (id > 0) {
-      Restangular.one('metadata', id).patch({
-        value: value,
-        name: name,
-        type: 0
-      }).then(function(meta) {
-        $scope.refreshMetadata();
-        $scope.refreshChangelog();
-        $scope.closeEditor();
-      });
-    } else {
-      Restangular.all('metadata').post({
-        resource: '/v1/resource/'+resource.id+'/',
-        value: value,
-        name: name,
-        type: 0
-      }).then(function(meta) {
-        $scope.refreshMetadata();
-        $scope.refreshChangelog();
-        $scope.closeEditor();
-      });
-    }
-  }
-
-  $scope.closeEditor = function() {
-    $('#metadataEditorModal').modal('hide');
-  }
 });
 
 var PayInvoiceCtrl = function($scope, $modalInstance, Restangular, invoice) {

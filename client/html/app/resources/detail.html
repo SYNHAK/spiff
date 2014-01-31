@@ -52,36 +52,6 @@
       </tr>
   </div>
 </div>
-<div id="metadataEditorModal" class="modal hide fade">
-  <form class="form-horizontal" id="metadataForm" ng-submit="saveMetadata()">
-    <div class="modal-header">
-      <h3>Edit Metadata</h3>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="meta-id">
-      <div class="control-group">
-        <label class="control-label" for="meta-name">
-          Name:
-        </label>
-        <div class="controls">
-          <input type="text" id="meta-name">
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="meta-value">
-          Value:
-        </label>
-        <div class="controls">
-          <input type="text" id="meta-value">
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="submit" class="btn btn-success">Save</button>
-      <button class="btn" ng-click="closeEditor()">Cancel</button>
-    </div>
-  </form>
-</div>
 <div id="trainingModal" class="modal hide fade">
   <form class="form-horizontal" id="trainingForm" ng-submit="saveTraining()">
     <div class="modal-header">
