@@ -12,11 +12,15 @@ from spiff.payment.models import LineItem, Invoice
 from spiff.subscription.models import SubscriptionPlan
 from django.template.loader import get_template
 from django.template import Context
+from django.contrib.contenttypes.models import ContentType
 
 stripe.api_key = settings.STRIPE_KEY
 
 if not hasattr(settings, 'ANONYMOUS_USER_ID'):
   settings.ANONYMOUS_USER_ID = 0
+
+if not hasattr(settings, 'AUTHENTICATED_GROUP_ID'):
+  settings.AUTHENTICATED_GROUP_ID = 0
 
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
@@ -306,12 +310,46 @@ def create_rank(sender, instance, created, **kwargs):
 
 post_save.connect(create_rank, sender=Group)
 
+class AuthenticatedUser(User):
+  class Meta:
+    proxy = True
+
+  def has_perm(self, perm, obj=None):
+    if super(AuthenticatedUser, self).has_perm(perm, obj):
+      return True
+    anon = get_anonymous_user()
+    if anon.has_perm(perm, obj):
+      return True
+    app, perm = perm.split('.', 1)
+    return get_authenticated_user_group().permissions.filter(
+      content_type__app_label = app,
+      codename=perm).exists()
+
+
+class AuthenticatedUserGroup(Group):
+  class Meta:
+    proxy = True
+
 class AnonymousUser(User):
   def is_anonymous(self):
     return True
 
   class Meta:
     proxy = True
+
+def get_authenticated_user_group():
+  if settings.AUTHENTICATED_GROUP_ID == 0:
+    try:
+      group = AuthenticatedUserGroup.objects.get(
+        name='Authenticated Users'
+      )
+    except AuthenticatedUserGroup.DoesNotExist:
+      group = AuthenticatedUserGroup.objects.create(
+        name='Authenticated Users'
+      )
+  else:
+    group = AuthenticatedUserGroup.objects.get(id=settings.AUTHENTICATED_GROUP_ID)
+  return group
 
 def get_anonymous_user():
   if settings.ANONYMOUS_USER_ID == 0:

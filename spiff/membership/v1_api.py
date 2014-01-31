@@ -12,8 +12,16 @@ from tastypie.exceptions import Unauthorized
 import models
 from spiff.api import SpiffAuthorization
 import json
+from spiff.subscription import v1_api as subscription
 
 class FieldValueAuthorization(SpiffAuthorization):
+  def conditions(self):
+    return (
+      ('public', 'field is public'),
+      ('protected', 'field is protected'),
+      ('private', 'field is private'),
+    ) + super(FieldValueAuthorization, self).conditions()
+
   def check_perm(self, request, model, name, op):
     if model.field.public:
       return super(FieldValueAuthorization, self).check_perm(request, model,
@@ -46,14 +54,18 @@ class FieldValueResource(ModelResource):
     authorization = FieldValueAuthorization()
 
 class RankPlanAuthorization(SpiffAuthorization):
+  def conditions(self):
+    return (
+      ('active_membership', 'rank is active membership'),
+    )+super(RankPlanAuthorization, self).conditions()
+
   def check_perm(self, request, model, name, op):
-    print model.rank
     if model.rank.isActiveMembership:
       return super(RankPlanAuthorization, self).check_perm(request, model,
         '%s_active_membership'%(name), op)
     return super(RankPlanAuthorization, self).check_perm(request, model, name, op)
 
-class RankSubscriptionPlanResource(ModelResource):
+class RankSubscriptionPlanResource(subscription.SubscriptionPlanResource):
   class Meta:
     queryset = models.RankSubscriptionPlan.objects.all()
     authorization = RankPlanAuthorization()
