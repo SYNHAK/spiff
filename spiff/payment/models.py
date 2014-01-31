@@ -5,6 +5,7 @@ import datetime
 import stripe
 
 from spiff.notification_loader import notification
+import spiff.api.plugins
 
 class InvoiceManager(models.Manager):
 
@@ -121,6 +122,9 @@ class LineItem(models.Model):
     def isOpen(self):
         return self.invoice.open
 
+    def process(self):
+      pass
+
     @property
     def totalPrice(self):
         return self.unitPrice * self.quantity
@@ -181,6 +185,9 @@ class Payment(models.Model):
         if self.invoice.unpaidBalance == 0:
             self.invoice.open = False
             self.invoice.save()
+            for lineItemType in spiff.api.plugins.find_api_classes('models', LineItem):
+              for item in lineItemType.objects.filter(invoice=self.invoice):
+                item.process()
 
     def __unicode__(self):
         return "%d %s by %s for %s"%(self.value, self.get_method_display(), self.user, self.invoice)

@@ -265,12 +265,33 @@ class RankLineItem(LineItem):
     activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
     activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
 
+    def process(self):
+      period, created = MembershipPeriod.objects.get_or_create(
+        rank = self.rank,
+        member = self.member,
+        activeFromDate = self.activeFromDate,
+        activeToDate = self.activeToDate,
+        lineItem = self
+      )
+      if created:
+        u = self.member.user
+        u.groups.add(self.rank.group)
+        u.save()
+        print "Processed", self, "- added", self.member, "to group", self.rank.group
+
     def save(self, *args, **kwargs):
         if not self.id:
             if self.unitPrice == 0:
               self.unitPrice = self.rank.monthlyDues
             self.name = "%s membership dues for %s, %s to %s"%(self.rank, self.member, self.activeFromDate, self.activeToDate)
         super(RankLineItem, self).save(*args, **kwargs)
+
+class MembershipPeriod(models.Model):
+    rank = models.ForeignKey(Rank)
+    member = models.ForeignKey(Member, related_name='membershipPeriods')
+    activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
+    activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
+    lineItem = models.ForeignKey(RankLineItem)
 
 def create_member(sender, instance, created, **kwargs):
   if created:
