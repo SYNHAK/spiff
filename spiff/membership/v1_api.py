@@ -45,6 +45,19 @@ class FieldValueResource(ModelResource):
     queryset = models.FieldValue.objects.all()
     authorization = FieldValueAuthorization()
 
+class RankPlanAuthorization(SpiffAuthorization):
+  def check_perm(self, request, model, name, op):
+    print model.rank
+    if model.rank.isActiveMembership:
+      return super(RankPlanAuthorization, self).check_perm(request, model,
+        '%s_active_membership'%(name), op)
+    return super(RankPlanAuthorization, self).check_perm(request, model, name, op)
+
+class RankSubscriptionPlanResource(ModelResource):
+  class Meta:
+    queryset = models.RankSubscriptionPlan.objects.all()
+    authorization = RankPlanAuthorization()
+
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
 
