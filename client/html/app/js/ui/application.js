@@ -1,11 +1,19 @@
 var spiffApp = angular.module('spiffApp', [
   'restangular',
-  'spiffControllers',
   'spiffDirectives',
   'spiff',
+  'spiff.dashboard',
+  'spiff.epicenter',
+  'spiff.members',
+  'spiff.resources',
+  'spiff.donate',
+  'spiff.sensors',
   'ngRoute',
   'ui-gravatar',
-  'md5'
+  'md5',
+  'ui.bootstrap.modal',
+  'template/modal/window.html',
+  'template/modal/backdrop.html'
 ]);
 
 spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
