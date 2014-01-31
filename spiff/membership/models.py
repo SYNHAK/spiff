@@ -333,7 +333,7 @@ def get_anonymous_user():
       member.hidden = True
       member.save()
   else:
-    user = User.objects.get(settings.ANONYMOUS_USER_ID)
+    user = User.objects.get(id=settings.ANONYMOUS_USER_ID)
   try:
     member = user.member
   except Member.DoesNotExist:

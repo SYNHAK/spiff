@@ -61,7 +61,7 @@ class LineItemResource(ModelResource):
   totalPrice = fields.FloatField('totalPrice')
 
   class Meta:
-    querySet = models.LineItem.objects.all()
+    queryset = models.LineItem.objects.all()
     authorization = SpiffAuthorization()
 
 class InvoiceResource(ModelResource):
