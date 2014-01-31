@@ -26,7 +26,8 @@
     "angular-route": "~1.2.6",
     "angularjs-gravatar": "",
     "angular-md5": "",
-    "angular-ui-bootstrap-bower": "0.10.0",
+    "angular-ui-bootstrap-bower": "0.8.0",
+    "angular-ui-router": "0.2.8-bowratic-tedium",
     "restangular": ""
   }
 }
