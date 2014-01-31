@@ -1,0 +1,28 @@
+<form class="form-horizontal" id="loginForm" ng-submit="login()">
+  <div class="modal-header">
+    <h3>Login</h3>
+  </div>
+  <div class="modal-body">
+      <div class="control-group">
+        <label class="control-label" for="username">
+          Username:
+        </label>
+        <div class="controls">
+          <input type="text" id="username" ng-model="d.username">
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="username">
+          Password:
+        </label>
+        <div class="controls">
+          <input type="password" id="password" ng-model="d.password">
+        </div>
+      </div>
+      <div class="alert alert-error" ng-if="error">{{error}}</div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary">Login</button>
+    <button class="btn" ng-click="cancel()">Cancel</button>
+  </div>
+</form>

@@ -1,4 +1,4 @@
-var spiffControllers = angular.module('spiffControllers', ['restangular', 'spiffApp', 'spiff']);
+var spiffControllers = angular.module('spiffControllers', ['restangular', 'spiffApp', 'spiff', 'ui.bootstrap.modal', 'template/modal/window.html', 'template/modal/backdrop.html']);
 
 spiffControllers.controller('DonateCtrl', function($scope, Restangular) {
   $scope.plans = Restangular.all('donationplan').getList().$object;
@@ -10,9 +10,36 @@ spiffControllers.controller('DonateCtrl', function($scope, Restangular) {
   };
 });
 
-spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
+var LoginCtrl = function($scope, $modalInstance, Spiff) {
+  $scope.d = {};
+
+  $scope.login = function() {
+    var username = $scope.d.username;
+    var password = $scope.d.password;
+    Spiff.login(username, password).then(function(user) {
+      if (user.status >= 300 || user.status < 200) {
+        if (user.status == 401) {
+          $scope.error = "Incorrect username or password";
+          $('#loginModal #error-msg').text("Incorrect username or password");
+        }
+      } else {
+        $scope.error = null;
+        $modalInstance.close()
+      }
+    });
+  };
+
+  $scope.cancel = function() {
+    $modalInstance.dismiss();
+  }
+};
+
+spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff, $modal) {
   $scope.showLogin = function() {
-    $('#loginModal').modal('show');
+    $modal.open({
+      templateUrl: 'partials/login.html',
+      controller: LoginCtrl
+    });
   };
 
   $scope.enterAdmin = function() {
@@ -21,23 +48,6 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff) {
 
   $scope.hideLogin = function() {
     $('#loginModal').modal('hide');
-  };
-
-  $scope.login = function() {
-    var username = $('#username').val();
-    var password = $('#password').val();
-    Spiff.login(username, password).then(function(user) {
-      if (user.status >= 300 || user.status < 200) {
-        if (user.status == 401) {
-          $('#loginModal #error-msg').text("Incorrect username or password");
-          $('#loginModal #error-msg').removeClass("hide");
-        }
-        $('#loginModal').effect('shake');
-      } else {
-        $('#loginModal #error-msg').addClass("hide");
-        $scope.hideLogin()
-      }
-    });
   };
 
   $scope.logout = function() {
