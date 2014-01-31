@@ -43,7 +43,12 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff, $mod
   };
 
   $scope.enterAdmin = function() {
-    $('#adminModal').modal('show');
+    $modal.open({
+      templateUrl: 'partials/open-admin.html',
+      controller: function($scope, $modalInstance) {
+        $scope.close = function() {$modalInstance.close();}
+      }
+    });
   };
 
   $scope.hideLogin = function() {
