@@ -64,7 +64,28 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff, $mod
   });
 });
 
-spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff, $location) {
+var AddPaymentCardCtrl = function($scope, $modalInstance, user) {
+  $scope.d = {};
+  $scope.save = function() {
+    $scope.saving = true;
+    var card = $scope.d.card_num;
+    var cvc = $scope.d.cvc;
+    var month = $scope.d.month;
+    var year = $scope.d.year;
+    user.addStripeCard({
+      card: card,
+      cvc: cvc,
+      exp_month: month,
+      exp_year: year
+    }).then(function(cardData) {
+      $modalInstance.close();
+    });
+  };
+
+  $scope.cancel = function() {$modalInstance.close()};
+};
+
+spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff, $location, $modal) {
   $scope.$watch('Spiff.currentUser', function(user) {
     if (user && !user.isAnonymous) {
       $scope.user = user;
@@ -94,22 +115,12 @@ spiffControllers.controller('DashboardCtrl', function($scope, Restangular, Spiff
       }
 
       $scope.addPaymentCard = function() {
-        $('#paymentCardModal').modal('show');
-      }
-
-      $scope.saveCard = function() {
-        var card = $('#card_num').val();
-        var cvc = $('#cvc').val();
-        var month = $('#exp_month').val();
-        var year = $('#exp_year').val();
-        console.log(user);
-        user.addStripeCard({
-          card: card,
-          cvc: cvc,
-          exp_month: month,
-          exp_year: year
-        }).then(function(cardData) {
-          $('#paymentCardModal').modal('hide');
+        var modal = $modal.open({
+          templateUrl: 'dashboard/modal/add-payment-card.html',
+          controller: AddPaymentCardCtrl,
+          resolve: {user: function() {return user}}
+        });
+        modal.result.then(function() {
           $scope.refreshCards();
         });
       }
@@ -356,25 +367,21 @@ spiffControllers.controller('ResourceCtrl', function($scope, Restangular, $route
   }
 });
 
-spiffControllers.controller('InvoiceCtrl', function($scope, Restangular, $routeParams) {
-  $scope.invoice = Restangular.one('invoice', $routeParams.invoiceID).get().$object;
-  $scope.showPayDialog = function() {
-    $('#payInvoiceModal').modal('show');
-  };
+var PayInvoiceCtrl = function($scope, $modalInstance, Restangular, invoice) {
+  console.log(invoice);
 
-  $scope.closePayDialog = function() {
-    $('#payInvoiceModal').modal('hide');
-  };
+  $scope.d = {};
+  $scope.d.value = invoice.unpaidBalance;
 
-  $scope.processCard = function() {
+  $scope.process = function() {
     $('#payInvoiceModal :input').attr('disabled', true);
-    var card = $('#card_num').val();
-    var cvc = $('#cvc').val();
-    var month = $('#exp_month').val();
-    var year = $('#exp_year').val();
+    var card = $scope.d.card_num;
+    var cvc = $scope.d.cvc;
+    var month = $scope.d.month;
+    var year = $scope.d.year;
     Restangular.all('payment').post({
-      invoice: '/v1/invoice/'+$routeParams.invoiceID+'/',
-      value: $('#inputPayment').val(),
+      invoice: '/v1/invoice/'+invoice.id+'/',
+      value: $scope.d.value,
       stripe: {
         card: card,
         cvc: cvc,
@@ -382,11 +389,34 @@ spiffControllers.controller('InvoiceCtrl', function($scope, Restangular, $routeP
         exp_year: year
       }
     }).then(function(payment) {
-      $scope.invoice = Restangular.one('invoice', $routeParams.invoiceID).get().$object;
-      $('#payInvoiceModal').modal('hide');
-      $('#payInvoiceModal').reset();
-    }).finally(function() {
-      $('#payInvoiceModal :input').attr('disabled', false);
+      $modalInstance.close();
+    });
+  }
+
+  $scope.close = function() {
+    $modalInstance.close();
+  }
+}
+
+spiffControllers.controller('InvoiceCtrl', function($scope, Restangular, $routeParams, $modal) {
+  var invoice = Restangular.one('invoice', $routeParams.invoiceID);
+
+  $scope.refresh = function() {
+    invoice.get().then(function (i) {
+      $scope.invoice = i;
+    });
+  }
+
+  $scope.payInvoice = function() {
+    var modal = $modal.open({
+      templateUrl: 'invoices/modal/pay.html',
+      controller: PayInvoiceCtrl,
+      resolve: {invoice: function() {return $scope.invoice}}
+    });
+    modal.result.then(function() {
+      $scope.refresh();
     });
   };
+
+  $scope.refresh();
 });

@@ -1,0 +1,49 @@
+<form class="form-horizontal" id="payForm" ng-submit="process()">
+  <div class="modal-header">
+    <h3>Pay Invoice</h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+      <label class="control-label" for="card_num">
+        Card number:
+      </label>
+      <div class="controls">
+        <input type="text" id="card_num" placeholder="XXXXXXXXXXXXXXXX" ng-model="d.card_num">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="cvc">
+        Card CVC:
+      </label>
+      <div class="controls">
+        <input type="text" id="cvc" placeholder="XXX" ng-model="d.cvc">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label">
+        Expiration:
+      </label>
+      <div class="controls">
+        <input class="input-mini" type="text" id="exp_month" placeholder="MM"
+        maxlength="2" ng-model="d.month">/
+        <input class="input-mini" type="text" id="exp_year" placeholder="YY"
+        maxlength="2" ng-model="d.year">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="inputPayment">
+        Payment:
+      </label>
+      <div class="controls">
+        <div class="input-prepend">
+          <span class="add-on">$</span>
+          <input type="text" name="ccv" id="inputPayment" ng-model="d.value">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-success">Process</button>
+    <button class="btn" ng-click="close()">Cancel</button>
+  </div>
+</form>
