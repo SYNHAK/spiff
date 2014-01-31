@@ -18,8 +18,8 @@ angular.module('spiff.members', [
   $scope.members = Restangular.all('member').getList().$object;
 })
 
-.controller('MemberCtrl', function($scope, Restangular, $routeParams) {
-  var member = Restangular.one('member', $routeParams.memberID);
+.controller('MemberViewCtrl', function($scope, Restangular, $stateParams) {
+  var member = Restangular.one('member', $stateParams.memberID);
   member.get().then(function (member) {
     $scope.member = member;
     console.log(member.groups);

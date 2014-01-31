@@ -23,8 +23,10 @@
     <h2>Subscriptions</h2>
     <ul>
       <li ng-repeat="subscription in user.subscriptions">
-      <a ng-click="startUnsubscribe(subscription)" >[X]</a>{{subscription.plan.name}} (${{subscription.plan.periodCost}}/mo)</li>
+        {{subscription.plan.name}} (${{subscription.plan.periodCost}}/mo)
+      </li>
     </ul>
+    <a class="btn" ng-click="openSubscriptionEditor()">Edit Subscriptions</a>
   </div>
   <div class="span8">
     <h2>Account Activity</h2>
@@ -38,7 +40,7 @@
         <th colspan="2">Unpaid Balance</th>
       </tr>
       <tr ng-repeat="invoice in invoices">
-        <td><a href="#/invoices/{{invoice.id}}">{{invoice.id}}</a></td>
+        <td><a ui-sref="viewInvoice({invoiceID: invoice.id})">{{invoice.id}}</a></td>
         <td>{{invoice.dueDate|date}}</td>
         <td>${{invoice.unpaidBalance}}</td>
         <td><a href="#/invoices/{{invoice.id}}/pay">Pay</a></td>

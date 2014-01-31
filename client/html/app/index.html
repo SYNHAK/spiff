@@ -15,6 +15,7 @@
   <script src="lib/angularjs-gravatar/gravatar-directive.js"></script>
   <script src="lib/restangular/restangular.js"></script>
   <script src="lib/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
+  <script src="lib/angular-ui-router/angular-ui-router.js"></script>
 
   <script src="lib/md5-service.js"></script>
   <script src="lib/ui/spiff.js"></script>
@@ -32,7 +33,7 @@
 </head>
 <body>
 <div ng-include="'partials/epicenter.html'"></div>
-<div class="container" id="canvas" ng-view>
+<div class="container" id="canvas" ui-view>
 </div>
 <div class="container" id="footer">
   <div class="row">

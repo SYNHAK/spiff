@@ -5,7 +5,7 @@
     </div>
     <ul class="thumbnails">
       <li ng-repeat="resource in resources">
-        <a href="#/resources/{{resource.id}}">
+        <a ui-sref="viewResource({resourceID: resource.id})">
           <div class="thumbnail">
               <h3><span class="qr" qr-code></span>{{resource.name}}</h3>
           </div>

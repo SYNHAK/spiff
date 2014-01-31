@@ -34,8 +34,8 @@ angular.module('spiff.payment', [
   }
 })
 
-.controller('InvoiceCtrl', function($scope, Restangular, $routeParams, $modal) {
-  var invoice = Restangular.one('invoice', $routeParams.invoiceID);
+.controller('InvoiceCtrl', function($scope, Restangular, $stateParams, $modal) {
+  var invoice = Restangular.one('invoice', $stateParams.invoiceID);
 
   $scope.refresh = function() {
     invoice.get().then(function (i) {

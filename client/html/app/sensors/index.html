@@ -5,7 +5,7 @@
     </div>
     <ul class="thumbnails">
       <li ng-repeat="sensor in sensors">
-        <a href="#/sensors/{{sensor.id}}">
+        <a ui-sref="viewSensor({sensorID: sensor.id})">
           <div class="thumbnail">
               <h3>{{sensor.name}}</h3>
           </div>

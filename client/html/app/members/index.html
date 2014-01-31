@@ -7,7 +7,7 @@
       <h2>{{group.name}}
       <ul class="thumbnails">
         <li ng-repeat="member in group.members">
-          <a href="#/members/{{member.id}}">
+          <a ui-sref="member.view({memberID: member.id})">
             <div class="thumbnail">
                 <h3>
                   <gravatar-image gravatar-email="member.email"></gravatar-image>

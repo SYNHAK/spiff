@@ -1,19 +1,19 @@
 <div class="navbar navbar-top" ng-controller="EpicenterCtrl">
   <div class="navbar-inner">
-    <a class="brand" href="#/">{{spaceAPI.space}}</a>
+    <a class="brand" ui-sref='dashboard'>{{spaceAPI.space}}</a>
     <ul class="nav">
-      <li><a href="#/">Home</a></li>
+      <li><a ui-sref="dashboard" >Home</a></li>
       <li check-permission="'inventory.list_resource'">
-        <a ng-if="hasPermission" href="#/resources">Resources</a>
+        <a ng-if="hasPermission" ui-sref="listResources">Resources</a>
       </li>
       <li check-permission="'membership.list_member'">
-        <a ng-if="hasPermission" href="#/members">Members</a>
+        <a ng-if="hasPermission" ui-sref="listMembers">Members</a>
       </li>
       <li check-permission="'sensors.list_sensor'">
-        <a ng-if="hasPermission" href="#/sensors">Sensors</a>
+        <a ng-if="hasPermission" ui-sref="listSensors">Sensors</a>
       </li>
       <li>
-        <a href="#/donate">Donate</a>
+        <a ui-sref="donate">Donate</a>
       </li>
     </ul>
     <ul class="nav pull-right" id="epicenter">
@@ -26,9 +26,10 @@
         </a>
         <ul class="dropdown-menu">
           <li ng-if="Spiff.currentUser.isAnonymous"><a ng-click="showLogin()">Login</a></li>
-          <li ng-if="Spiff.currentUser.isAnonymous"><a href="#">Register</a></li>
+          <li ng-if="Spiff.currentUser.isAnonymous"><a ui-sref="register">Register</a></li>
           <li ng-if="Spiff.currentUser.isAnonymous"><a href="#">Reset Password</a></li>
-          <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#/members/self">View Profile</a></li>
+          <li ng-if="!Spiff.currentUser.isAnonymous"><a
+            ui-sref="member.view({memberID: 'self'})">View Profile</a></li>
           <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#" ng-click="logout()">Logout</a></li>
           <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#">Change Password</a></li>
         </ul>

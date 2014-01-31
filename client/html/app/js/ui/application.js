@@ -13,58 +13,83 @@ var spiffApp = angular.module('spiffApp', [
   'ui-gravatar',
   'md5',
   'ui.bootstrap.modal',
+  'ui.router',
   'template/modal/window.html',
   'template/modal/backdrop.html'
 ]);
 
-spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
-  $routeProvider.
-    when('/', {
+spiffApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, SpiffProvider) {
+  $urlRouterProvider.otherwise('/');
+  $stateProvider
+    .state('dashboard', {
+      url: '/',
       templateUrl: 'dashboard/index.html',
-      controller: 'DashboardCtrl'
-    }).
-    when('/welcome', {
+      controller: 'DashboardCtrl',
+    })
+    .state('welcome', {
+      url: '/welcome',
       templateUrl: 'dashboard/index-anonymous.html',
       controller: 'AnonDashCtrl'
-    }).
-    when('/invoices/:invoiceID', {
+    })
+    .state('viewInvoice', {
+      url: '/invoices/:invoiceID',
       templateUrl: 'invoices/detail.html',
       controller: 'InvoiceCtrl'
-    }).
-    when('/resources', {
+    })
+    .state('listResources', {
+      url: '/resources',
       templateUrl: 'resources/index.html',
       controller: 'ResourceListCtrl'
-    }).
-    when('/resources/:resourceID', {
+    })
+    .state('viewResource', {
+      url: '/resources',
       templateUrl: 'resources/detail.html',
-      controller: 'ResourceCtrl'
-    }).
-    when('/members', {
+      controller: 'ResourceCtrl',
+    })
+    .state('listMembers', {
+      url: '/members',
       templateUrl: 'members/index.html',
-      controller: 'MemberListCtrl'
-    }).
-    when('/members/:memberID', {
+      controller: 'MemberListCtrl',
+    })
+    .state('member', {
+      url: '/members/:memberID',
       templateUrl: 'members/detail.html',
-      controller: 'MemberCtrl'
-    }).
-    when('/sensors', {
+      controller: 'MemberViewCtrl'
+    })
+    .state('member.view', {
+      url: '',
+      templateUrl: 'members/view.html',
+      controller: 'MemberViewCtrl',
+    })
+    .state('member.subscriptions', {
+      url: '/subscriptions',
+      templateUrl: 'members/subscriptions.html',
+      controller: 'SubscriptionCtrl',
+    })
+    .state('member.edit', {
+      url: '/edit',
+      templateUrl: 'members/edit.html',
+      controller: 'EditMemberCtrl'
+    })
+    .state('listSensors', {
+      url: '/sensors',
       templateUrl: 'sensors/index.html',
       controller: 'SensorListCtrl',
-    }).
-    when('/sensors/:sensorID', {
+    })
+    .state('viewSensor', {
+      url: '/sensors/:sensorID',
       templateUrl: 'sensors/detail.html',
-      controller: 'SensorCtrl',
-    }).
-    when('/donate', {
+      controller: 'SensorCtrl'
+    })
+    .state('donate', {
+      url: '/donate',
       templateUrl: 'donate/index.html',
       controller: 'DonateCtrl',
-    }).
-    when('/register', {
+    })
+    .state('register', {
+      url: '/register',
       templateUrl: 'register.html',
-      controller: 'RegistrationCtrl',
-    }).
-    otherwise({
-      redirectTo: '/'
+      controller: 'RegistrationCtrl'
     });
 
   RestangularProvider.setBaseUrl('../v1');
