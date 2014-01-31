@@ -17,12 +17,12 @@ class FieldValueAuthorization(SpiffAuthorization):
   def check_perm(self, request, model, name, op):
     if model.field.public:
       return super(FieldValueAuthorization, self).check_perm(request, model,
-      '%s_public', op)
+      '%s_public'%(name), op)
     if model.field.protected:
       return super(FieldValueAuthorization, self).check_perm(request, model,
-      '%s_protected', op)
+      '%s_protected'%(name), op)
     return super(FieldValueAuthorization, self).check_perm(request, model,
-    '%s_private', op)
+    '%s_private'%(name), op)
 
 class FieldResource(ModelResource):
   name = fields.CharField('name')
