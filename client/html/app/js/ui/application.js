@@ -8,6 +8,7 @@ var spiffApp = angular.module('spiffApp', [
   'spiff.resources',
   'spiff.donate',
   'spiff.sensors',
+  'spiff.payment',
   'ngRoute',
   'ui-gravatar',
   'md5',
