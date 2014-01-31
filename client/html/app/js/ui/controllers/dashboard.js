@@ -3,6 +3,16 @@ angular.module('spiff.dashboard', [
   'spiff'
 ])
 
+.controller('UnsubscribeCtrl', function($scope, $modalInstance, Restangular, subscription) {
+  $scope.subscription = subscription;
+  $scope.close = $modalInstance.close;
+  $scope.unsubscribe = function() {
+    Restangular.one('subscription', subscription.id).remove().then(function () {
+      $modalInstance.close();
+    });
+  }
+})
+
 .controller('AddPaymentCardCtrl', function($scope, $modalInstance, user) {
   $scope.d = {};
   $scope.save = function() {
@@ -47,10 +57,20 @@ angular.module('spiff.dashboard', [
 
       $scope.refreshCards();
 
+      $scope.refreshSubscriptions = function() {
+      }
+
+      $scope.refreshSubscriptions();
+
       $scope.startUnsubscribe = function(subscription) {
-        $('#subscriptionUnsubscribeModal .subscription-name').text(subscription.plan.name);
-        $('#subscriptionUnsubscribeModal .subscription-name').data('id', subscription.id);
-        $('#subscriptionUnsubscribeModal').modal('show');
+        var modal = $modal.open({
+          templateUrl: 'dashboard/modal/unsubscribe.html',
+          controller: 'UnsubscribeCtrl',
+          resolve: {subscription: function() {return subscription;}}
+        });
+        modal.result.then(function() {
+          $scope.refreshSubscriptions();
+        });
       }
 
       $scope.addPaymentCard = function() {

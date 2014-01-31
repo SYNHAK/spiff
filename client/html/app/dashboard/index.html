@@ -22,7 +22,8 @@
     </ul>
     <h2>Subscriptions</h2>
     <ul>
-      <li ng-repeat="subscription in user.subscriptions" ng-click="startUnsubscribe(subscription)" >{{subscription.plan.name}} (${{subscription.plan.periodCost}}/mo)</li>
+      <li ng-repeat="subscription in user.subscriptions">
+      <a ng-click="startUnsubscribe(subscription)" >[X]</a>{{subscription.plan.name}} (${{subscription.plan.periodCost}}/mo)</li>
     </ul>
   </div>
   <div class="span8">
@@ -59,19 +60,5 @@
         </tr>
       </table>
     </div>
-  </div>
-</div>
-<div class="modal hide fade" id="subscriptionUnsubscribeModal">
-  <div class="modal-header">
-    <h3>Unsubscribe</h3>
-  </div>
-  <div class="modal-body">
-    <!-- FIXME: Should really be using angularjs bootstrap modal bits... -->
-    <p>You are about to remove this subscription:</p>
-    <p class="subscription-name"></p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-warning" ng-click="unsubscribe()">Yes, remove this subscription</button>
-    <button class="btn" ng-click="hideSubscriptionDetails()">Close</button>
   </div>
 </div>
