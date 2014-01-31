@@ -59,6 +59,10 @@ spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
       templateUrl: 'donate/index.html',
       controller: 'DonateCtrl',
     }).
+    when('/register', {
+      templateUrl: 'register.html',
+      controller: 'RegistrationCtrl',
+    }).
     otherwise({
       redirectTo: '/'
     });

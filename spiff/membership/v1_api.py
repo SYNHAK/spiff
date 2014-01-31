@@ -87,6 +87,26 @@ class MemberResource(ModelResource):
     queryset = models.Member.objects.all()
     authorization = SelfMemberAuthorization()
 
+  def obj_create(self, bundle, **kwargs):
+    data = bundle.data
+    u = User.objects.create(
+      username = data['username'],
+      email = data['email'],
+      first_name = data['firstName'],
+      last_name = data['lastName']
+    )
+    u.set_password(data['password'])
+    u.save()
+    for f in data['fields']:
+      field = models.Field.objects.get(id=f['id'])
+      val = models.FieldValue.objects.create(
+        field = field,
+        value = f['value'],
+        member = u.member
+      )
+    bundle.obj = u.member
+    return bundle
+
   def self(self, request, **kwargs):
     self.method_check(request, allowed=['get'])
     self.throttle_check(request)
