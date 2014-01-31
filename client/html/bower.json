@@ -26,12 +26,7 @@
     "angular-route": "~1.2.6",
     "angularjs-gravatar": "",
     "angular-md5": "",
-    "angular-ui-bootstrap": "0.10.0",
+    "angular-ui-bootstrap-bower": "0.10.0",
     "restangular": ""
-  },
-  "exportsOverride": {
-    "angular-ui-bootstrap": {
-      "js": "src/**/*.js"
-    }
   }
 }
