@@ -13,6 +13,17 @@ import models
 from spiff.api import SpiffAuthorization
 import json
 
+class FieldValueAuthorization(SpiffAuthorization):
+  def check_perm(self, request, model, name, op):
+    if model.field.public:
+      return super(FieldValueAuthorization, self).check_perm(request, model,
+      '%s_public', op)
+    if model.field.protected:
+      return super(FieldValueAuthorization, self).check_perm(request, model,
+      '%s_protected', op)
+    return super(FieldValueAuthorization, self).check_perm(request, model,
+    '%s_private', op)
+
 class FieldResource(ModelResource):
   name = fields.CharField('name')
   description = fields.CharField('description')
@@ -29,6 +40,10 @@ class FieldValueResource(ModelResource):
   value = fields.CharField('value')
   member = fields.ToOneField('spiff.membership.v1_api.MemberResource',
   'member')
+
+  class Meta:
+    queryset = models.FieldValue.objects.all()
+    authorization = FieldValueAuthorization()
 
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
