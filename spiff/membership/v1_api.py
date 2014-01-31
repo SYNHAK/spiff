@@ -69,6 +69,7 @@ class SelfMemberAuthorization(SpiffAuthorization):
     return super(SelfMemberAuthorization, self).check_perm(request, model, name)
 
 class MemberResource(ModelResource):
+  username = fields.CharField(attribute='user__username')
   firstName = fields.CharField(attribute='user__first_name', null=True)
   lastName = fields.CharField(attribute='user__last_name')
   isAnonymous = fields.BooleanField(attribute='isAnonymous')
