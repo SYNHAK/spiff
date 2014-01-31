@@ -45,13 +45,17 @@
   </div>
 </div>
 </div>
-<div id="errorModal" class="modal hide fade">
+<script type="text/ng-template" id="error.html">
   <div class="modal-header">
     <h3>Spiff had an issue with what you did.</h3>
   </div>
   <div class="modal-body">
-    Something weird happened. Spiff said "<code id="message"></code>".
-    <pre id="traceback"></pre>
+    Something weird happened. Spiff said "<code>{{message}</code>".
+    <pre>{{traceback}}</pre>
+  </div>
+  <div class="modal-footer">
+    <p>You might be able to continue.</p>
+    <button ng-click="close()" class="btn btn-block">Dismiss</button>
   </div>
 </div>
 </body>

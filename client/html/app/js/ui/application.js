@@ -63,9 +63,13 @@ spiffApp.config(function($routeProvider, RestangularProvider, SpiffProvider) {
       $injector.get('$rootScope').$broadcast('loginRequired');
     } else {
       console.log(response);
-      $('#errorModal #message').text(response.data.error_message);
-      $('#errorModal #traceback').text(response.data.traceback);
-      $('#errorModal').modal('show');
+      $modal.open({
+        templateUrl: 'error.html',
+        controller: function($scope, $modalInstance) {
+          $scope.message = response.data.error_message;
+          $scope.traceback = response.data.traceback;
+        }
+      });
     }
     return true;
   });
