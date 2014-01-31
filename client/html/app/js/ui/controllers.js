@@ -51,10 +51,6 @@ spiffControllers.controller('EpicenterCtrl', function($scope, $http, Spiff, $mod
     });
   };
 
-  $scope.hideLogin = function() {
-    $('#loginModal').modal('hide');
-  };
-
   $scope.logout = function() {
     Spiff.logout();
   };
