@@ -3,14 +3,6 @@ angular.module('spiff.dashboard', [
   'spiff'
 ])
 
-.controller('SubscriptionCtrl', function($scope, Restangular, Spiff) {
-  $scope.activeSubscriptions = Spiff.currentUser.subscriptions;
-  var membershipPlans = Restangular.all('ranksubscriptionplan');
-  $scope.membershipPlans = membershipPlans.getList().$object;
-
-  $scope.close = $modalInstance.close;
-})
-
 .controller('RegistrationCtrl', function($scope, Restangular, Spiff, $modal) {
   $scope.$watch('Spiff.currentUser', function(user) {
     if (user && !user.isAnonymous) {
@@ -110,15 +102,6 @@ angular.module('spiff.dashboard', [
       }
 
       $scope.refreshCards();
-
-      $scope.refreshSubscriptions = function() {
-      }
-
-      $scope.refreshSubscriptions();
-
-      $scope.openSubscriptionEditor = function() {
-        $location.url('/members/self/subscriptions');
-      }
 
       $scope.addPaymentCard = function() {
         var modal = $modal.open({

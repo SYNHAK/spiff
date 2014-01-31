@@ -61,10 +61,10 @@ spiffApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider
       templateUrl: 'members/view.html',
       controller: 'MemberViewCtrl',
     })
-    .state('member.subscriptions', {
-      url: '/subscriptions',
-      templateUrl: 'members/subscriptions.html',
-      controller: 'SubscriptionCtrl',
+    .state('member.membership', {
+      url: '/membership',
+      templateUrl: 'members/membership.html',
+      controller: 'MembershipCtrl',
     })
     .state('member.edit', {
       url: '/edit',
