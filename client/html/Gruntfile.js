@@ -8,7 +8,7 @@ module.exports = function(grunt) {
       deps: {
         files: [{
           expand: true,
-          cwd: 'build/lib/',
+          cwd: 'app/lib/',
           src: '**/*.js',
           dest: 'app/lib'
         }]
@@ -25,17 +25,21 @@ module.exports = function(grunt) {
     bower: {
       install: {
         options: {
-          targetDir: "build/lib",
+          targetDir: "app/lib",
         }
       }
     },
     watch: {
       bower: {
         files: ['bower.js'],
+        tasks: ['bower']
+      },
+      deps: {
+        files: ["bower_components/**/*"],
         tasks: ['bower', 'uglify:deps']
       },
       scripts: {
-        files: ['app/js/*.js'],
+        files: ['app/js/**/*.js', 'app/js/*.js'],
         tasks: ['uglify:app'],
       }
     }
