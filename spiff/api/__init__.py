@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 from tastypie.authorization import DjangoAuthorization
 from spiff.api.plugins import find_api_classes
+from spiff import funcLog
 
 def add_resource_permissions(sender, **kwargs):
   """
@@ -45,7 +46,7 @@ def add_resource_permissions(sender, **kwargs):
             Permission.objects.create(content_type=content_type,
                                       codename=codename,
                                       name=name)
-            print "Created permission %s.%s (%s)"%(content_type.app_label, codename, name)
+            funcLog().debug("Created permission %s.%s (%s)", content_type.app_label, codename, name)
 
 # check for all our view permissions after a syncdb
 post_migrate.connect(add_resource_permissions)
@@ -71,7 +72,7 @@ class SpiffAuthorization(DjangoAuthorization):
     klass = self.base_checks(request, model.__class__)
     permName = '%s.%s_%s' % (model.__class__._meta.app_label, name,
         model.__class__._meta.module_name)
-    print "Checking", request.user, "for", permName
+    funcLog().debug("Checking %s for %s", request.user, permName)
     return request.user.has_perm(permName)
 
   def check_list(self, object_list, bundle, op, perm=None):

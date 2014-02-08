@@ -3,6 +3,7 @@ from django import forms
 from django.db import models
 from django.forms import fields
 from widgets import JqSplitDateTimeWidget
+from spiff import funcLog
 
 class JqSplitDateTimeField(fields.MultiValueField):
     widget = JqSplitDateTimeWidget
@@ -31,6 +32,6 @@ class JqSplitDateTimeField(fields.MultiValueField):
                 raise forms.ValidationError("Field is missing data.")
             input_time = strptime("%s:%s %s"%(data_list[1], data_list[2], data_list[3]), "%I:%M %p")
             datetime_string = "%s %s" % (data_list[0], strftime('%H:%M', input_time))
-            print "Datetime: %s"%datetime_string
+            funcLog().debug("Datetime: %s", datetime_string)
             return datetime_string
         return None

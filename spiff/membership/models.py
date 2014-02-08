@@ -13,6 +13,7 @@ from spiff.subscription.models import SubscriptionPlan
 from django.template.loader import get_template
 from django.template import Context
 from django.contrib.contenttypes.models import ContentType
+from spiff import funcLog
 
 stripe.api_key = settings.STRIPE_KEY
 
@@ -251,7 +252,7 @@ class RankSubscriptionPlan(SubscriptionPlan):
       planOwner = subscription.user
       startOfMonth, endOfMonth = monthRange(processDate)
 
-      print "Processing subscription of %s dues for %s, billing to %s"%(self.rank, self.member, subscription.user)
+      funcLog().info("Processing subscription of %s dues for %s, billing to %s", self.rank, self.member, subscription.user)
 
       return [RankLineItem(
         rank = self.rank,
@@ -281,7 +282,8 @@ class RankLineItem(LineItem):
         u = self.member.user
         u.groups.add(self.rank.group)
         u.save()
-        print "Processed", self, "- added", self.member, "to group", self.rank.group
+        funcLog().info("Processed %s - added %s to group %s", self, self.member,
+            self.rank.group)
 
     def save(self, *args, **kwargs):
         if not self.id:
