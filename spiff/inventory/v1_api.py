@@ -47,8 +47,6 @@ class ResourceMetadataResource(ModelResource):
     return bundle
 
   def obj_delete(self, bundle, **kwargs):
-    if bundle.request.user.is_anonymous():
-      raise ImmediateHttpResponse(response=HttpUnauthorized());
     oldMeta = models.Metadata.objects.get(pk=kwargs['pk'])
     oldName = oldMeta.name
     oldValue = oldMeta.value
