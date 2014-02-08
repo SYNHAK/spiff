@@ -23,7 +23,7 @@ angular.module('spiff.members', [
       $scope.pending++;
       Restangular.all('subscription').post({
         plan: '/v1/subscriptionplan/'+addition.id+'/',
-        member: user.id
+        user: '/v1/member/'+user.id+'/'
       }).then(function() {
         $scope.pending--;
         if ($scope.pending == 0)
