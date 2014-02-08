@@ -90,6 +90,18 @@ class APITestMixin(ClientTestMixin):
     funcLog().info("Logging in with test user")
     self.client.login(username=self.user.username, password=self.password)
 
+  def deleteAPIRaw(self, endpoint, struct=None):
+    if struct:
+      funcLog().info("Deleting %s: %r", endpoint, struct)
+      return self.client.delete(
+        endpoint,
+        json.dumps(struct),
+        content_type="application/json"
+      )
+    else:
+      funcLog().info("Deleting %s", endpoint)
+      return self.client.delete(endpoint)
+
   def postAPIRaw(self, endpoint, struct=None):
     if struct:
       funcLog().info("Posting to %s: %r", endpoint, struct)
@@ -119,6 +131,15 @@ class APITestMixin(ClientTestMixin):
       )
     funcLog().info("Patching %s", endpoint)
     return self.client.patch(endpoint)
+
+  def deleteAPI(self, endpoint, struct=None, status=204):
+    ret = self.deleteAPIRaw(endpoint, struct)
+    self.assertEqual(ret.status_code, status)
+    if len(ret.content):
+      ret = json.loads(ret.content)
+    else:
+      ret = None
+    return ret
 
   def patchAPI(self, endpoint, struct=None, status=202):
     ret = self.patchAPIRaw(endpoint, struct)
