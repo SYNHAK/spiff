@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User, Group
 import models
 from spiff.payment.models import Payment
-from spiff.api.tests import ClientTestMixin, APITestMixin, withPermission, withLogin
+from spiff.api.tests import ClientTestMixin, APITestMixin, withPermission, withLogin, withUser
 
 class AnonymousUserMiddlewareTest(APITestMixin):
   def setUp(self):
@@ -57,22 +57,26 @@ class MemberSearchAPITest(APITestMixin):
   def search(self, status=200, **kwargs):
     return self.getAPI('/v1/member/search/', kwargs, status=status)
 
+  @withUser
   def testSearchFullname(self):
     ret = self.search(fullName='Test McTesterson')
     self.assertIn('objects', ret)
     self.assertEqual(len(ret['objects']), 1)
 
+  @withUser
   def testSearchPartialFirst(self):
     ret = self.search(fullName='Test')
     self.assertIn('objects', ret)
     self.assertEqual(len(ret['objects']), 1)
 
+  @withUser
   def testSearchPartialLast(self):
     ret = self.search(fullName='McTesterson')
     self.assertEqual(len(ret['objects']), 1)
 
+  @withUser
   def testSearchPartialMultiple(self):
-    guesterson = User.objects.create_user('guest', 'guest@example.com', 'guest')
+    guesterson = self.createUser('guest', 'guest')
     guesterson.first_name = 'Guest'
     guesterson.last_name = 'McGuesterson'
     guesterson.save()
@@ -85,17 +89,20 @@ class MemberAPITest(APITestMixin):
   def setUp(self):
     self.setupAPI()
 
+  @withUser
   def testLogin(self):
     response = self.postAPIRaw('/v1/member/login/', {'username': 'test', 'password': 'test'})
     self.assertEqual(response.status_code, 200)
     self.assertTrue(response.cookies.has_key('sessionid'))
 
+  @withUser
   def testBadLogin(self):
     response = self.postAPIRaw('/v1/member/login/', {'username': 'test',
       'password': 'nottest'})
     self.assertEqual(response.status_code, 401)
     self.assertFalse(response.cookies.has_key('sessionid'))
 
+  @withUser
   def testDisabledLogin(self):
     self.user.is_active = False
     self.user.save()
@@ -104,6 +111,7 @@ class MemberAPITest(APITestMixin):
     self.assertEqual(response.status_code, 403)
     self.assertFalse(response.cookies.has_key('sessionid'))
 
+  @withUser
   def testLogout(self):
     response = self.postAPIRaw('/v1/member/login/', {'username': 'test', 'password': 'test'})
     self.assertEqual(response.status_code, 200)

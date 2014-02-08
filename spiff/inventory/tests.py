@@ -6,7 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
-from spiff.api.tests import APITestMixin, withPermission, withLogin 
+from spiff.api.tests import APITestMixin, withPermission, withLogin, withoutPermission
 import models
 
 class ResourceTestMixin(TestCase):
@@ -38,10 +38,13 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       resource = self.resource
     return self.getAPI('/v1/resource/%s/metadata/'%(resource.id))
 
+  @withPermission('inventory.view_resource')
   def testGetBlankMeta(self):
     meta = self.getMeta()
     self.assertTrue(len(meta['objects']) == 0)
 
+  @withPermission('inventory.view_resource')
+  @withPermission('inventory.list_metadata')
   def testGetSingleMeta(self):
     self.addMeta(self.resource, 'meta-test', 'meta-test-value')
     meta = self.getMeta()
@@ -57,7 +60,8 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       'type': 0
     }, status=401)
 
-  @withLogin
+  @withoutPermission('inventory.add_metadata')
+  @withPermission('inventory.view_resource')
   def testUnpermissionedCreateMeta(self):
     meta = self.getMeta()
     self.assertEqual(len(meta['objects']), 0)
@@ -69,8 +73,9 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       'type': 0
     }, status=401)
 
-  @withLogin
   @withPermission('inventory.add_metadata')
+  @withPermission('inventory.view_resource')
+  @withPermission('inventory.list_metadata')
   def testCreateMeta(self):
     meta = self.getMeta()
     self.assertEqual(len(meta['objects']), 0)

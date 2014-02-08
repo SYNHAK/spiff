@@ -13,6 +13,7 @@ import models
 from spiff.api import SpiffAuthorization
 import json
 from spiff.subscription import v1_api as subscription
+from spiff import funcLog
 
 class FieldValueAuthorization(SpiffAuthorization):
   def conditions(self):
@@ -229,6 +230,7 @@ class MemberResource(ModelResource):
       query &= Q(first_name__icontains=name[0]) | Q(last_name__icontains=' '.join(name[1:]))
       firstName, lastName = request.GET['fullName'].split(' ', 1)
     query &= Q(member__hidden=False)
+    funcLog().info("User search query: %s", query)
     users = User.objects.filter(query)
     objects = []
     for u in users:
@@ -254,11 +256,14 @@ class MemberResource(ModelResource):
     user = authenticate(username=username, password=password)
     if user:
       if user.is_active:
+        funcLog().info("Successful login for %s", username)
         login(request, user)
         return self.create_response(request, {'success': True})
       else:
+        funcLog().warning("Good login, but %s is disabled.", username)
         raise ImmediateHttpResponse(response=HttpForbidden())
     else:
+      funcLog().warning("Invalid login for %s", username)
       raise ImmediateHttpResponse(response=HttpUnauthorized())
 
   def logout(self, request, **kwargs):

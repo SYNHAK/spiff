@@ -72,8 +72,10 @@ class SpiffAuthorization(DjangoAuthorization):
     klass = self.base_checks(request, model.__class__)
     permName = '%s.%s_%s' % (model.__class__._meta.app_label, name,
         model.__class__._meta.module_name)
-    funcLog().debug("Checking %s for %s", request.user, permName)
-    return request.user.has_perm(permName)
+    ret = request.user.has_perm(permName)
+    funcLog().debug("%r", request.user.user_permissions.all())
+    funcLog().debug("Checking %s for %s: %s", request.user, permName, ret)
+    return ret
 
   def check_list(self, object_list, bundle, op, perm=None):
     func = getattr(super(SpiffAuthorization, self), '%s_list'%(op))

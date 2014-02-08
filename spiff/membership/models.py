@@ -317,15 +317,23 @@ class AuthenticatedUser(User):
     proxy = True
 
   def has_perm(self, perm, obj=None):
+    funcLog().debug("Checking %s for permission %s on %r",self, perm, obj)
     if super(AuthenticatedUser, self).has_perm(perm, obj):
+      funcLog().debug("Found django permission %s", perm)
       return True
     anon = get_anonymous_user()
     if anon.has_perm(perm, obj):
+      funcLog().debug("Found anonymous permission %s", perm)
       return True
     app, perm = perm.split('.', 1)
-    return get_authenticated_user_group().permissions.filter(
+    ret = get_authenticated_user_group().permissions.filter(
       content_type__app_label = app,
       codename=perm).exists()
+    if ret:
+      funcLog().debug("Found authenticated group permission %s", perm)
+    else:
+      funcLog().debug("Denied")
+    return ret
 
 
 class AuthenticatedUserGroup(Group):
@@ -335,6 +343,10 @@ class AuthenticatedUserGroup(Group):
 class AnonymousUser(User):
   def is_anonymous(self):
     return True
+
+  def has_perm(self, *args, **kwargs):
+    u = User.objects.get(pk=self.pk)
+    return u.has_perm(*args, **kwargs)
 
   class Meta:
     proxy = True

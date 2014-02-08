@@ -1,9 +1,19 @@
 from django.test import TestCase
 from django.test.client import Client
-from spiff import membership, inventory, sensors, local
+from spiff import membership, inventory, sensors, local, funcLog
 from django.contrib.auth.models import User, Permission
 import json
 import functools
+from spiff import funcLog
+
+def withoutPermission(perm):
+  def wrapIt(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+      self.revokePermission(perm)
+      return func(self, *args, **kwargs)
+    return wrapper
+  return wrapIt
 
 def withPermission(perm):
   def wrapIt(func):
@@ -14,12 +24,28 @@ def withPermission(perm):
     return wrapper
   return wrapIt
 
+def withUser(username='test', password='test'):
+  def wrap(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+      self.user = self.createUser(username, password)
+      self.password = password
+      return func(self, *args, **kwargs)
+    return wrapper
+  if callable(username):
+    f = username
+    username = 'test'
+    return wrap(f)
+  return wrap
+
 def withLogin(func):
   @functools.wraps(func)
+  @withUser
   def wrapper(self, *args, **kwargs):
     self.login()
     return func(self, *args, **kwargs)
   return wrapper
+
 
 class ClientTestMixin(TestCase):
   def setupClient(self):
@@ -27,13 +53,22 @@ class ClientTestMixin(TestCase):
 
 class APITestMixin(ClientTestMixin):
   def setupAPI(self):
-    self.user = User.objects.create_user('test', 'test@example.com', 'test')
-    self.user.first_name = 'Test'
-    self.user.last_name = 'McTesterson'
-    self.user.save()
+    self.user = membership.models.get_anonymous_user()
     self.setupClient()
 
+  def revokePermission(self, permissionName):
+    funcLog().info("Revoking %s from %s", permissionName, self.user)
+    appName, name = permissionName.split('.', 1)
+    perm = Permission.objects.get(
+      codename=name,
+      content_type__app_label=appName,
+    )
+    self.user.user_permissions.remove(perm)
+    self.user.save()
+    return perm
+
   def grantPermission(self, permissionName):
+    funcLog().info("Granting %s to %s", permissionName, self.user)
     appName, name = permissionName.split('.', 1)
     perm = Permission.objects.get(
       codename=name,
@@ -43,22 +78,35 @@ class APITestMixin(ClientTestMixin):
     self.user.save()
     return perm
 
+  def createUser(self, username, password):
+    funcLog().info("Creating user %s with password %s", username, password)
+    user = User.objects.create_user(username, 'test@example.com', password)
+    user.first_name = 'Test'
+    user.last_name = 'McTesterson'
+    user.save()
+    return user
+
   def login(self):
-    self.client.login(username='test', password='test')
+    funcLog().info("Logging in with test user")
+    self.client.login(username=self.user.username, password=self.password)
 
   def postAPIRaw(self, endpoint, struct=None):
     if struct:
+      funcLog().info("Posting to %s: %r", endpoint, struct)
       return self.client.post(
         endpoint,
         json.dumps(struct),
         content_type="application/json"
       )
     else:
+      funcLog().info("Posting to %s", endpoint)
       return self.client.post(endpoint)
 
   def getAPIRaw(self, endpoint, args=None):
     if args:
+      funcLog().info("Requesting %s with %r", endpoint, args)
       return self.client.get(endpoint, args)
+    funcLog().info("Requesting %s", endpoint)
     return self.client.get(endpoint)
 
   def postAPI(self, endpoint, struct=None, status=200):
