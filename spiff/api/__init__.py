@@ -8,11 +8,11 @@ from south.signals import post_migrate
 from django.db.models.signals import post_syncdb
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
-from tastypie.authorization import DjangoAuthorization
+from tastypie.authorization import Authorization
 from spiff.api.plugins import find_api_classes
 from spiff import funcLog
 
-def add_resource_permissions(sender, **kwargs):
+def add_resource_permissions(*args, **kwargs):
   """
   This syncdb hooks takes care of adding a view permission too all our 
   content types.
@@ -52,7 +52,7 @@ def add_resource_permissions(sender, **kwargs):
 post_migrate.connect(add_resource_permissions)
 post_syncdb.connect(add_resource_permissions)
 
-class SpiffAuthorization(DjangoAuthorization):
+class SpiffAuthorization(Authorization):
 
   def conditions(self):
     return (
@@ -61,45 +61,44 @@ class SpiffAuthorization(DjangoAuthorization):
 
   def operations(self):
     return (
-      ('list', 'list'),
-      ('view', 'view'),
-      ('change', 'change'),
+      ('create', 'create'),
+      ('read', 'read'),
+      ('update', 'update'),
       ('delete', 'delete'),
-      ('add', 'add'),
     )
 
-  def check_perm(self, request, model, name, op):
+  def base_checks(self, request, model_klass):
+    if not model_klass or not getattr(model_klass, '_meta', None):
+      return False
+
+    if not hasattr(request, 'user'):
+      return False
+
+    return model_klass
+
+  def check_perm(self, request, model, permName):
     klass = self.base_checks(request, model.__class__)
-    permName = '%s.%s_%s' % (model.__class__._meta.app_label, name,
+    permName = '%s.%s_%s' % (model.__class__._meta.app_label, permName,
         model.__class__._meta.module_name)
     ret = request.user.has_perm(permName)
-    funcLog().debug("%r", request.user.user_permissions.all())
     funcLog().debug("Checking %s for %s: %s", request.user, permName, ret)
     return ret
 
-  def check_list(self, object_list, bundle, op, perm=None):
-    func = getattr(super(SpiffAuthorization, self), '%s_list'%(op))
-    permitted = func(object_list, bundle)
+  def check_list(self, object_list, bundle, op):
     ret = []
-    if perm is not None:
-      for obj in permitted:
-        if self.check_perm(bundle.request, obj, perm, op):
-          ret.append(obj)
+    for obj in object_list:
+      if self.check_perm(bundle.request, obj, op):
+        ret.append(obj)
     return ret
 
-  def check_detail(self, object_list, bundle, op, perm=None):
-    func = getattr(super(SpiffAuthorization, self), '%s_detail'%(op))
-    if func(object_list, bundle):
-      if perm is not None:
-        return self.check_perm(bundle.request, bundle.obj, perm, op)
-      return True
-    return False
+  def check_detail(self, object_list, bundle, op):
+    return self.check_perm(bundle.request, bundle.obj, op)
 
   def read_list(self, object_list, bundle):
-    return self.check_list(object_list, bundle, 'read', 'list')
+    return self.check_list(object_list, bundle, 'read')
 
   def read_detail(self, object_list, bundle):
-    return self.check_detail(object_list, bundle, 'read', 'view')
+    return self.check_detail(object_list, bundle, 'read')
 
   def create_list(self, object_list, bundle):
     return self.check_list(object_list, bundle, 'create')
@@ -132,9 +131,9 @@ class OwnedObjectAuthorization(SpiffAuthorization):
   def check_perm(self, request, model, name, op):
     if getattr(model, self._attr) != request.user:
       return super(OwnedObjectAuthorization, self).check_perm(request,
-          model.__class__, '%s_others'%(name), op)
+          model.__class__, '%s_others'%(name))
     return super(OwnedObjectAuthorization, self).check_perm(request,
-        model.__class__, name, op)
+        model.__class__, name)
 
 v1_api = Api(api_name='v1')
 for api in find_api_classes('v1_api', Resource, lambda x:hasattr(x, 'Meta')):

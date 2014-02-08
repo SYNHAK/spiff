@@ -38,13 +38,13 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       resource = self.resource
     return self.getAPI('/v1/resource/%s/metadata/'%(resource.id))
 
-  @withPermission('inventory.view_resource')
+  @withPermission('inventory.read_resource')
   def testGetBlankMeta(self):
     meta = self.getMeta()
     self.assertTrue(len(meta['objects']) == 0)
 
-  @withPermission('inventory.view_resource')
-  @withPermission('inventory.list_metadata')
+  @withPermission('inventory.read_resource')
+  @withPermission('inventory.read_metadata')
   def testGetSingleMeta(self):
     self.addMeta(self.resource, 'meta-test', 'meta-test-value')
     meta = self.getMeta()
@@ -60,8 +60,8 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       'type': 0
     }, status=401)
 
-  @withoutPermission('inventory.add_metadata')
-  @withPermission('inventory.view_resource')
+  @withoutPermission('inventory.create_metadata')
+  @withPermission('inventory.read_resource')
   def testUnpermissionedCreateMeta(self):
     meta = self.getMeta()
     self.assertEqual(len(meta['objects']), 0)
@@ -73,9 +73,9 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       'type': 0
     }, status=401)
 
-  @withPermission('inventory.add_metadata')
-  @withPermission('inventory.view_resource')
-  @withPermission('inventory.list_metadata')
+  @withPermission('inventory.create_metadata')
+  @withPermission('inventory.read_resource')
+  @withPermission('inventory.read_metadata')
   def testCreateMeta(self):
     meta = self.getMeta()
     self.assertEqual(len(meta['objects']), 0)
@@ -85,9 +85,34 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
       'name': 'api-meta',
       'value': 'api-meta-test',
       'type': 0
-    }, status=201)
+    })
 
     meta = self.getMeta()
     self.assertEqual(len(meta['objects']), 1)
     self.assertEqual(meta['objects'][0]['name'], 'api-meta')
     self.assertEqual(meta['objects'][0]['value'], 'api-meta-test')
+
+  @withPermission('inventory.read_resource')
+  @withPermission('inventory.create_metadata')
+  @withPermission('inventory.read_metadata')
+  @withPermission('inventory.update_metadata')
+  def testUpdateMeta(self):
+    self.postAPI('/v1/metadata/', {
+      'resource': '/v1/resource/%s/'%(self.resource.id),
+      'name': 'api-meta',
+      'value': 'api-meta-test',
+      'type': 0
+    })
+
+    meta = self.getMeta()
+    id = meta['objects'][0]['id']
+
+    self.patchAPI('/v1/metadata/%s/'%id, {
+      'value': 'api-meta-test-updated',
+    })
+
+    meta = self.getMeta()
+    self.assertEqual(len(meta['objects']), 1)
+    self.assertEqual(meta['objects'][0]['name'], 'api-meta')
+    self.assertEqual(meta['objects'][0]['value'], 'api-meta-test-updated')
+    self.assertEqual(meta['objects'][0]['id'], id)

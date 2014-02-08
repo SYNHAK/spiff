@@ -23,15 +23,15 @@ class FieldValueAuthorization(SpiffAuthorization):
       ('private', 'field is private'),
     ) + super(FieldValueAuthorization, self).conditions()
 
-  def check_perm(self, request, model, name, op):
+  def check_perm(self, request, model, permName):
     if model.field.public:
       return super(FieldValueAuthorization, self).check_perm(request, model,
-      '%s_public'%(name), op)
+      '%s_public'%(permName))
     if model.field.protected:
       return super(FieldValueAuthorization, self).check_perm(request, model,
-      '%s_protected'%(name), op)
+      '%s_protected'%(permName))
     return super(FieldValueAuthorization, self).check_perm(request, model,
-    '%s_private'%(name), op)
+    '%s_private'%(permName))
 
 class FieldResource(ModelResource):
   name = fields.CharField('name')
@@ -60,11 +60,11 @@ class RankPlanAuthorization(SpiffAuthorization):
       ('active_membership', 'rank is active membership'),
     )+super(RankPlanAuthorization, self).conditions()
 
-  def check_perm(self, request, model, name, op):
+  def check_perm(self, request, model, name):
     if model.rank.isActiveMembership:
       return super(RankPlanAuthorization, self).check_perm(request, model,
-        '%s_active_membership'%(name), op)
-    return super(RankPlanAuthorization, self).check_perm(request, model, name, op)
+        '%s_active_membership'%(name))
+    return super(RankPlanAuthorization, self).check_perm(request, model, name)
 
 class RankSubscriptionPlanResource(subscription.SubscriptionPlanResource):
   class Meta:
@@ -104,11 +104,10 @@ class GroupResource(ModelResource):
     authorization = SpiffAuthorization()
 
 class SelfMemberAuthorization(SpiffAuthorization):
-  def check_perm(self, request, model, name, op):
+  def check_perm(self, request, model, name):
     if request.user.pk == model.pk:
       return True
-    return super(SelfMemberAuthorization, self).check_perm(request, model, name,
-        op)
+    return super(SelfMemberAuthorization, self).check_perm(request, model, name)
 
 class MemberResource(ModelResource):
   username = fields.CharField(attribute='user__username')

@@ -108,8 +108,28 @@ class APITestMixin(ClientTestMixin):
       return self.client.get(endpoint, args)
     funcLog().info("Requesting %s", endpoint)
     return self.client.get(endpoint)
+  
+  def patchAPIRaw(self, endpoint, struct=None):
+    if struct:
+      funcLog().info("Patching %s with %r", endpoint, struct)
+      return self.client.patch(
+        endpoint,
+        json.dumps(struct),
+        content_type = 'application/json'
+      )
+    funcLog().info("Patching %s", endpoint)
+    return self.client.patch(endpoint)
 
-  def postAPI(self, endpoint, struct=None, status=200):
+  def patchAPI(self, endpoint, struct=None, status=202):
+    ret = self.patchAPIRaw(endpoint, struct)
+    self.assertEqual(ret.status_code, status)
+    if len(ret.content):
+      ret = json.loads(ret.content)
+    else:
+      ret = None
+    return ret
+
+  def postAPI(self, endpoint, struct=None, status=201):
     ret = self.postAPIRaw(endpoint, struct)
     self.assertEqual(ret.status_code, status)
     if len(ret.content):
