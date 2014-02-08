@@ -52,6 +52,17 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
     self.assertEqual(meta['objects'][0]['name'], 'meta-test')
     self.assertEqual(meta['objects'][0]['value'], 'meta-test-value')
 
+  @withPermission('inventory.read_resource')
+  @withPermission('inventory.read_metadata')
+  @withPermission('inventory.delete_metadata')
+  def testDeleteMeta(self):
+    self.addMeta(self.resource, 'meta-test', 'meta-test-value')
+    meta = self.getMeta()
+    self.assertEqual(len(meta['objects']),  1)
+    self.deleteAPI('/v1/metadata/%s/'%meta['objects'][0]['id'])
+    meta = self.getMeta()
+    self.assertEqual(len(meta['objects']),  0)
+
   def testUnauthedCreateMeta(self):
     self.postAPI('/v1/metadata/',{
       'resource': '/v1/resource/%s/'%(self.resource.id),
