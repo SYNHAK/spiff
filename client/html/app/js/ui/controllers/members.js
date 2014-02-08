@@ -21,9 +21,10 @@ angular.module('spiff.members', [
     });
     _.each(additions, function(addition) {
       $scope.pending++;
+      console.log(user);
       Restangular.all('subscription').post({
         plan: '/v1/subscriptionplan/'+addition.id+'/',
-        user: '/v1/member/'+user.id+'/'
+        user: '/v1/user/'+user.userid+'/'
       }).then(function() {
         $scope.pending--;
         if ($scope.pending == 0)
@@ -77,7 +78,7 @@ angular.module('spiff.members', [
       resolve: {
         removals: function() {return $scope.pendingRemovals;},
         additions: function() {return $scope.pendingAdditions;},
-        user: function() {return user;}
+        user: function() {return $scope.user;}
       }
     });
     modal.result.then(function() {

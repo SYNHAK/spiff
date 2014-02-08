@@ -1,6 +1,7 @@
 from tastypie import fields
 from tastypie.resources import ModelResource
 from spiff.api import SpiffAuthorization
+from django.contrib.auth.models import User
 import models
 
 class SubscriptionPeriodResource(ModelResource):
@@ -23,8 +24,8 @@ class SubscriptionPlanResource(ModelResource):
     authorization = SpiffAuthorization()
 
 class SubscriptionResource(ModelResource):
-  user = fields.ToOneField('spiff.membership.v1_api.MemberResource',
-      'user__member', null=True)
+  user = fields.ToOneField('spiff.membership.v1_api.UserResource',
+      'user', null=True)
   active = fields.BooleanField('active')
   plan = fields.ToOneField('spiff.subscription.v1_api.SubscriptionPlanResource',
   'plan', full=True)
@@ -33,14 +34,3 @@ class SubscriptionResource(ModelResource):
     queryset = models.Subscription.objects.all()
     authorization = SpiffAuthorization()
     always_return_data = True
-
-  def obj_create(self, bundle, **kwargs):
-    bundle = self.full_hydrate(bundle)
-    m2m = self.hydrate_m2m(bundle)
-    plan = m2m.obj.plan
-    subscription = models.Subscription.objects.create(
-      user = bundle.request.user,
-      plan = plan,
-    )
-    bundle.obj = subscription
-    return bundle

@@ -109,6 +109,11 @@ class SelfMemberAuthorization(SpiffAuthorization):
       return True
     return super(SelfMemberAuthorization, self).check_perm(request, model, name)
 
+class UserResource(ModelResource):
+  class Meta:
+    queryset = User.objects.all()
+    authorization = SpiffAuthorization()
+
 class MemberResource(ModelResource):
   username = fields.CharField(attribute='user__username')
   firstName = fields.CharField(attribute='user__first_name', null=True)
@@ -123,6 +128,7 @@ class MemberResource(ModelResource):
   subscriptions = fields.ToManyField('spiff.subscription.v1_api.SubscriptionResource', 'user__subscriptions', null=True, full=True)
   stripeCards = fields.ListField(attribute='stripeCards', default=[],
       readonly=True)
+  userid = fields.IntegerField('user_id', readonly=True)
 
   class Meta:
     queryset = models.Member.objects.all()
