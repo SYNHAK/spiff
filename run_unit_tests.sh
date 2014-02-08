@@ -3,8 +3,8 @@ if [ ! -f virtualenv/bin/activate ];then
   virtualenv --no-site-packages virtualenv/
 fi
 source virtualenv/bin/activate
-pip install -r pip-requirements
-pip install coverage
+pip -q install -r pip-requirements
+pip -q install coverage
 coverage erase
 coverage run ./manage.py test $@
 ret=$?
