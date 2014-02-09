@@ -1,6 +1,6 @@
 <h1>Invoice #{{invoice.id}}</h1>
 <ul>
-    <li>To: {{invoice.user.firstName}} {{invoice.user.lastName}}</li>
+  <li>To: {{invoice.user.firstName}} {{invoice.user.lastName}} <span ng-if="!(invoice.user.firstName && invoice.user.lastName)">{{invoice.user.email}}</span></li>
     <li>Created: {{invoice.created|date:longDate}}</li>
     <li>Due date: {{invoice.dueDate|date:longDate}}</li>
 </ul>
