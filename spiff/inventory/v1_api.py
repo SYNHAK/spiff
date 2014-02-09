@@ -15,6 +15,9 @@ class TrainingResource(ModelResource):
   class Meta:
     authorization = SpiffAuthorization()
     queryset = models.Certification.objects.all()
+    filtering = {
+      'resource': 'exact'
+    }
 
 class ResourceMetadataResource(ModelResource):
   name = fields.CharField('name')
@@ -24,6 +27,9 @@ class ResourceMetadataResource(ModelResource):
   class Meta:
     authorization = SpiffAuthorization()
     queryset = models.Metadata.objects.all()
+    filtering = {
+      'resource': 'exact'
+    }
 
   def obj_create(self, bundle, **kwargs):
     bundle = super(ResourceMetadataResource, self).obj_create(
@@ -70,6 +76,9 @@ class ChangelogResource(ModelResource):
   class Meta:
     queryset = models.Change.objects.all()
     authorization = SpiffAuthorization()
+    filtering = {
+      'resource': 'exact'
+    }
 
 class ResourceResource(ModelResource):
   name = fields.CharField('name')
@@ -79,44 +88,3 @@ class ResourceResource(ModelResource):
     queryset = models.Resource.objects.all()
     resource_name = 'resource'
     authorization = SpiffAuthorization()
-
-  def prepend_urls(self):
-    return [
-      url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/changelog%s$" %
-        (self._meta.resource_name, trailing_slash()),
-        self.wrap_view('get_changelog'), name="api_get_changelog"),
-      url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/metadata%s$" %
-        (self._meta.resource_name, trailing_slash()),
-        self.wrap_view('get_metadata'), name="api_get_metadata"),
-      url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/training%s$" %
-        (self._meta.resource_name, trailing_slash()),
-        self.wrap_view('get_training'), name="api_get_training"),
-    ]
-
-  def get_training(self, request, **kwargs):
-    try:
-      bundle = self.build_bundle(data={'pk': kwargs['pk']}, request=request)
-      obj = self.cached_obj_get(bundle=bundle, **self.remove_api_resource_names(kwargs))
-    except ObjectDoesNotExist:
-      return HttpGone()
-
-    return TrainingResource().get_list(request, resource_id=obj.pk)
-
-  def get_metadata(self, request, **kwargs):
-    try:
-      bundle = self.build_bundle(data={'pk': kwargs['pk']}, request=request)
-      obj = self.cached_obj_get(bundle=bundle, **self.remove_api_resource_names(kwargs))
-    except ObjectDoesNotExist:
-      return HttpGone()
-
-    return ResourceMetadataResource().get_list(request, resource_id=obj.pk)
-
-  def get_changelog(self, request, **kwargs):
-    try:
-      bundle = self.build_bundle(data={'pk': kwargs['pk']}, request=request)
-      obj = self.cached_obj_get(bundle=bundle, **self.remove_api_resource_names(kwargs))
-    except ObjectDoesNotExist:
-      return HttpGone()
-
-    return ChangelogResource().get_list(request, resource_id=obj.pk)
-

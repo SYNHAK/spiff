@@ -39,11 +39,6 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     baseURL = url;
   }
 
-  RestangularProvider.addElementTransformer('group', false, function(group) {
-    group.addRestangularMethod('getMembers', 'get', 'members');
-    return group;
-  });
-
   RestangularProvider.addElementTransformer('member', true, function(member) {
     if (member.addRestangularMethod) {
       member.addRestangularMethod('login', 'post', 'login');

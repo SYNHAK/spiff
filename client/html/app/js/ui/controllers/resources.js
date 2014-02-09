@@ -55,19 +55,19 @@ angular.module('spiff.resources', [
   }
 
   $scope.refreshMetadata = function() {
-    resource.getList('metadata').then(function(meta) {
+    Restangular.all('metadata').getList({resource: resource.id}).then(function(meta) {
       $scope.metadata = meta;
     });
   }
 
   $scope.refreshChangelog = function() {
-    resource.getList('changelog').then(function(log) {
+    Restangular.all('changelog').getList({resource: resource.id}).then(function(log) {
       $scope.changelog = log;
     });
   }
 
   $scope.refreshTrainings = function() {
-    resource.getList('training').then(function(trainings) {
+    Restangular.all('training').getList({resource: resource.id}).then(function(trainings) {
       $scope.trainings = trainings;
     });
   }

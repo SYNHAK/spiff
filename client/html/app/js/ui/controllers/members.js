@@ -160,8 +160,8 @@ angular.module('spiff.members', [
     _.each(groups, function(group) {
       group.members = [];
       $scope.groups.push(group);
-      group.getMembers().then(function (members) {
-        group.members = members.objects;
+      Restangular.all('member').getList({'groups__in': group.id}).then(function(members) {
+        group.members = members;
       });
     });
   });
