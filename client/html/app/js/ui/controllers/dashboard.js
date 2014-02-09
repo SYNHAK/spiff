@@ -6,7 +6,7 @@ angular.module('spiff.dashboard', [
 .controller('RegistrationCtrl', function($scope, Restangular, Spiff, $modal) {
   $scope.$watch('Spiff.currentUser', function(user) {
     if (user && !user.isAnonymous) {
-      $location.url('/');
+      $location.url('/members/'+user.id);
     }
   });
 
