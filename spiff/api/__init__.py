@@ -121,8 +121,7 @@ class OwnedObjectAuthorization(SpiffAuthorization):
   def __init__(self, attrName):
     self._attr = attrName
 
-  @classmethod
-  def conditions():
+  def conditions(self):
     return (
       ('others', 'owned by other users'),
     )+super(OwnedObjectAuthorization, self).conditions()
