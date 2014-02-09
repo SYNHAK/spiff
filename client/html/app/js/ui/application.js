@@ -42,7 +42,7 @@ spiffApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider
       controller: 'ResourceListCtrl'
     })
     .state('viewResource', {
-      url: '/resources',
+      url: '/resources/:resourceID',
       templateUrl: 'resources/detail.html',
       controller: 'ResourceCtrl',
     })

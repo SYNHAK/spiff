@@ -42,8 +42,8 @@ angular.module('spiff.resources', [
   $scope.close = function() {$modalInstance.close()};
 })
 
-.controller('ResourceCtrl', function($scope, Restangular, $routeParams, $modal) {
-  var resource = Restangular.one('resource', $routeParams.resourceID);
+.controller('ResourceCtrl', function($scope, Restangular, $stateParams, $modal) {
+  var resource = Restangular.one('resource', $stateParams.resourceID);
 
   $scope.refreshResource = function() {
     resource.get().then(function (res) {
