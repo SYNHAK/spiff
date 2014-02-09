@@ -10,7 +10,7 @@ from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie.exceptions import Unauthorized
 import models
-from spiff.api import SpiffAuthorization
+from spiff.api import SpiffAuthorization, OwnedObjectAuthorization
 import json
 from spiff.subscription import v1_api as subscription
 from spiff import funcLog
@@ -105,14 +105,21 @@ class GroupResource(ModelResource):
 
 class SelfMemberAuthorization(SpiffAuthorization):
   def check_perm(self, request, model, name):
-    if request.user.pk == model.pk:
+    if request.user.member.pk == model.pk:
       return True
     return super(SelfMemberAuthorization, self).check_perm(request, model, name)
+
+class SelfUserAuthorization(SpiffAuthorization):
+  def check_perm(self, request, model, name):
+    funcLog().info("Checking if %s == %s", request.user, model)
+    if request.user.pk == model.pk:
+      return True
+    return super(SelfUserAuthorization, self).check_perm(request, model, name)
 
 class UserResource(ModelResource):
   class Meta:
     queryset = User.objects.all()
-    authorization = SpiffAuthorization()
+    authorization = SelfUserAuthorization()
 
 class MembershipPeriodResource(ModelResource):
   group = fields.ToOneField(GroupResource, 'rank__group', full=True)
