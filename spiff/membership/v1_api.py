@@ -147,11 +147,17 @@ class MemberResource(ModelResource):
 
   def obj_create(self, bundle, **kwargs):
     data = bundle.data
+    firstName = ""
+    lastName = ""
+    if 'firstName' in data:
+      firstName = data['firstName']
+    if 'lastName' in data:
+      lastName = data['lastName']
     u = User.objects.create(
       username = data['username'],
       email = data['email'],
-      first_name = data['firstName'],
-      last_name = data['lastName']
+      first_name = firstName,
+      last_name = lastName
     )
     u.set_password(data['password'])
     u.save()
