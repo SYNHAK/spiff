@@ -85,7 +85,7 @@ angular.module('spiff.members', [
   }
 })
 
-.controller('MembershipCtrl', function($scope, $modal, $stateParams, Restangular, Spiff) {
+.controller('SubscriptionCtrl', function($scope, $modal, $stateParams, Restangular, Spiff) {
   var user = Restangular.one('member', $stateParams.memberID);
   function refresh() {
     user.get().then(function (u) {
@@ -103,9 +103,20 @@ angular.module('spiff.members', [
     $scope.availableGroups = groups;
   });
 
+  $scope.availablePlans = [];
+
   var membershipPlans = Restangular.all('ranksubscriptionplan');
   membershipPlans.getList().then(function(plans) {
-    $scope.membershipPlans = plans;
+    _.each(plans, function(p) {
+      $scope.availablePlans.push(p);
+    });
+  });
+
+  var donationPlans = Restangular.all('donationplan');
+  donationPlans.getList().then(function(plans) {
+    _.each(plans, function(p) {
+      $scope.availablePlans.push(p);
+    });
   });
 
   $scope.addSubscription = function(plan) {
