@@ -114,6 +114,17 @@ class UserResource(ModelResource):
     queryset = User.objects.all()
     authorization = SpiffAuthorization()
 
+class MembershipPeriodResource(ModelResource):
+  group = fields.ToOneField(GroupResource, 'rank__group', full=True)
+  member = fields.ToOneField('spiff.membership.v1_api.MemberResource',
+  'member')
+  start = fields.DateTimeField('activeFromDate')
+  end = fields.DateTimeField('activeToDate')
+
+  class Meta:
+    queryset = models.MembershipPeriod.objects.all()
+    authorization = SpiffAuthorization()
+
 class MemberResource(ModelResource):
   username = fields.CharField(attribute='user__username')
   firstName = fields.CharField(attribute='user__first_name', null=True)
