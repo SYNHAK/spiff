@@ -124,14 +124,17 @@ class OwnedObjectAuthorization(SpiffAuthorization):
   def conditions(self):
     return (
       ('others', 'owned by other users'),
+      ('own', 'owned by self'),
     )+super(OwnedObjectAuthorization, self).conditions()
 
-  def check_perm(self, request, model, name, op):
-    if getattr(model, self._attr) != request.user:
+  def check_perm(self, request, model, name):
+    u = getattr(model, self._attr)
+    funcLog().info("Checking %r for ownership of %r (%r)", request.user, model, u)
+    if u.pk == request.user.pk:
       return super(OwnedObjectAuthorization, self).check_perm(request,
-          model.__class__, '%s_others'%(name))
+          model, '%s_own'%(name))
     return super(OwnedObjectAuthorization, self).check_perm(request,
-        model.__class__, name)
+        model, '%s_others'%(name))
 
 v1_api = Api(api_name='v1')
 for api in find_api_classes('v1_api', Resource, lambda x:hasattr(x, 'Meta')):
