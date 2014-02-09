@@ -1,0 +1,20 @@
+<table class="table table-hover">
+  <tr>
+    <th>Date</th>
+    <th>Who</th>
+    <th>What</th>
+  </tr>
+  <tr ng-repeat="log in changelog">
+    <td>{{log.date}}</td>
+    <td>{{log.member.firstName}} {{log.member.lastName}}</td>
+    <td ng-if="log.property && log.old && log.new">
+      Changed {{log.property}} from {{log.old}} to {{log.new}}
+    </td>
+    <td ng-if="log.property && log.old && !log.new">
+      Deleted {{log.property}} (was {{log.old}})
+    </td>
+    <td ng-if="log.property && !log.old && log.new">
+      Added {{log.property}}: {{log.new}}
+    </td>
+  </tr>
+</table>

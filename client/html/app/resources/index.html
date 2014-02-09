@@ -1,0 +1,16 @@
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Resources</h1>
+    </div>
+    <ul class="thumbnails">
+      <li ng-repeat="resource in resources">
+        <a ui-sref="viewResource({resourceID: resource.id})">
+          <div class="thumbnail">
+              <h3><span class="qr" qr-code></span>{{resource.name}}</h3>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

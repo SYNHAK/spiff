@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>
+        <gravatar-image gravatar-email="member.email" gravatar-default="identicon"></gravatar-image>
+        {{member.firstName}} {{member.lastName}}
+        <small ng-if="member.tagline">-- {{member.tagline}}</small>
+      </h1>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="span12">
+    <ul class="nav nav-tabs">
+      <li ui-sref-active="active">
+        <a ui-sref="member">Profile</a>
+      </li>
+      <!--<li ui-sref-active="active">
+        <a ui-sref="member.edit">Edit</a>
+      </li> -->
+      <li ui-sref-active="active">
+        <a ui-sref="member.payments">Invoices</a>
+      </li>
+      <li ui-sref-active="active">
+        <a ui-sref="member.subscriptions">Subscriptions</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div ui-view>
+  <div ng-include="'members/view.html'"></div>
+</div>
+
+<div class="modal hide fade" id="modifyGroupsModal">
+  <form class="form-horizontal" id="groups-form" ng-submit="saveGroups()">
+    <div class="modal-header">
+      <h3>Modify Groups</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group" ng-repeat="group in availableGroups">
+          <label class="control-label" for="group-{{group.id}}">
+            {{group.name}}
+          </label>
+          <div class="controls">
+            <input type="checkbox" value="{{group.id}}" id="group-{{group.id}}" ng-checked="group.active">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-success">Save</button>
+      <button class="btn" ng-click="hideModifyGroups()">Close</button>
+    </div>
+  </form>
+</div>

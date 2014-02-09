@@ -1,0 +1,24 @@
+{
+  "name": "Spiff",
+  "version": "0.1.0",
+  "description": "Spaceman Spiff Manages Spaces",
+  "homepage": "https://github.com/SYNHAK/spiff/",
+  "bugs": {
+    "url": "https://github.com/SYNHAK/spiff/issues/",
+    "email": "tdfischer@hackerbots.net"
+  },
+  "license": "AGPL-3.0",
+  "contributors": [
+    "Torrie Fischer <tdfischer@hackerbots.net> (https://hackerbots.net/)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SYNHAK/spiff.git"
+  },
+  "private": true,
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-bower-task": "~0.3.4",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}

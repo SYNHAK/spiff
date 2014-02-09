@@ -1,0 +1,20 @@
+<div class="row" ng-controller="EpicenterCtrl">
+  <div class="span9" id="welcome-page">
+    <h1>{{spaceAPI['x-spiff-greeting']}}</h1>
+    {{spaceAPI['x-spiff-welcome']}}
+    <div ng-if="spaceAPI.motd">
+      <h2>Message of the Day</h2>
+      <div class="well" ng-if="spaceAPI.motd">
+        {{spaceAPI.motd}}
+      </div>
+    </div>
+  </div>
+  <div class="span3">
+    <div class="well">
+      <p class="text-muted">Permissions may be required to use certain features.</p>
+    <button class="btn btn-block btn-primary btn-large" ng-click="showLogin()">Login</button>
+    <div class="login-or">or</div>
+    <a ui-sref='register' class="btn btn-block btn-large">Register</a>
+    </div>
+  </div>
+</div>

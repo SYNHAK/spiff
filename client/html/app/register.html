@@ -1,0 +1,111 @@
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Registration</h1>
+    </div>
+  </div>
+</div>
+<form class="form-horizontal" ng-submit="submit()">
+<div class="row">
+  <div class="span12">
+    <h2>Basic Information</h2>
+    <p>These items form the basis for your Spiff identity. These can be
+    changed later.</p>
+  </div>
+</div>
+<div class="row">
+  <div class="span6">
+    <h3>Required</h3>
+    <div class="control-group">
+      <label class="control-label" for="username">
+        Username:
+      </label>
+      <div class="controls">
+        <input type="text" id="username" ng-model="d.username">
+        <span class="help-inline">You will use this to login to Spiff.</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="password">
+        Password:
+      </label>
+      <div class="controls">
+        <input type="password" id="password" ng-model="d.password">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="password_confirm">
+        Confirm Password:
+      </label>
+      <div class="controls">
+        <input type="password" id="password_confirm" ng-model="d.password_confirm">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="email">
+        E-mail:
+      </label>
+      <div class="controls">
+        <input type="text" id="email" ng-model="d.email">
+        <span class="help-inline">Notifications get sent here.</span>
+      </div>
+    </div>
+    <div ng-repeat="field in requiredFields">
+      <div class="control-group">
+        <label class="control-label" for="{{field.id}}-field">
+          {{field.name}}
+        </label>
+        <div class="controls">
+          <input type="text" id="{{field.id}}-field" ng-model="field.value">
+          <span class="help-inline">{{field.description}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="span6">
+    <h3>Optional</h3>
+    <div class="control-group">
+      <label class="control-label" for="first_name">
+        First name:
+      </label>
+      <div class="controls">
+        <input type="text" id="first_name" ng-model="d.first_name">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="last_name">
+        Last name:
+      </label>
+      <div class="controls">
+        <input type="text" id="last_name" ng-model="d.last_name">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="last_name">
+        Tagline:
+      </label>
+      <div class="controls">
+        <input type="text" id="tagline" ng-model="d.tagline">
+        <span class="help-inline">Free-form text to show on your profile</span>
+      </div>
+    </div>
+    <div ng-repeat="field in optionalFields">
+      <div class="control-group">
+        <label class="control-label" for="{{field.id}}-field">
+          {{field.name}}
+        </label>
+        <div class="controls">
+          <input type="text" id="{{field.id}}-field" ng-model="field.value">
+          <span class="help-inline">{{field.description}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="span12">
+    <button type="submit" class="btn btn-primary btn-large">Submit</button>
+  </div>
+</div>
+</form>
+<script 

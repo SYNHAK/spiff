@@ -33,10 +33,11 @@ class Sensor(models.Model):
     }
 
   def valueObj(self):
+    ret = None
     v = self.values.all()
     if len(v):
-      return v[0]
-    return None
+      ret = v[0]
+    return ret
 
   def value(self):
       lastVal = self.valueObj()

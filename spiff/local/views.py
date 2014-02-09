@@ -23,18 +23,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 import datetime
 
-def index(request):
-  now = datetime.datetime.utcnow()
-  events = Event.objects.filter(end__gte=now)
-  if request.user.is_anonymous():
-    return render_to_response('local/index_anonymous.html',
-        {'events': events},
-        context_instance=RequestContext(request))
-  else:
-    return render_to_response('local/index.html',
-        {'events': events},
-        context_instance=RequestContext(request))
-
 def register(request):
   fields = Field.objects.filter(required=True)
   if request.method == 'POST':
@@ -92,63 +80,6 @@ def search(request):
   return render_to_response('local/search.html',
       {'resources': resources, 'members': members, 'metadata': metadata},
       context_instance=RequestContext(request))
-
-def spaceapi(request):
-  meta = {}
-  meta['api'] = '0.12'
-  meta['x-spiff-version'] = '0.1'
-  site = get_current_site(request)
-  base = "%s://%s"%(request.META['wsgi.url_scheme'], site.domain)
-  if (request.META['wsgi.url_scheme'] == 'http' and request.META['SERVER_PORT'] != '80') or (request.META['wsgi.url_scheme'] == 'https' and request.META['SERVER_PORT'] != '443'):
-    base = "%s:%s"%(base, request.META['SERVER_PORT'])
-  meta['x-spiff-url'] = "%s%s"%(base, reverse('home'))
-
-  spaceConfig = SpaceConfig.objects.get(site=site)
-
-  meta['space'] = site.name
-  meta['logo'] = spaceConfig.logo
-  meta['icon'] = {'open': spaceConfig.closedIcon, 'closed': spaceConfig.openIcon}
-  meta['url'] = site.domain
-  meta['open'] = spaceConfig.isOpen()
-
-  if spaceConfig.openSensor is not None:
-      meta['x-spiff-open-sensor'] = spaceConfig.openSensor.id
-
-  meta['address'] = spaceConfig.address
-  meta['lat'] = spaceConfig.lat
-  meta['lon'] = spaceConfig.lon
-  meta['status'] = spaceConfig.status
-  meta['lastchange'] = str(spaceConfig.lastChange)
-
-  contacts = {}
-  for c in SpaceContact.objects.filter(space=spaceConfig):
-    contacts[c.name] = c.value
-  meta['contact'] = contacts
-
-  keyholders = []
-  for r in Rank.objects.filter(isKeyholder=True):
-    for u in r.group.user_set.all():
-      keyholders.append(str(u.member))
-
-  meta['contact']['keymaster'] = keyholders
-
-  feeds = []
-  for f in SpaceFeed.objects.filter(space=spaceConfig):
-    feeds.append({'name': f.name, 'url': f.url})
-  meta['feeds'] = feeds
-
-  sensors = {}
-  for t in SENSOR_TYPES:
-    sensors[t[1]] = []
-    for s in Sensor.objects.filter(type=t[0]):
-      v = s.value()
-      sensors[t[1]].append({s.name: v})
-  meta['sensors'] = sensors
-
-  data = json.dumps(meta, indent=True)
-  resp = HttpResponse(data)
-  resp['Content-Type'] = 'text/plain'
-  return resp
 
 @login_required
 def untrust_openid_root(request, id):

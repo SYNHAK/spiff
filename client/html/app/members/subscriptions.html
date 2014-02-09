@@ -1,0 +1,75 @@
+<div class="row">
+  <div class="span6">
+    <h2>Current Plans</h2>
+    <table class="table table-hover">
+      <tr>
+        <th>Name</th>
+        <th>Frequency</th>
+        <th colspan="2">Price</th>
+      </tr>
+      <tr ng-if="activeSubscriptions.length == 0">
+        <th colspan="4">
+          No subscriptions
+        </th>
+      </tr>
+      <tr ng-repeat="subscription in activeSubscriptions">
+        <td>{{subscription.plan.name}}</th>
+        <td>{{subscription.plan.period.name}}</th>
+        <td>{{subscription.plan.periodCost}}</th>
+        <td><button class="btn" ng-click="removeSubscription($index)">Remove</button></th>
+      </tr>
+      <tr ng-if="pendingRemovals.length">
+        <th colspan="4">
+          To be removed
+        </th>
+      </tr>
+      <tr ng-repeat="pending in pendingRemovals">
+        <td>{{pending.plan.name}}</td>
+        <td>{{pending.plan.period.name}}</td>
+        <td>{{pending.plan.periodCost}}</td>
+        <td><button class="btn"
+            ng-click="removePendingRemoval($index)">Cancel</button></td>
+      </tr>
+    </table>
+  </div>
+  <div class="span6">
+    <h2>Available Plans</h2>
+    <table class="table table-hover">
+      <tr>
+        <th>Name</th>
+        <th>Frequency</th>
+        <th colspan="2">Price</th>
+      </tr>
+      <tr ng-if="membershipPlans.length == 0">
+        <th colspan="4">
+          No subscriptions available
+        </th>
+      </tr>
+      <tr ng-repeat="plan in availablePlans">
+        <td>{{plan.name}}</td>
+        <td>{{plan.period.name}}</td>
+        <td>{{plan.periodCost}}</td>
+        <td><button class="btn" ng-click="addSubscription(plan)">Add</button></th>
+      </tr>
+      <tr ng-if="pendingAdditions.length">
+        <th colspan="4">
+          To be added
+        </th>
+      </tr>
+      <tr ng-repeat="pending in pendingAdditions track by $index">
+        <td>{{pending.name}}</td>
+        <td>{{pending.period.name}}</td>
+        <td>{{pending.periodCost}}</td>
+        <td><button class="btn"
+            ng-click="removePendingAddition($index)">Remove</button></td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="span12">
+    <div class="form-actions">
+      <button class="btn" ng-click="save()">Save Changes</button>
+    </div>
+  </div>
+</div>

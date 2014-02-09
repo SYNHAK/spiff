@@ -1,0 +1,33 @@
+{
+  "name": "Spiff",
+  "version": "0.0.0",
+  "authors": [
+    "Torrie Fischer <tdfischer@hackerbots.net>"
+  ],
+  "description": "Spaceman Spiff Manages Spaces",
+  "main": "index.html",
+  "license": "AGPL-3.0",
+  "homepage": "https://github.com/SYNHAK/spiff/",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~2.3.2",
+    "jquery": "~1.10.2",
+    "jquery-ui": "~1.10",
+    "jquery-qrcode": "",
+    "underscore": "~1.5.2",
+    "angular": "~1.2.6",
+    "angular-route": "~1.2.6",
+    "angularjs-gravatar": "",
+    "angular-md5": "",
+    "angular-ui-bootstrap-bower": "0.8.0",
+    "angular-ui-router": "0.2.8-bowratic-tedium",
+    "restangular": ""
+  }
+}

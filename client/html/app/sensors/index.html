@@ -1,0 +1,16 @@
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Sensors</h1>
+    </div>
+    <ul class="thumbnails">
+      <li ng-repeat="sensor in sensors">
+        <a ui-sref="viewSensor({sensorID: sensor.id})">
+          <div class="thumbnail">
+              <h3>{{sensor.name}}</h3>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

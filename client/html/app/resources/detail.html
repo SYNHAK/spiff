@@ -1,0 +1,97 @@
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1><span class="qr" qr-code></span>{{resource.name}}</h1>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="span7">
+    <h2>Metadata</h2>
+    <table class="table table-hover">
+      <tr ng-repeat="meta in metadata">
+        <th>
+          <span check-permission="'inventory.del_metadata'">
+            <a ng-if='hasPermission' ng-click="deleteMetadata(meta)">
+              [X]
+            </a>
+          </span>
+          <a ng-click="editMetadata(meta.name)">{{meta.name}}</a></th>
+        <td>{{meta.value}}</td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <button class="btn btn-primary" ng-click="editMetadata()">Add
+          metadata</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="span5">
+    <h2>Changelog</h2>
+    <div ng-include="'resources/_changelog.html'"></div>
+  </div>
+</div>
+<div class="row">
+  <div class="span6">
+    <h2>Trained Users</h2>
+    <table class="table table-hover">
+      <tr>
+        <th>Name</th>
+        <th>Rank</th>
+      </tr>
+      <tr ng-repeat="training in trainings">
+        <td>{{training.member.firstName}} {{training.member.lastName}}</td>
+        <td>{{training.rank}}</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <button class="btn btn-primary" ng-click="addTraining()">Train
+            someone</button>
+        </td>
+      </tr>
+  </div>
+</div>
+<div id="trainingModal" class="modal hide fade">
+  <form class="form-horizontal" id="trainingForm" ng-submit="saveTraining()">
+    <div class="modal-header">
+      <h3>Add Training</h3>
+    </div>
+    <div class="modal-body">
+      <div class="control-group">
+        <label class="control-label" for="training-user">
+          User:
+        </label>
+        <div class="controls">
+          <input type="text" id="training-user"><button class="btn btn-success"
+            ng-click="addPendingUser()">+</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="training-rank">
+          Description:
+        </label>
+        <div class="controls">
+          <input type="text" id="training-rank">
+        </div>
+      </div>
+      <p ng-if="training.pendingUsers.length > 0">Users to train:</p>
+      <ul id="selected-users">
+        <li ng-repeat="user in training.pendingUsers">
+          <a ng-click="forgetUser(user)">
+            <span ng-if="user.fullName">
+              <i class="icon-ok"></i>{{user.fullName}}
+            </span>
+            <span ng-if="!user.fullName">
+              {{user.searchName}}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-success">Save</button>
+      <button class="btn" ng-click="closeTraining()">Close</button>
+    </div>
+  </form>
+</div>

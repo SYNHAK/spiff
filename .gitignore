@@ -2,3 +2,4 @@ virtualenv
 *.pyc
 *.swp
 local_settings.py
+.coverage

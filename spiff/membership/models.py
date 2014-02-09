@@ -9,19 +9,53 @@ import datetime
 import stripe
 from django.conf import settings
 from spiff.payment.models import LineItem, Invoice
+from spiff.subscription.models import SubscriptionPlan
 from django.template.loader import get_template
 from django.template import Context
+from django.contrib.contenttypes.models import ContentType
+from spiff import funcLog
 
 stripe.api_key = settings.STRIPE_KEY
 
+if not hasattr(settings, 'ANONYMOUS_USER_ID'):
+  settings.ANONYMOUS_USER_ID = 0
+
+if not hasattr(settings, 'AUTHENTICATED_GROUP_ID'):
+  settings.AUTHENTICATED_GROUP_ID = 0
+
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
-  user = models.OneToOneField(User)
+  user = models.OneToOneField(User, related_name='member')
   created = models.DateTimeField(editable=False, auto_now_add=True)
   lastSeen = models.DateTimeField(editable=False, auto_now_add=True)
   fields = models.ManyToManyField('Field', through='FieldValue')
   stripeID = models.TextField()
   hidden = models.BooleanField(default=False)
+
+  @property
+  def stripeCards(self):
+    customer = self.stripeCustomer()
+    if 'cards' in customer:
+      return customer.cards.data
+    return []
+
+  def addStripeCard(self, cardData):
+    customer = self.stripeCustomer()
+    return customer.cards.create(
+      card = cardData
+    )
+
+  def setDefaultStripeCard(self, cardID):
+    customer = self.stripeCustomer()
+    customer.default_card = cardID
+    customer.save()
+
+  def removeStripeCard(self, cardID):
+    customer = self.stripeCustomer()
+    customer.cards.retrieve(cardID).delete()
+
+  def isAnonymous(self):
+    return self.user_id == get_anonymous_user().id
 
   class Meta:
     permissions = (
@@ -62,6 +96,11 @@ class Member(models.Model):
       )
       self.stripeID = customer.id
       self.save()
+      return self.stripeCustomer()
+    if 'deleted' in customer:
+      self.stripeID = ""
+      self.save()
+      return self.stripeCustomer()
     return customer
 
   def serialize(self):
@@ -121,12 +160,19 @@ class Member(models.Model):
       return items[0].activeToDate
     return None
 
-  def getMembershipLineItemsForMonth(self, date=None):
+  def getMembershipLineItemsForMonth(self, rank=None, date=None):
     monthStart, monthEnd = monthRange(date)
-    billedMonths = self.rankLineItems.filter(
-      activeFromDate__gte=monthStart,
-      activeToDate__lte=monthEnd
-    )
+    if rank is None:
+      billedMonths = self.rankLineItems.filter(
+        activeFromDate__gte=monthStart,
+        activeToDate__lte=monthEnd,
+      )
+    else:
+      billedMonths = self.rankLineItems.filter(
+        activeFromDate__gte=monthStart,
+        activeToDate__lte=monthEnd,
+        rank=rank,
+      )
     return billedMonths
 
   def paidForMonth(self, date=None):
@@ -190,11 +236,54 @@ class FieldValue(models.Model):
   def __unicode__(self):
     return "%s: %s = %s"%(self.member.fullName, self.field.name, self.value)
 
+class RankSubscriptionPlan(SubscriptionPlan):
+    rank = models.ForeignKey(Rank, related_name='subscriptions')
+    member = models.ForeignKey(Member, related_name='rankSubscriptions',
+        blank=True, null=True)
+    quantity = models.IntegerField(default=1)
+
+    def calculatePeriodCost(self):
+      return self.rank.monthlyDues * self.quantity
+
+    def createLineItems(self, subscription, processDate):
+      targetMember = self.member
+      if targetMember is None:
+        targetMember = subscription.user.member
+      planOwner = subscription.user
+      startOfMonth, endOfMonth = monthRange(processDate)
+
+      funcLog().info("Processing subscription of %s dues for %s, billing to %s", self.rank, self.member, subscription.user)
+
+      return [RankLineItem(
+        rank = self.rank,
+        member = targetMember,
+        activeFromDate = startOfMonth,
+        activeToDate = endOfMonth
+      ),]
+
+    def __unicode__(self):
+      return "%sx%s for %s, %s"%(self.rank, self.quantity, self.member, self.period)
+
 class RankLineItem(LineItem):
     rank = models.ForeignKey(Rank)
     member = models.ForeignKey(Member, related_name='rankLineItems')
     activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
     activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
+
+    def process(self):
+      period, created = MembershipPeriod.objects.get_or_create(
+        rank = self.rank,
+        member = self.member,
+        activeFromDate = self.activeFromDate,
+        activeToDate = self.activeToDate,
+        lineItem = self
+      )
+      if created:
+        u = self.member.user
+        u.groups.add(self.rank.group)
+        u.save()
+        funcLog().info("Processed %s - added %s to group %s", self, self.member,
+            self.rank.group)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -202,6 +291,13 @@ class RankLineItem(LineItem):
               self.unitPrice = self.rank.monthlyDues
             self.name = "%s membership dues for %s, %s to %s"%(self.rank, self.member, self.activeFromDate, self.activeToDate)
         super(RankLineItem, self).save(*args, **kwargs)
+
+class MembershipPeriod(models.Model):
+    rank = models.ForeignKey(Rank)
+    member = models.ForeignKey(Member, related_name='membershipPeriods')
+    activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
+    activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
+    lineItem = models.ForeignKey(RankLineItem)
 
 def create_member(sender, instance, created, **kwargs):
   if created:
@@ -215,3 +311,86 @@ def create_rank(sender, instance, created, **kwargs):
     Rank.objects.get_or_create(group=instance)
 
 post_save.connect(create_rank, sender=Group)
+
+class AuthenticatedUser(User):
+  class Meta:
+    proxy = True
+
+  def has_perm(self, perm, obj=None):
+    funcLog().debug("Checking %s for permission %s on %r",self, perm, obj)
+    if super(AuthenticatedUser, self).has_perm(perm, obj):
+      funcLog().debug("Found django permission %s", perm)
+      return True
+    anon = get_anonymous_user()
+    if anon.has_perm(perm, obj):
+      funcLog().debug("Found anonymous permission %s", perm)
+      return True
+    app, perm = perm.split('.', 1)
+    ret = get_authenticated_user_group().permissions.filter(
+      content_type__app_label = app,
+      codename=perm).exists()
+    if ret:
+      funcLog().debug("Found authenticated group permission %s", perm)
+    else:
+      funcLog().debug("Denied")
+    return ret
+
+
+class AuthenticatedUserGroup(Group):
+  class Meta:
+    proxy = True
+
+class AnonymousUser(User):
+  def is_anonymous(self):
+    return True
+
+  def has_perm(self, *args, **kwargs):
+    u = User.objects.get(pk=self.pk)
+    return u.has_perm(*args, **kwargs)
+
+  class Meta:
+    proxy = True
+
+def get_authenticated_user_group():
+  if settings.AUTHENTICATED_GROUP_ID == 0:
+    try:
+      group = AuthenticatedUserGroup.objects.get(
+        name='Authenticated Users'
+      )
+    except AuthenticatedUserGroup.DoesNotExist:
+      group = AuthenticatedUserGroup.objects.create(
+        name='Authenticated Users'
+      )
+  else:
+    group = AuthenticatedUserGroup.objects.get(id=settings.AUTHENTICATED_GROUP_ID)
+  return group
+
+def get_anonymous_user():
+  if settings.ANONYMOUS_USER_ID == 0:
+    try:
+      user = AnonymousUser.objects.get(
+        username='anonymous'
+      )
+    except AnonymousUser.DoesNotExist:
+      user = AnonymousUser.objects.create(
+        username='anonymous',
+        email='anonymous@example.com',
+        password='',
+        first_name='Guest',
+        last_name='McGuesterson',
+      )
+      user.set_unusable_password()
+      user.save()
+      member = Member.objects.get(user=user)
+      member.hidden = True
+      member.save()
+  else:
+    user = User.objects.get(id=settings.ANONYMOUS_USER_ID)
+  try:
+    member = user.member
+  except Member.DoesNotExist:
+    user.member, created = Member.objects.get_or_create(user=user)
+    user.save()
+  return user
+
+post_save.connect(create_member, sender=AnonymousUser)

@@ -66,11 +66,11 @@ STATIC_ROOT = ''
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = '/ui/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    relpath("static/"),
+    relpath('../client/html/app/'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -100,6 +100,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'spiff.membership.middleware.AnonymousUserMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -110,7 +111,6 @@ ROOT_URLCONF = 'spiff.urls'
 WSGI_APPLICATION = 'spiff.wsgi.application'
 
 TEMPLATE_DIRS = (
-    relpath("templates/"),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -132,6 +132,9 @@ INSTALLED_APPS = (
     'django_openid_auth',
     'openid_provider',
     'notification',
+    'spiff.api',
+    'spiff.subscription',
+    'spiff.donations',
     'spiff.membership',
     'spiff.inventory',
     'spiff.local',
@@ -139,7 +142,10 @@ INSTALLED_APPS = (
     'spiff.sensors',
     'spiff.payment',
     'spiff.management',
+    'django_nose',
 )
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 WEBFINGER_HANDLER = 'spiff.local.webfinger.handle'
 
@@ -206,8 +212,11 @@ GREETINGS = (
   "Hello!",
 )
 
+WELCOME_MESSAGE = """
+Spiff is a tool for managing hackerspaces.
+"""
+
 try:
   from local_settings import *
 except ImportError:
   pass
-

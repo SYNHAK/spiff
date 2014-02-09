@@ -2,8 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import utc
 import datetime
+import stripe
+from spiff import funcLog
 
 from spiff.notification_loader import notification
+import spiff.api.plugins
 
 class InvoiceManager(models.Manager):
 
@@ -12,7 +15,7 @@ class InvoiceManager(models.Manager):
 
     def unpaid(self):
         ids = []
-        for i in self.filter(open=True):
+        for i in self.allOpen():
             if i.unpaidBalance > 0:
                 ids.append(i.id)
         return self.filter(id__in=ids, draft=False)
@@ -27,9 +30,40 @@ class Invoice(models.Model):
     open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
 
+    @classmethod
+    def bundleLineItems(cls, user, dueDate, items):
+      if len(items) == 0:
+        return None
+
+      invoice = Invoice.objects.create(
+        user = user,
+        dueDate = dueDate,
+      )
+      for item in items:
+        item.invoice = invoice
+        item.save()
+      return invoice
+
     class Meta:
       permissions = (
         ('view_other_invoices', 'Can view invoices assigned to other users'),
+      )
+
+    def chargeStripe(self):
+      stripeCustomer = self.user.member.stripeCustomer()
+      charge = stripe.Charge.create(
+        amount = int(self.unpaidBalance*100),
+        currency = 'usd',
+        description = 'Payment from %s for invoice %s'%(self.user.member.fullName, self.id),
+        customer = stripeCustomer.id
+      )
+      payment = Payment.objects.create(
+        user = self.user,
+        value = self.unpaidBalance,
+        status = Payment.STATUS_PAID,
+        transactionID = charge.id,
+        method = Payment.METHOD_STRIPE,
+        invoice = self
       )
 
     def save(self, *args, **kwargs):
@@ -37,11 +71,15 @@ class Invoice(models.Model):
         current = Invoice.objects.get(pk=self.pk)
         if current.draft == True or current.open == False:
           if self.draft == False and self.open == True and self.unpaidBalance > 0:
-            notification.send(
-              [self.user],
-              "invoice_ready",
-              {'user': self.user, 'invoice': self},
-            ) 
+            try:
+              self.chargeStripe()
+            except stripe.error.CardError, e:
+              funcLog().error("Failed to charge stripe")
+              funcLog().exception(e)
+              notification.send(
+                [self.user],
+                "card_failed",
+                {'user': self.user, 'invoice': self})
       super(Invoice, self).save(*args, **kwargs)
 
     @property
@@ -86,6 +124,9 @@ class LineItem(models.Model):
     def isOpen(self):
         return self.invoice.open
 
+    def process(self):
+      pass
+
     @property
     def totalPrice(self):
         return self.unitPrice * self.quantity
@@ -129,7 +170,7 @@ class Payment(models.Model):
     )
     user = models.ForeignKey(User, related_name='payments')
     value = models.FloatField()
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(default=STATUS_PENDING, choices=STATUS)
     transactionID = models.TextField(blank=True, null=True)
     method = models.IntegerField(choices=METHODS)
@@ -138,10 +179,18 @@ class Payment(models.Model):
     def save(self, *args, **kwargs):
         if not self.id and not self.created:
             self.created = datetime.datetime.utcnow().replace(tzinfo=utc)
+            notification.send(
+              [self.user],
+              "payment_received",
+              {'user': self.user, 'payment': self})
         super(Payment, self).save(*args, **kwargs)
         if self.invoice.unpaidBalance == 0:
             self.invoice.open = False
             self.invoice.save()
+            for lineItemType in spiff.api.plugins.find_api_classes('models', LineItem):
+              for item in lineItemType.objects.filter(invoice=self.invoice):
+                item.process()
 
     def __unicode__(self):
         return "%d %s by %s for %s"%(self.value, self.get_method_display(), self.user, self.invoice)
+

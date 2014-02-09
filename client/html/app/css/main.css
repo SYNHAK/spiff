@@ -1,0 +1,68 @@
+@import url(http://fonts.googleapis.com/css?family=Sofia);
+
+tr.invoice-total th {
+  text-align: right;
+}
+
+tr.invoice-total {
+  font-size: xx-large;
+  line-height: 1;
+}
+
+#errorModal pre {
+  font-size: x-small;
+  word-wrap: pre;
+  overflow: auto;
+}
+
+.qr div {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.login-or {
+  text-align: center;
+  font-size: x-large;
+  font-weight: bold;
+  font-style: italic;
+  margin: 0.5em 0;
+  font-family: 'Sofia', cursive;
+}
+
+.login-or:before, .login-or:after {
+  content: "-"
+}
+
+#footer {
+  font-size: x-small;
+  border-top: 1px solid #ddd;
+}
+
+#footer p {
+  margin: 0;
+}
+
+#footer button.btn {
+  margin: 10px 0;
+}
+
+#footer .SYN {
+  color: #F56F22;
+}
+
+#footer .HAK {
+  color: #0066D6;
+}
+
+#footer .synhak-link {
+  color: #000;
+  font-weight: bold;
+}
+
+#footer .heart {
+  color: #f00 !important;
+}
+
+#welcome-page {
+  background: url(../logo.png) no-repeat top right;
+}
