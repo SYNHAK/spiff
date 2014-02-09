@@ -6,6 +6,7 @@ import models
 from django.conf import settings
 from tastypie import fields
 from spiff.api import SpiffAuthorization
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')
@@ -15,6 +16,9 @@ class PaymentResource(ModelResource):
     queryset = models.Payment.objects.all()
     authorization = SpiffAuthorization()
     always_return_data = True
+    filtering = {
+        'user': 'exact'
+    }
 
   def obj_create(self, bundle, **kwargs):
     bundle = self.full_hydrate(bundle)
@@ -75,3 +79,6 @@ class InvoiceResource(ModelResource):
   class Meta:
     queryset = models.Invoice.objects.all()
     authorization = SpiffAuthorization()
+    filtering = {
+        'user': 'exact'
+    }
