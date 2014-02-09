@@ -10,8 +10,9 @@
           <a ui-sref="member.view({memberID: member.id})">
             <div class="thumbnail">
                 <h3>
-                  <gravatar-image gravatar-email="member.email"></gravatar-image>
-                  {{member.firstName}} {{member.lastName}}</h3>
+                  <gravatar-image gravatar-email="member.email"
+                  gravatar-default="identicon"></gravatar-image>
+                  {{member.firstName}} {{member.lastName}} <span ng-if="!member.firstName && !member.lastName">{{member.username}}</span></h3>
             </div>
           </a>
         </li>
