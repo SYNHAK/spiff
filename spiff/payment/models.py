@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.timezone import utc
 import datetime
 import stripe
+from spiff import funcLog
 
 from spiff.notification_loader import notification
 import spiff.api.plugins
@@ -73,7 +74,8 @@ class Invoice(models.Model):
             try:
               self.chargeStripe()
             except stripe.error.CardError, e:
-              print "Failed to charge stripe", e
+              funcLog().error("Failed to charge stripe")
+              funcLog().exception(e)
               notification.send(
                 [self.user],
                 "card_failed",
