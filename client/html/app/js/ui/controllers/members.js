@@ -98,10 +98,14 @@ angular.module('spiff.members', [
 
   refresh();
 
+  var groups = Restangular.all('group');
+  groups.getList().then(function(groups) {
+    $scope.availableGroups = groups;
+  });
+
   var membershipPlans = Restangular.all('ranksubscriptionplan');
   membershipPlans.getList().then(function(plans) {
     $scope.membershipPlans = plans;
-    console.log(plans[0]);
   });
 
   $scope.addSubscription = function(plan) {
@@ -155,6 +159,7 @@ angular.module('spiff.members', [
 
 .controller('MemberViewCtrl', function($scope, Restangular, $stateParams) {
   var member = Restangular.one('member', $stateParams.memberID);
+  var periods = Restangular.all('membershipperiod', {'user': $stateParams.memberID});
   member.get().then(function (member) {
     $scope.member = member;
     Restangular.all('group').getList().then(function (groups) {
@@ -165,6 +170,10 @@ angular.module('spiff.members', [
         } else {
           group.active = false;
         }
+      });
+      periods.getList().then(function(periods) {
+        $scope.periods = periods;
+        console.log(periods);
       });
     });
   });

@@ -1,51 +1,51 @@
-<div ng-controller="MemberViewCtrl">
-  <div class="row">
-    <div class="span4">
-      <h2>Profile</h2>
-      <table class="table table-striped">
-        <tr>
-          <th>Joined</th>
-          <td>{{member.created}}</td>
-        </tr>
-        <tr>
-          <th>Last Seen</th>
-          <td>{{member.lastSeen}}</td>
-        </tr>
-        <tr>
-          <th>Email</th>
-          <td>{{member.email}}</td>
-        </tr>
-      </table>
-    </div>
-    <div class="span8">
-      <h2>Recent Payments</h2>
-      <table class="table table-striped table-hover">
-        <tr>
-          <th>Date</th>
-          <th>Value</th>
-          <th>Method</th>
-          <th>Invoice</th>
-        </tr>
-      </table>
-      <h2>Recent Invoices</h2>
-      <table class="table table-striped table-hover">
-        <tr>
-          <th>ID</th>
-          <th>Due Date</th>
-          <th>Unpaid Balance</th>
-        </tr>
-      </table>
-    </div>
+<div class="row">
+  <div class="span4">
+    <h2>Profile</h2>
+    <table class="table table-striped">
+      <tr>
+        <th>Joined</th>
+        <td>{{member.created}}</td>
+      </tr>
+      <tr>
+        <th>Last Seen</th>
+        <td>{{member.lastSeen}}</td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td>{{member.email}}</td>
+      </tr>
+    </table>
   </div>
-  <div class="row">
-    <div class="span12">
-      <h2>Resource Training</h2>
-      <table class="table table-striped table-hover">
-        <tr>
-          <th>Resource</th>
-          <th>Comment</th>
-        </tr>
-      </table>
-    </div>
+  <div class="span4">
+    <h2>Groups</h2>
+    <ul>
+      <li ng-repeat="group in member.groups">{{group.name}}</li>
+    </ul>
+  </div>
+  <div class="span4">
+    <h2>Membership</h2>
+    <table class="table table-striped">
+      <tr>
+        <th>Rank</th>
+        <th>Start</th>
+        <th>End</th>
+      </tr>
+      <tr ng-repeat="period in periods">
+        <td>{{period.group.name}}</td>
+        <td>{{period.start|date}}</td>
+        <td>{{period.end|date}}</td>
+      </tr>
+    </table>
   </div>
 </div>
+<!-- <div class="row">
+  <div class="span12">
+    <h2>Resource Training</h2>
+    <table class="table table-striped table-hover">
+      <tr>
+        <th>Resource</th>
+        <th>Comment</th>
+      </tr>
+    </table>
+  </div>
+</div> -->
