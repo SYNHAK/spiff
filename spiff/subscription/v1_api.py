@@ -1,6 +1,6 @@
 from tastypie import fields
 from tastypie.resources import ModelResource
-from spiff.api import SpiffAuthorization
+from spiff.api import SpiffAuthorization, OwnedObjectAuthorization
 from django.contrib.auth.models import User
 import models
 
@@ -32,5 +32,5 @@ class SubscriptionResource(ModelResource):
 
   class Meta:
     queryset = models.Subscription.objects.all()
-    authorization = SpiffAuthorization()
+    authorization = OwnedObjectAuthorization('user')
     always_return_data = True
