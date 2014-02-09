@@ -7,7 +7,7 @@
       <li ng-repeat="resource in resources">
         <a ui-sref="viewResource({resourceID: resource.id})">
           <div class="thumbnail">
-              <h3><span class="qr" qr-code></span>{{resource.name}}</h3>
+            <h3><span class="qr" qr-code text="{{$state.href('viewResource', {resourceID: resource.id}, {absolute: true})}}"></span>{{resource.name}}</h3>
           </div>
         </a>
       </li>

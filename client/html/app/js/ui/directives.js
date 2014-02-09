@@ -6,12 +6,12 @@ spiffDirectives.directive('qrCode', function($location) {
     link: function(scope, element, attrs) {
       if (attrs.qrCode == undefined) {
         $(element).qrcode({
-          text: $location.absUrl(),
-          maxVersion: 4
+          text: attrs.text,
+          maxVersion: 4,
         });
       } else {
         $(element).qrcode({
-          text: $location.absUrl(),
+          text: attrs.text,
           size: 80,
           ecLevel: 'H',
           render: 'div'

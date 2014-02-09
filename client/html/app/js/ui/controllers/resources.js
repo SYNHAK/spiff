@@ -3,8 +3,9 @@ angular.module('spiff.resources', [
   'restangular',
 ])
 
-.controller('ResourceListCtrl', function($scope, Restangular) {
+.controller('ResourceListCtrl', function($scope, Restangular, $state) {
   $scope.resources = Restangular.all('resource').getList().$object;
+  $scope.$state = $state;
 })
 
 .controller('ResourceMetadataEditCtrl', function($scope, $modalInstance, Restangular, resource, currentMetadata) {
@@ -42,8 +43,11 @@ angular.module('spiff.resources', [
   $scope.close = function() {$modalInstance.close()};
 })
 
-.controller('ResourceCtrl', function($scope, Restangular, $stateParams, $modal) {
+.controller('ResourceCtrl', function($scope, Restangular, $stateParams, $state, $modal) {
   var resource = Restangular.one('resource', $stateParams.resourceID);
+  $scope.resource = resource;
+
+  $scope.$state = $state;
 
   $scope.refreshResource = function() {
     resource.get().then(function (res) {
