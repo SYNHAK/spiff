@@ -5,6 +5,57 @@ angular.module('spiff.members', [
   'template/progressbar/progressbar.html'
 ])
 
+.controller('MemberPaymentCtrl', function($scope, $modal, $stateParams, Restangular, Spiff) {
+  var user = Restangular.one('member', $stateParams.memberID);
+  var payments = Restangular.all('payment');
+  var invoices = Restangular.all('invoice');
+
+  function refreshCards() {
+    return user.getStripeCards().then(function (cards) {
+      var cardList = [];
+      _.each(cards.cards, function(c) {
+        cardList.push(c);
+      });
+      $scope.stripeCards = cardList;
+    });
+  }
+
+  function refresh() {
+    user.get().then(function(user) {
+      $scope.user = user;
+    });
+    invoices.getList({'user': user.id}).then(function(invoices) {
+      $scope.invoices = invoices;
+    });
+    payments.getList({'user': user.id}).then(function(payments) {
+      $scope.payments = payments;
+    });
+
+    refreshCards();
+  }
+
+  $scope.stripeCards = null;
+
+  $scope.addPaymentCard = function() {
+    var modal = $modal.open({
+      templateUrl: 'dashboard/modal/add-payment-card.html',
+      controller: 'AddPaymentCardCtrl',
+      resolve: {user: function() {return user}}
+    });
+    modal.result.then(function() {
+      $scope.refreshCards();
+    });
+  }
+
+  $scope.removeCard = function(card) {
+    user.one('stripeCards', card.id).remove().then(function() {
+      $scope.refreshCards();
+    });
+  }
+
+  refresh();
+})
+
 .controller('ConfirmSubscriptionChangesCtrl', function($scope, additions, removals, user, $modalInstance, Restangular) {
   $scope.additions = additions;
   $scope.removals = removals;

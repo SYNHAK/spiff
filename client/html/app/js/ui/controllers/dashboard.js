@@ -83,47 +83,7 @@ angular.module('spiff.dashboard', [
 .controller('DashboardCtrl', function($scope, Restangular, Spiff, $location, $modal) {
   $scope.$watch('Spiff.currentUser', function(user) {
     if (user && !user.isAnonymous) {
-      $scope.user = user;
-      $scope.invoices = [];
-      _.each(user.invoices, function(invoice) {
-        $scope.invoices.push(Restangular.oneUrl('invoice', invoice).get().$object);
-      });
-
-
-      $scope.stripeCards = null;
-      $scope.refreshCards = function() {
-        return user.getStripeCards().then(function (cards) {
-          var cardList = [];
-          _.each(cards.cards, function(c) {
-            cardList.push(c);
-          });
-          $scope.stripeCards = cardList;
-        });
-      }
-
-      $scope.refreshCards();
-
-      $scope.addPaymentCard = function() {
-        var modal = $modal.open({
-          templateUrl: 'dashboard/modal/add-payment-card.html',
-          controller: 'AddPaymentCardCtrl',
-          resolve: {user: function() {return user}}
-        });
-        modal.result.then(function() {
-          $scope.refreshCards();
-        });
-      }
-
-      $scope.removeCard = function(card) {
-        user.one('stripeCards', card.id).remove().then(function() {
-          $scope.refreshCards();
-        });
-      }
-
-      $scope.hideUnsubscribe  = function() {
-        $('#subscriptionUnsubscribeModal').modal('hide');
-      }
-
+      $location.url('/members/'+user.id);
     } else if (user && user.isAnonymous) {
       $location.url('/welcome');
     }

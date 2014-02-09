@@ -71,6 +71,11 @@ spiffApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider
       templateUrl: 'members/edit.html',
       controller: 'EditMemberCtrl'
     })
+    .state('member.payments', {
+      url: '/payment',
+      templateUrl: 'members/payment.html',
+      controller: 'MemberPaymentCtrl'
+    })
     .state('listSensors', {
       url: '/sensors',
       templateUrl: 'sensors/index.html',
