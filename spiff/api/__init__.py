@@ -32,8 +32,7 @@ def add_resource_permissions(*args, **kwargs):
         for operation in operations:
           # build our permission slug
           if condition:
-            codename = "%s_%s_%s" % (operation[0], content_type.model,
-                condition[0])
+            codename = "%s_%s_%s" % (operation[0], condition[0], content_type.model)
             name = "Can %s %s, when %s" % (operation[1], content_type.name,
                 condition[1])
           else:
