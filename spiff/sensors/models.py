@@ -2,8 +2,9 @@ from django.db import models
 from django.db.models.signals import post_save
 import stat
 import tempfile
-import socket
 import requests
+import subprocess
+import os
 
 SENSOR_TYPE_BOOLEAN = 5 
 

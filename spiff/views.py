@@ -6,7 +6,6 @@ from django.conf.urls import url
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import HttpResponse
-from django.core import serializers
 from django.db.models import Model, Manager
 from django.db.models.query import QuerySet
 from django.db.models.fields import FieldDoesNotExist
@@ -33,7 +32,7 @@ class ModelEncoder(json.JSONEncoder):
             for c in o._meta.get_field(f)._choices:
               choices[c[0]] = c[1]
             data["_%s_choices"%(f)] = choices
-        except AttributeError, e:
+        except AttributeError:
           pass
         except FieldDoesNotExist:
           pass
@@ -93,7 +92,7 @@ class ObjectView(TemplateView):
     if format:
       if format not in ['json']:
         kwargs[self.slug_field] = "%s.%s"%(kwargs[self.slug_field], format)
-        return dispatch(request, *args, **kwargs)
+        return self.dispatch(request, *args, **kwargs)
 
     if isIndex:
       instances = self.instances(request, **kwargs)

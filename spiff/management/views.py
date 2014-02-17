@@ -1,4 +1,3 @@
-from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import permission_required
 import string
 import random
@@ -8,7 +7,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from spiff.membership.forms import ProfileForm
 from spiff.management.forms import RegistrationForm, UserSelectionForm
-from spiff.membership.models import Field
+from spiff.membership.models import Field, FieldValue
 from spiff.notification_loader import notification
 
 def index(request):
@@ -55,7 +54,7 @@ def createUser(request):
     oldUser = None
     try:
       oldUser = User.objects.get(username__exact=userForm.cleaned_data['username'])
-    except User.DoesNotExist, e:
+    except User.DoesNotExist:
       pass
     if oldUser:
       messages.info(request, "The username '%s' already exists."%(userForm.cleaned_data['username']))
@@ -78,7 +77,7 @@ def createUser(request):
         {'user': user, 'creator': request.user}
       )
       for field in fields:
-        value = FieldValue.objects.create(field=field,
+        FieldValue.objects.create(field=field,
             value=profileForm.fieldValue(field), member=member)
   return render_to_response('management/createUser.html',
     {'userForm': userForm, 'profileForm':

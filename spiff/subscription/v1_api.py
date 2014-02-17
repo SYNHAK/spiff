@@ -1,7 +1,6 @@
 from tastypie import fields
 from tastypie.resources import ModelResource
 from spiff.api import SpiffAuthorization, OwnedObjectAuthorization
-from django.contrib.auth.models import User
 import models
 
 class SubscriptionPeriodResource(ModelResource):

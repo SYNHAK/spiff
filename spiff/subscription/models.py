@@ -9,7 +9,6 @@ class SubscriptionPeriod(models.Model):
     monthOfYear = models.IntegerField(default=0)
 
     def __unicode__(self):
-      ret = ""
       if self.dayOfMonth > 0:
         if self.monthOfYear > 0:
           return "%s: every %s of %s" % (self.name, self.dayOfMonth, self.dayOfYear)

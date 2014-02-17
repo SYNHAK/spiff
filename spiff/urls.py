@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 from spiff.api import v1_api
 from django.views.generic import RedirectView
-from django.core.urlresolvers import reverse_lazy
 from django.templatetags.static import static
 
 # Uncomment the next two lines to enable the admin:

@@ -1,7 +1,5 @@
 from django import forms
 from django.contrib.auth.models import User
-import models
-from spiff.events.fields import JqSplitDateTimeField
 
 class RankForm(forms.ModelForm):
   class Meta:

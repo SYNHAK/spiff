@@ -1,9 +1,5 @@
-from django.conf import settings
-from django.conf.urls import patterns, include
 from tastypie.api import Api
 from tastypie.resources import Resource, ModelResource
-import importlib
-import inspect
 from south.signals import post_migrate
 from django.db.models.signals import post_syncdb
 from django.contrib.contenttypes.models import ContentType
@@ -24,7 +20,6 @@ def add_resource_permissions(*args, **kwargs):
     if isinstance(auth, SpiffAuthorization):
       conditions = auth.conditions()
       operations = auth.operations()
-      content_types = []
       if len(conditions) == 0:
         conditions = (None,)
 
@@ -76,7 +71,6 @@ class SpiffAuthorization(Authorization):
     return model_klass
 
   def check_perm(self, request, model, permName):
-    klass = self.base_checks(request, model.__class__)
     permName = '%s.%s_%s' % (model.__class__._meta.app_label, permName,
         model.__class__._meta.module_name)
     ret = request.user.has_perm(permName)

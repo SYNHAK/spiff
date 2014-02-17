@@ -1,6 +1,3 @@
-from django import forms
-from django.db import models
-from django.template.loader import render_to_string
 from django.forms.widgets import Select, MultiWidget, DateInput, TextInput
 from time import strftime
 

@@ -1,6 +1,5 @@
 from time import strptime, strftime
 from django import forms
-from django.db import models
 from django.forms import fields
 from widgets import JqSplitDateTimeWidget
 from spiff import funcLog

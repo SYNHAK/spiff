@@ -4,9 +4,7 @@ from spiff.api.plugins import find_api_classes
 from spiff.subscription.models import SubscriptionPlan
 from spiff.payment.models import Invoice
 from spiff.membership.utils import monthRange
-from spiff.membership.models import Member, RankLineItem
 from spiff import funcLog
-import stripe
 
 class Command(BaseCommand):
   help = 'Bills active members for the month'

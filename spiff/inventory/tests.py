@@ -6,7 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
-from spiff.api.tests import APITestMixin, withPermission, withLogin, withoutPermission
+from spiff.api.tests import APITestMixin, withPermission, withoutPermission
 import models
 
 class ResourceTestMixin(TestCase):

@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from spiff.membership.models import Rank, Member
+from spiff.membership.models import Member
 from django.conf import settings
 import stripe
 
@@ -8,11 +8,9 @@ class Command(BaseCommand):
 
   def handle(self, *args, **options):
     stripe.api_key = settings.STRIPE_KEY
-    ranks = Rank.objects.filter(monthlyDues__gt=0)
     members = Member.objects.all()
     validCustomers = []
     for member in members:
-      isGone = True
       customer = None
       plan = None
       if member.highestRank is not None:

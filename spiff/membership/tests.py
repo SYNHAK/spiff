@@ -8,8 +8,7 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
 import models
-from spiff.payment.models import Payment
-from spiff.api.tests import ClientTestMixin, APITestMixin, withPermission, withLogin, withUser
+from spiff.api.tests import APITestMixin, withPermission, withLogin, withUser
 
 class AnonymousUserMiddlewareTest(APITestMixin):
   def setUp(self):
@@ -17,6 +16,7 @@ class AnonymousUserMiddlewareTest(APITestMixin):
 
   def testFetchAnon(self):
     user = self.getAPI('/v1/member/self/')
+    self.assertNotEqual(user, None)
 
 class MemberTest(TestCase):
   def testUserCreation(self):
@@ -28,11 +28,12 @@ class MemberTest(TestCase):
   def testCreateAnonUser(self):
     userCount = len(User.objects.all())
     memberCount = len(models.Member.objects.all())
-    user = models.get_anonymous_user()
+    anonUser = models.get_anonymous_user()
     newUserCount = len(User.objects.all())
     newMemberCount = len(models.Member.objects.all())
     self.assertNotEqual(userCount, newUserCount)
     self.assertNotEqual(memberCount, newMemberCount)
+    self.assertEqual(models.get_anonymous_user().pk, anonUser.pk)
 
   def testRecreateAnonMember(self):
     user = models.get_anonymous_user()
@@ -42,6 +43,7 @@ class MemberTest(TestCase):
       member = User.objects.get(id=user.pk).member
     user = models.get_anonymous_user()
     self.assertEqual(user.member.user_id, user.id)
+    self.assertEqual(member, None)
 
 class RankTest(TestCase):
   def testGroupCreation(self):

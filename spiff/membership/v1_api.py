@@ -8,9 +8,8 @@ from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
-from tastypie.exceptions import Unauthorized
 import models
-from spiff.api import SpiffAuthorization, OwnedObjectAuthorization
+from spiff.api import SpiffAuthorization
 import json
 from spiff.subscription import v1_api as subscription
 from spiff import funcLog
@@ -155,7 +154,7 @@ class MemberResource(ModelResource):
     u.save()
     for f in data['fields']:
       field = models.Field.objects.get(id=f['id'])
-      val = models.FieldValue.objects.create(
+      models.FieldValue.objects.create(
         field = field,
         value = f['value'],
         member = u.member

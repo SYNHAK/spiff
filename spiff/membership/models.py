@@ -1,18 +1,13 @@
 from django.db import models
-from django.template import RequestContext
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from openid_provider.models import OpenID
 from spiff.membership.utils import monthRange
-from django.contrib.sites.models import get_current_site
 import datetime
 import stripe
 from django.conf import settings
 import spiff.payment.models
 from spiff.subscription.models import SubscriptionPlan
-from django.template.loader import get_template
-from django.template import Context
-from django.contrib.contenttypes.models import ContentType
 from spiff import funcLog
 
 stripe.api_key = settings.STRIPE_KEY
@@ -73,7 +68,7 @@ class Member(models.Model):
         )
         for group in self.user.groups.all():
           if group.rank.monthlyDues > 0:
-            lineItem = RankLineItem.objects.create(
+            RankLineItem.objects.create(
               rank = group.rank,
               member = self,
               activeFromDate=startOfMonth,
@@ -252,7 +247,7 @@ class RankSubscriptionPlan(SubscriptionPlan):
       planOwner = subscription.user
       startOfMonth, endOfMonth = monthRange(processDate)
 
-      funcLog().info("Processing subscription of %s dues for %s, billing to %s", self.rank, self.member, subscription.user)
+      funcLog().info("Processing subscription of %s dues for %s, billing to %s", self.rank, self.member, planOwner)
 
       return [RankLineItem(
         rank = self.rank,

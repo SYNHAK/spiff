@@ -1,10 +1,6 @@
-from django.conf.urls import url
-from django.core.exceptions import ObjectDoesNotExist
 from tastypie import fields
 from spiff.api import SpiffAuthorization
-from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.resources import ModelResource
-from tastypie.utils import trailing_slash
 import models
 
 class TrainingResource(ModelResource):
@@ -42,7 +38,6 @@ class ResourceMetadataResource(ModelResource):
 
   def obj_update(self, bundle, **kwargs):
     oldVal = bundle.obj.value
-    oldName = bundle.obj.name
     bundle = super(ResourceMetadataResource, self).obj_update(
       bundle, **kwargs)
     bundle.obj.resource.logChange(

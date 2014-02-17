@@ -57,7 +57,7 @@ class Invoice(models.Model):
         description = 'Payment from %s for invoice %s'%(self.user.member.fullName, self.id),
         customer = stripeCustomer.id
       )
-      payment = Payment.objects.create(
+      Payment.objects.create(
         user = self.user,
         value = self.unpaidBalance,
         status = Payment.STATUS_PAID,

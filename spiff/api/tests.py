@@ -1,10 +1,9 @@
 from django.test import TestCase
 from django.test.client import Client
-from spiff import membership, inventory, sensors, local, funcLog
+from spiff import membership, sensors, local, funcLog
 from django.contrib.auth.models import User, Permission
 import json
 import functools
-from spiff import funcLog
 
 def withoutPermission(perm):
   def wrapIt(func):
@@ -191,13 +190,13 @@ class SpaceAPITest(ClientTestMixin):
     )
     conf.openSensor = sensor
     conf.save()
-    value = sensors.models.SensorValue.objects.create(
+    sensors.models.SensorValue.objects.create(
       sensor=sensor,
       value="true"
     )
     data = self.getAPI()
     self.assertTrue(data['open'])
-    value = sensors.models.SensorValue.objects.create(
+    sensors.models.SensorValue.objects.create(
       sensor=sensor,
       value="false"
     )

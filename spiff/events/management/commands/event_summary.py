@@ -1,7 +1,6 @@
 from django.core.management import BaseCommand
 from spiff.events.models import Event
 from optparse import make_option
-from django.utils.timezone import utc
 import datetime
 
 class Command(BaseCommand):

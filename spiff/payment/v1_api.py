@@ -6,7 +6,6 @@ import models
 from django.conf import settings
 from tastypie import fields
 from spiff.api import SpiffAuthorization
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')
