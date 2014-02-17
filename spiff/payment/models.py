@@ -107,10 +107,6 @@ class Invoice(models.Model):
     def __unicode__(self):
         return "Invoice %d"%(self.id)
 
-    @models.permalink
-    def get_absolute_url(self):
-      return ("payment:viewInvoice", [], {"invoiceID": self.id})
-
     @property
     def isOverdue(self):
       return self.dueDate < datetime.date.utcnow().replace(tzinfo=utc) and self.draft is False 

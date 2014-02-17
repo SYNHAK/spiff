@@ -8,10 +8,6 @@ class Resource(models.Model):
       limit_choices_to={'is_active': True})
   certified_users = models.ManyToManyField(Member, through='Certification', related_name='certified_resources')
 
-  @models.permalink
-  def get_absolute_url(self):
-    return ('inventory:view', [], {'id':self.id})
-
   def __unicode__(self):
     return self.name
 

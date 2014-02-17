@@ -23,16 +23,6 @@ class Sensor(models.Model):
   type = models.IntegerField(choices=SENSOR_TYPES)
   ttl = models.IntegerField(default=255)
 
-  def serialize(self):
-    return {
-      'value': self.value(),
-      'name': self.name,
-      'id': self.id,
-      'description': self.description,
-      'type': SENSOR_TYPES[self.type],
-      'ttl': self.ttl
-    }
-
   def valueObj(self):
     ret = None
     v = self.values.all()
@@ -49,10 +39,6 @@ class Sensor(models.Model):
           return True
         return lastVal.value
       return None
-
-  @models.permalink
-  def get_absolute_url(self):
-    return ('sensors:view', [], {'id': self.id})
 
   def __unicode__(self):
     return self.name
