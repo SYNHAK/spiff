@@ -36,7 +36,7 @@ class ResourceMetadataAPITest(APITestMixin, ResourceTestMixin):
   def getMeta(self, resource=None):
     if resource is None:
       resource = self.resource
-    return self.getAPI('/v1/resource/%s/metadata/'%(resource.id))
+    return self.getAPI('/v1/metadata/?resource=%s'%(resource.id))
 
   @withPermission('inventory.read_resource')
   def testGetBlankMeta(self):
