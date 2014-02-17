@@ -141,7 +141,6 @@ INSTALLED_APPS = (
     'spiff.events',
     'spiff.sensors',
     'spiff.payment',
-    'spiff.management',
     'django_nose',
 )
 

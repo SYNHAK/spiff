@@ -14,7 +14,6 @@ urlpatterns = patterns('',
 
     #$url(r'^sensors/', include('spiff.sensors.urls', namespace='sensors')),
     #$url(r'^events/', include('spiff.events.urls', namespace='events')),
-    #$url(r'^manage/', include('spiff.management.urls', namespace='management')),
     #$url(r'^openid_provider/', include('openid_provider.urls')),
     #$url(r'^openid/untrust/(?P<id>.*)', 'spiff.local.views.untrust_openid_root'),
     #$url(r'^openid/unassociate/(?P<id>.*)', 'spiff.local.views.unassociate_openid'),
