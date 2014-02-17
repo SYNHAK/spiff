@@ -8,7 +8,7 @@ from django.contrib.sites.models import get_current_site
 import datetime
 import stripe
 from django.conf import settings
-from spiff.payment.models import LineItem, Invoice
+import spiff.payment.models
 from spiff.subscription.models import SubscriptionPlan
 from django.template.loader import get_template
 from django.template import Context
@@ -67,7 +67,7 @@ class Member(models.Model):
     if not self.billedForMonth():
       if self.highestRank is not None and self.highestRank.monthlyDues > 0:
         startOfMonth, endOfMonth = monthRange()
-        invoice = Invoice.objects.create(
+        invoice = spiff.payment.models.Invoice.objects.create(
           user=self.user,
           dueDate=endOfMonth,
         )
@@ -264,7 +264,7 @@ class RankSubscriptionPlan(SubscriptionPlan):
     def __unicode__(self):
       return "%sx%s for %s, %s"%(self.rank, self.quantity, self.member, self.period)
 
-class RankLineItem(LineItem):
+class RankLineItem(spiff.payment.models.LineItem):
     rank = models.ForeignKey(Rank)
     member = models.ForeignKey(Member, related_name='rankLineItems')
     activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
