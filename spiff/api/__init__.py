@@ -1,5 +1,4 @@
-from tastypie.api import Api
-from tastypie.resources import Resource, ModelResource
+from tastypie.resources import ModelResource
 from south.signals import post_migrate
 from django.db.models.signals import post_syncdb
 from django.contrib.contenttypes.models import ContentType
@@ -129,7 +128,3 @@ class OwnedObjectAuthorization(SpiffAuthorization):
           model, '%s_own'%(name))
     return super(OwnedObjectAuthorization, self).check_perm(request,
         model, '%s_others'%(name))
-
-v1_api = Api(api_name='v1')
-for api in find_api_classes('v1_api', Resource, lambda x:hasattr(x, 'Meta')):
-  v1_api.register(api())

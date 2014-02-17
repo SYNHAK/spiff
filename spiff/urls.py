@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from spiff.api import v1_api
+from spiff.api.v1 import v1_api
 from django.views.generic import RedirectView
 from django.templatetags.static import static
 
