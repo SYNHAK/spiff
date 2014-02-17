@@ -58,29 +58,6 @@ class Member(models.Model):
       ('list_members', 'Can list members'),
     )
 
-  def generateMonthlyInvoice(self):
-    if not self.billedForMonth():
-      if self.highestRank is not None and self.highestRank.monthlyDues > 0:
-        startOfMonth, endOfMonth = monthRange()
-        invoice = spiff.payment.models.Invoice.objects.create(
-          user=self.user,
-          dueDate=endOfMonth,
-        )
-        for group in self.user.groups.all():
-          if group.rank.monthlyDues > 0:
-            RankLineItem.objects.create(
-              rank = group.rank,
-              member = self,
-              activeFromDate=startOfMonth,
-              activeToDate=endOfMonth,
-              invoice=invoice
-            )
-        invoice.draft = False
-        invoice.open = True
-        invoice.save()
-        return invoice
-    return None
-
   def stripeCustomer(self):
     try:
       customer = stripe.Customer.retrieve(self.stripeID)
@@ -97,25 +74,6 @@ class Member(models.Model):
       self.save()
       return self.stripeCustomer()
     return customer
-
-  def serialize(self):
-    return {
-      'firstName': self.user.first_name,
-      'lastName': self.user.last_name,
-      'created': self.created,
-      'lastSeen': self.lastSeen,
-      'email': self.user.email,
-      'fields': self.fields.filter(public=True),
-      'id': self.id,
-      'active': self.activeMember(),
-    }
-
-  @property
-  def highestRank(self):
-    groups = self.user.groups.extra(order_by=['-rank__monthlyDues'])
-    if len(groups) > 0:
-      return groups[0].rank
-    return None
 
   @models.permalink
   def get_absolute_url(self):
@@ -145,39 +103,19 @@ class Member(models.Model):
     groups = self.user.groups.filter(rank__isKeyholder=True)
     return len(groups) > 0
 
-  def billedForMonth(self, date=None):
-    return len(self.getMembershipLineItemsForMonth(date)) > 0
+  @property
+  def lastMembershipPeriod(self):
+    periods = MembershipPeriod.objects.filter(member=self).extra(order_by=['-activeToDate'])
+    if len(periods) == 0:
+      return None
+    return periods[0]
 
   @property
   def membershipExpiration(self):
-    items = self.getMembershipLineItemsForMonth()
-    if len(items) > 0:
-      return items[0].activeToDate
-    return None
-
-  def getMembershipLineItemsForMonth(self, rank=None, date=None):
-    monthStart, monthEnd = monthRange(date)
-    if rank is None:
-      billedMonths = self.rankLineItems.filter(
-        activeFromDate__gte=monthStart,
-        activeToDate__lte=monthEnd,
-      )
-    else:
-      billedMonths = self.rankLineItems.filter(
-        activeFromDate__gte=monthStart,
-        activeToDate__lte=monthEnd,
-        rank=rank,
-      )
-    return billedMonths
-
-  def paidForMonth(self, date=None):
-    billedMonths = self.getMembershipLineItemsForMonth(date)
-    if len(billedMonths) == 0:
-      return False
-    for lineItem in billedMonths:
-      if billedMonths.invoice.unpaidBalance() > 0:
-        return False
-    return True
+    period = self.lastMembershipPeriod
+    if period is None:
+      return None
+    return period.activeToDate
 
   def activeMember(self):
     if not self.user.is_active:
