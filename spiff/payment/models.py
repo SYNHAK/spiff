@@ -6,7 +6,7 @@ import stripe
 from spiff import funcLog
 
 from spiff.notification_loader import notification
-import spiff.api.plugins
+from spiff.api.plugins import find_api_classes
 
 class InvoiceManager(models.Manager):
 
@@ -183,7 +183,7 @@ class Payment(models.Model):
         if self.invoice.unpaidBalance == 0:
             self.invoice.open = False
             self.invoice.save()
-            for lineItemType in spiff.api.plugins.find_api_classes('models', LineItem):
+            for lineItemType in find_api_classes('models', LineItem):
               for item in lineItemType.objects.filter(invoice=self.invoice):
                 item.process()
 
