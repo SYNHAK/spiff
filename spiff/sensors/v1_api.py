@@ -2,6 +2,7 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from spiff.api import SpiffAuthorization
 import models
+from spiff import funcLog
 
 class SensorResource(ModelResource):
   name = fields.CharField('name')
@@ -12,4 +13,13 @@ class SensorResource(ModelResource):
 
   class Meta:
     queryset = models.Sensor.objects.all()
+    authorization = SpiffAuthorization()
+
+class SensorValueResource(ModelResource):
+  sensor = fields.ToOneField(SensorResource, 'sensor')
+  value = fields.CharField('value')
+  stamp = fields.DateTimeField('stamp')
+
+  class Meta:
+    queryset = models.SensorValue.objects.all()
     authorization = SpiffAuthorization()
