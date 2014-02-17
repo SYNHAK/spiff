@@ -12,7 +12,6 @@ urlpatterns = patterns('',
     url(r'^$', RedirectView.as_view(url=static('index.html')), name='root'),
     url(r'^', include(v1_api.urls)),
 
-    #$url(r'^sensors/', include('spiff.sensors.urls', namespace='sensors')),
     #$url(r'^events/', include('spiff.events.urls', namespace='events')),
     #$url(r'^openid_provider/', include('openid_provider.urls')),
     #$url(r'^openid/untrust/(?P<id>.*)', 'spiff.local.views.untrust_openid_root'),
