@@ -38,7 +38,7 @@ def add_resource_permissions(*args, **kwargs):
             # add it
             Permission.objects.create(content_type=content_type,
                                       codename=codename,
-                                      name=name)
+                                      name=name[:49])
             funcLog().debug("Created permission %s.%s (%s)", content_type.app_label, codename, name)
 
 # check for all our view permissions after a syncdb
