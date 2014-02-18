@@ -99,7 +99,8 @@ spiffApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider
 
   RestangularProvider.setBaseUrl('../v1');
   RestangularProvider.setParentless(false);
-  RestangularProvider.setRequestSuffix('\\');
+  RestangularProvider.setRequestSuffix('/');
+  RestangularProvider.setDefaultHttpFields({withCredentials: true});
   RestangularProvider.setErrorInterceptor(function(response) {
     var $injector = angular.element('body').injector();
     if (response.status == 401) {
