@@ -104,6 +104,16 @@ spiffApp.config(function(SpaceAPIProvider, SpiffConfigProvider) {
   SpaceAPIProvider.setBaseUrl(CONFIG['spaceAPI']);
 });
 
-spiffApp.run(function(Spiff) {
+spiffApp.run(function(Spiff, SpiffConfig, $window) {
+  if ($window.sessionStorage.token) {
+    SpiffConfig.setAuthToken($window.sessionStorage.token);
+  }
   Spiff.login();
+  Spiff.$on('loginSuccess', function(element, token) {
+    $window.sessionStorage.token = token;
+  });
+
+  Spiff.$on('loggedOut', function() {
+    delete $window.sessionStorage.token;
+  });
 });

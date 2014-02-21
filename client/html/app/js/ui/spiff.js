@@ -24,7 +24,19 @@ Spiff.factory('SpiffRestangular', function(SpiffConfig, Restangular) {
     RestangularConfigurer.setBaseUrl(SpiffConfig.baseUrl);
     RestangularConfigurer.setParentless(false);
     RestangularConfigurer.setRequestSuffix('/');
-    RestangularConfigurer.setDefaultHttpFields({withCredentials: true});
+
+    RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
+      var currentHeaders = headers;
+      if (SpiffConfig.getAuthToken()) {
+        currentHeaders.Authorization = 'Bearer '+SpiffConfig.getAuthToken();
+      }
+      return {
+        element: element,
+        params: params,
+        headers: currentHeaders 
+      };
+    });
+
     RestangularConfigurer.setErrorInterceptor(function(response) {
       var $injector = angular.element('body').injector();
       if (response.status == 401) {
@@ -84,16 +96,23 @@ Spiff.provider('SpiffConfig', function() {
     baseUrl = url;
   }
 
+  var authToken = null;
+  var setAuthToken = function(token) {
+    authToken = token;
+  }
+
   this.$get = function() {
     return {
-      baseUrl: baseUrl
+      baseUrl: baseUrl,
+      getAuthToken: function() {return authToken;},
+      setAuthToken: setAuthToken
     }
   };
 });
 
 Spiff.provider('Spiff', function() {
 
-  this.$get = function(SpaceAPI, SpiffRestangular, $q, $rootScope, $http) {
+  this.$get = function(SpaceAPI, SpiffConfig, SpiffRestangular, $q, $rootScope, $http) {
     var scope = $rootScope.$new();
 
     scope.refreshUser = function() {
@@ -109,9 +128,11 @@ Spiff.provider('Spiff', function() {
         return SpiffRestangular.all('member').login({
           username: username,
           password: password
-        }).then(function(user) {
+        }).then(function(data) {
+          scope.$broadcast('loginSuccess', data.token);
+          SpiffConfig.setAuthToken(data.token);
           scope.refreshUser();
-          return user;
+          return data;
         }, function(reason) {
           scope.$broadcast('loginFailed');
           return reason;
@@ -120,10 +141,9 @@ Spiff.provider('Spiff', function() {
     };
 
     scope.logout = function() {
-      return SpiffRestangular.all('member').logout().then(function() {
-        console.log('logged out');
-        scope.refreshUser();
-      });
+      SpiffConfig.setAuthToken(null);
+      scope.refreshUser();
+      scope.$broadcast('loggedOut');
     };
     scope.currentUser = null;
 
