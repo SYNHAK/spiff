@@ -60,8 +60,8 @@
     <h3>Spiff had an issue with what you did.</h3>
   </div>
   <div class="modal-body">
-    Something weird happened. Spiff threw a {{status}} and said "<code>{{message}</code>".
-    <pre>{{traceback}}</pre>
+    Something weird happened. Spiff threw a {{status}} and said "<code>{{message}}</code>".
+    <pre ng-if="traceback">{{traceback}}</pre>
     <p>This is a bug. You might be able to continue.</p>
   </div>
   <div class="modal-footer">
