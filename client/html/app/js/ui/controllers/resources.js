@@ -3,12 +3,12 @@ angular.module('spiff.resources', [
   'restangular',
 ])
 
-.controller('ResourceListCtrl', function($scope, Restangular, $state) {
-  $scope.resources = Restangular.all('resource').getList().$object;
+.controller('ResourceListCtrl', function($scope, SpiffRestangular, $state) {
+  $scope.resources = SpiffRestangular.all('resource').getList().$object;
   $scope.$state = $state;
 })
 
-.controller('ResourceMetadataEditCtrl', function($scope, $modalInstance, Restangular, resource, currentMetadata) {
+.controller('ResourceMetadataEditCtrl', function($scope, $modalInstance, SpiffRestangular, resource, currentMetadata) {
   $scope.d = {};
 
   if (currentMetadata) {
@@ -21,7 +21,7 @@ angular.module('spiff.resources', [
     var name = $scope.d.name;
 
     if (currentMetadata) {
-      Restangular.one('metadata', currentMetadata.id).patch({
+      SpiffRestangular.one('metadata', currentMetadata.id).patch({
         value: value,
         name: name,
         type: 0
@@ -29,7 +29,7 @@ angular.module('spiff.resources', [
         $modalInstance.close();
       });
     } else {
-      Restangular.all('metadata').post({
+      SpiffRestangular.all('metadata').post({
         resource: '/v1/resource/'+resource.id+'/',
         value: value,
         name: name,
@@ -43,8 +43,8 @@ angular.module('spiff.resources', [
   $scope.close = function() {$modalInstance.close()};
 })
 
-.controller('ResourceCtrl', function($scope, Restangular, $stateParams, $state, $modal) {
-  var resource = Restangular.one('resource', $stateParams.resourceID);
+.controller('ResourceCtrl', function($scope, SpiffRestangular, $stateParams, $state, $modal) {
+  var resource = SpiffRestangular.one('resource', $stateParams.resourceID);
   $scope.resource = resource;
 
   $scope.$state = $state;
@@ -59,19 +59,19 @@ angular.module('spiff.resources', [
   }
 
   $scope.refreshMetadata = function() {
-    Restangular.all('metadata').getList({resource: resource.id}).then(function(meta) {
+    SpiffRestangular.all('metadata').getList({resource: resource.id}).then(function(meta) {
       $scope.metadata = meta;
     });
   }
 
   $scope.refreshChangelog = function() {
-    Restangular.all('changelog').getList({resource: resource.id}).then(function(log) {
+    SpiffRestangular.all('changelog').getList({resource: resource.id}).then(function(log) {
       $scope.changelog = log;
     });
   }
 
   $scope.refreshTrainings = function() {
-    Restangular.all('training').getList({resource: resource.id}).then(function(trainings) {
+    SpiffRestangular.all('training').getList({resource: resource.id}).then(function(trainings) {
       $scope.trainings = trainings;
     });
   }
@@ -100,7 +100,7 @@ angular.module('spiff.resources', [
     _.each($scope.training.pendingUsers, function(pending) {
       console.log("Training "+pending);
 
-      Restangular.all('training').post({
+      SpiffRestangular.all('training').post({
         resource: '/v1/resource/'+resource.id+'/',
         member: '/v1/member/'+pending.id+'/',
         rank: rank,
@@ -118,7 +118,7 @@ angular.module('spiff.resources', [
     console.log("Adding new user");
     console.log(newUser);
     $('#trainingModel #training-user').val('');
-    Restangular.all('member').search({fullName: newUser.searchName}).then(function(users) {
+    SpiffRestangular.all('member').search({fullName: newUser.searchName}).then(function(users) {
       if (users.objects.length > 0) {
         var user = users.objects[0];
         newUser.fullName = user.firstName+" "+user.lastName;
@@ -158,7 +158,7 @@ angular.module('spiff.resources', [
   };
 
   $scope.deleteMetadata = function(meta) {
-    Restangular.one('metadata', meta.id).remove().then(function() {
+    SpiffRestangular.one('metadata', meta.id).remove().then(function() {
       $scope.refreshMetadata();
       $scope.refreshChangelog();
     });

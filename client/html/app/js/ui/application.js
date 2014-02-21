@@ -1,6 +1,7 @@
 var spiffApp = angular.module('spiffApp', [
   'restangular',
   'spiffDirectives',
+  'spaceapi',
   'spiff',
   'spiff.dashboard',
   'spiff.epicenter',
@@ -96,33 +97,11 @@ spiffApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider
       templateUrl: 'register.html',
       controller: 'RegistrationCtrl'
     });
+});
 
-  RestangularProvider.setBaseUrl('../v1');
-  RestangularProvider.setParentless(false);
-  RestangularProvider.setRequestSuffix('/');
-  RestangularProvider.setDefaultHttpFields({withCredentials: true});
-  RestangularProvider.setErrorInterceptor(function(response) {
-    var $injector = angular.element('body').injector();
-    if (response.status == 401) {
-      $injector.get('$rootScope').$broadcast('loginRequired');
-    } else {
-      console.log(response);
-      $injector.get('$modal').open({
-        templateUrl: 'error.html',
-        controller: function($scope, $modalInstance) {
-          $scope.status = response.status;
-          $scope.message = response.data.error_message;
-          $scope.traceback = response.data.traceback;
-          $scope.close = function() {
-            $modalInstance.close();
-          }
-        }
-      });
-    }
-    return true;
-  });
-
-  SpiffProvider.setBaseURL('../');
+spiffApp.config(function(SpaceAPIProvider, SpiffConfigProvider) {
+  SpiffConfigProvider.setBaseUrl(CONFIG['spiff']+'v1');
+  SpaceAPIProvider.setBaseUrl(CONFIG['spaceAPI']);
 });
 
 spiffApp.run(function(Spiff) {

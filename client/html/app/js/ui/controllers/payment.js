@@ -3,7 +3,7 @@ angular.module('spiff.payment', [
   'restangular',
 ])
 
-.controller('PayInvoiceCtrl', function($scope, $modalInstance, Restangular, invoice) {
+.controller('PayInvoiceCtrl', function($scope, $modalInstance, SpiffRestangular, invoice) {
   console.log(invoice);
 
   $scope.d = {};
@@ -15,7 +15,7 @@ angular.module('spiff.payment', [
     var cvc = $scope.d.cvc;
     var month = $scope.d.month;
     var year = $scope.d.year;
-    Restangular.all('payment').post({
+    SpiffRestangular.all('payment').post({
       invoice: '/v1/invoice/'+invoice.id+'/',
       value: $scope.d.value,
       stripe: {
@@ -34,8 +34,8 @@ angular.module('spiff.payment', [
   }
 })
 
-.controller('InvoiceCtrl', function($scope, Restangular, $stateParams, $modal) {
-  var invoice = Restangular.one('invoice', $stateParams.invoiceID);
+.controller('InvoiceCtrl', function($scope, SpiffRestangular, $stateParams, $modal) {
+  var invoice = SpiffRestangular.one('invoice', $stateParams.invoiceID);
 
   $scope.refresh = function() {
     invoice.get().then(function (i) {

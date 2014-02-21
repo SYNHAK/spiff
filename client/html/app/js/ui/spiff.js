@@ -1,21 +1,7 @@
 var Spiff = angular.module('spiff', [
-  'restangular'
+  'restangular',
+  'spaceapi'
 ]);
-
-Spiff.provider('SpaceAPI', function() {
-  var baseURL = '/';
-  this.setBaseURL = function(url) {
-    baseURL = url;
-  }
-
-  this.$get = function($http) {
-    return {
-      update: function() {
-        return $http.get(baseURL);
-      }
-    };
-  }
-});
 
 Spiff.directive('checkPermission', function(Spiff, $rootScope) {
   return {
@@ -33,47 +19,85 @@ Spiff.directive('checkPermission', function(Spiff, $rootScope) {
   };
 });
 
-Spiff.provider('Spiff', function(RestangularProvider) {
-  var baseURL = null;
-  this.setBaseURL = function(url) {
-    baseURL = url;
+Spiff.factory('SpiffRestangular', function(SpiffConfig, Restangular) {
+  return Restangular.withConfig(function(RestangularConfigurer) {
+    RestangularConfigurer.setBaseUrl(SpiffConfig.baseUrl);
+    RestangularConfigurer.setParentless(false);
+    RestangularConfigurer.setRequestSuffix('/');
+    RestangularConfigurer.setDefaultHttpFields({withCredentials: true});
+    RestangularConfigurer.setErrorInterceptor(function(response) {
+      var $injector = angular.element('body').injector();
+      if (response.status == 401) {
+        $injector.get('$rootScope').$broadcast('loginRequired');
+      } else {
+        console.log(response);
+        $injector.get('$modal').open({
+          templateUrl: 'error.html',
+          controller: function($scope, $modalInstance) {
+            $scope.status = response.status;
+            $scope.message = response.data.error_message;
+            $scope.traceback = response.data.traceback;
+            $scope.close = function() {
+              $modalInstance.close();
+            }
+          }
+        });
+      }
+      return true;
+    });
+
+    RestangularConfigurer.addElementTransformer('member', true, function(member) {
+      if (member.addRestangularMethod) {
+        member.addRestangularMethod('login', 'post', 'login');
+        member.addRestangularMethod('logout', 'get', 'logout');
+        member.addRestangularMethod('search', 'get', 'search');
+      }
+      return member;
+    });
+
+    RestangularConfigurer.addElementTransformer('member', false, function(member) {
+      if (member.addRestangularMethod) {
+        member.addRestangularMethod('getStripeCards', 'get', 'stripeCards');
+        member.addRestangularMethod('addStripeCard', 'post', 'stripeCards');
+        member.addRestangularMethod('removeStripeCard', 'remove', 'stripeCards');
+      }
+      return member;
+    });
+
+    RestangularConfigurer.setResponseExtractor(function(response, operation, what, url) {
+      var newResponse;
+      if (operation == 'getList') {
+        newResponse = response.objects;
+        newResponse.meta = response.meta;
+      } else {
+        newResponse = response;
+      }
+      return newResponse;
+    });
+
+  });
+});
+
+Spiff.provider('SpiffConfig', function() {
+  var baseUrl = null;
+  this.setBaseUrl = function(url) {
+    baseUrl = url;
   }
 
-  RestangularProvider.addElementTransformer('member', true, function(member) {
-    if (member.addRestangularMethod) {
-      member.addRestangularMethod('login', 'post', 'login');
-      member.addRestangularMethod('logout', 'get', 'logout');
-      member.addRestangularMethod('search', 'get', 'search');
+  this.$get = function() {
+    return {
+      baseUrl: baseUrl
     }
-    return member;
-  });
+  };
+});
 
-  RestangularProvider.addElementTransformer('member', false, function(member) {
-    if (member.addRestangularMethod) {
-      member.addRestangularMethod('getStripeCards', 'get', 'stripeCards');
-      member.addRestangularMethod('addStripeCard', 'post', 'stripeCards');
-      member.addRestangularMethod('removeStripeCard', 'remove', 'stripeCards');
-    }
-    return member;
-  });
+Spiff.provider('Spiff', function() {
 
-  RestangularProvider.setResponseExtractor(function(response, operation, what, url) {
-    var newResponse;
-    if (operation == 'getList') {
-      newResponse = response.objects;
-      newResponse.meta = response.meta;
-    } else {
-      newResponse = response;
-    }
-    return newResponse;
-  });
-
-  this.$get = function(Restangular, $q, $rootScope, $http) {
+  this.$get = function(SpaceAPI, SpiffRestangular, $q, $rootScope, $http) {
     var scope = $rootScope.$new();
-    $rootScope.Spiff = scope;
 
     scope.refreshUser = function() {
-      return Restangular.one('member', 'self').get().then(function(user) {
+      return SpiffRestangular.one('member', 'self').get().then(function(user) {
         scope.currentUser = user;
       });
     }
@@ -82,7 +106,7 @@ Spiff.provider('Spiff', function(RestangularProvider) {
       if (password === undefined) {
         return scope.refreshUser();
       } else {
-        return Restangular.all('member').login({
+        return SpiffRestangular.all('member').login({
           username: username,
           password: password
         }).then(function(user) {
@@ -96,7 +120,7 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     };
 
     scope.logout = function() {
-      return Restangular.all('member').logout().then(function() {
+      return SpiffRestangular.all('member').logout().then(function() {
         console.log('logged out');
         scope.refreshUser();
       });
@@ -104,7 +128,7 @@ Spiff.provider('Spiff', function(RestangularProvider) {
     scope.currentUser = null;
 
     scope.checkPermission = function(perm) {
-      var member = Restangular.one('member', 'self');
+      var member = SpiffRestangular.one('member', 'self');
       var ret = $q.defer();
       $http.get(member.getRestangularUrl()+'/has_permission/'+perm).success(function() {
         ret.resolve(true);

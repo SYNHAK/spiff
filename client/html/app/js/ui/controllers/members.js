@@ -5,10 +5,10 @@ angular.module('spiff.members', [
   'template/progressbar/progressbar.html'
 ])
 
-.controller('MemberPaymentCtrl', function($scope, $modal, $stateParams, Restangular, Spiff) {
-  var user = Restangular.one('member', $stateParams.memberID);
-  var payments = Restangular.all('payment');
-  var invoices = Restangular.all('invoice');
+.controller('MemberPaymentCtrl', function($scope, $modal, $stateParams, SpiffRestangular, Spiff) {
+  var user = SpiffRestangular.one('member', $stateParams.memberID);
+  var payments = SpiffRestangular.all('payment');
+  var invoices = SpiffRestangular.all('invoice');
 
   function refreshCards() {
     return user.getStripeCards().then(function (cards) {
@@ -56,7 +56,7 @@ angular.module('spiff.members', [
   refresh();
 })
 
-.controller('ConfirmSubscriptionChangesCtrl', function($scope, additions, removals, user, $modalInstance, Restangular) {
+.controller('ConfirmSubscriptionChangesCtrl', function($scope, additions, removals, user, $modalInstance, SpiffRestangular) {
   $scope.additions = additions;
   $scope.removals = removals;
   $scope.close = $modalInstance.close;
@@ -64,7 +64,7 @@ angular.module('spiff.members', [
   $scope.save = function() {
     _.each(removals, function(subscription) {
       $scope.pending++;
-      Restangular.one('subscription', subscription.id).remove().then(function() {
+      SpiffRestangular.one('subscription', subscription.id).remove().then(function() {
         $scope.pending--;
         if ($scope.pending == 0)
           $modalInstance.close();
@@ -73,7 +73,7 @@ angular.module('spiff.members', [
     _.each(additions, function(addition) {
       $scope.pending++;
       console.log(user);
-      Restangular.all('subscription').post({
+      SpiffRestangular.all('subscription').post({
         plan: '/v1/subscriptionplan/'+addition.id+'/',
         user: '/v1/user/'+user.userid+'/'
       }).then(function() {
@@ -85,8 +85,8 @@ angular.module('spiff.members', [
   }
 })
 
-.controller('SubscriptionCtrl', function($scope, $modal, $stateParams, Restangular, Spiff) {
-  var user = Restangular.one('member', $stateParams.memberID);
+.controller('SubscriptionCtrl', function($scope, $modal, $stateParams, SpiffRestangular, Spiff) {
+  var user = SpiffRestangular.one('member', $stateParams.memberID);
   function refresh() {
     user.get().then(function (u) {
       $scope.user = u;
@@ -98,21 +98,21 @@ angular.module('spiff.members', [
 
   refresh();
 
-  var groups = Restangular.all('group');
+  var groups = SpiffRestangular.all('group');
   groups.getList().then(function(groups) {
     $scope.availableGroups = groups;
   });
 
   $scope.availablePlans = [];
 
-  var membershipPlans = Restangular.all('ranksubscriptionplan');
+  var membershipPlans = SpiffRestangular.all('ranksubscriptionplan');
   membershipPlans.getList().then(function(plans) {
     _.each(plans, function(p) {
       $scope.availablePlans.push(p);
     });
   });
 
-  var donationPlans = Restangular.all('donationplan');
+  var donationPlans = SpiffRestangular.all('donationplan');
   donationPlans.getList().then(function(plans) {
     _.each(plans, function(p) {
       $scope.availablePlans.push(p);
@@ -154,26 +154,26 @@ angular.module('spiff.members', [
 })
 
 
-.controller('MemberListCtrl', function($scope, Restangular) {
+.controller('MemberListCtrl', function($scope, SpiffRestangular) {
   $scope.groups = []
-  Restangular.all('group').getList().then(function (groups) {
+  SpiffRestangular.all('group').getList().then(function (groups) {
     _.each(groups, function(group) {
       group.members = [];
       $scope.groups.push(group);
-      Restangular.all('member').getList({'groups__in': group.id}).then(function(members) {
+      SpiffRestangular.all('member').getList({'groups__in': group.id}).then(function(members) {
         group.members = members;
       });
     });
   });
-  $scope.members = Restangular.all('member').getList().$object;
+  $scope.members = SpiffRestangular.all('member').getList().$object;
 })
 
-.controller('MemberViewCtrl', function($scope, Restangular, $stateParams) {
-  var member = Restangular.one('member', $stateParams.memberID);
-  var periods = Restangular.all('membershipperiod', {'user': $stateParams.memberID});
+.controller('MemberViewCtrl', function($scope, SpiffRestangular, $stateParams) {
+  var member = SpiffRestangular.one('member', $stateParams.memberID);
+  var periods = SpiffRestangular.all('membershipperiod', {'user': $stateParams.memberID});
   member.get().then(function (member) {
     $scope.member = member;
-    Restangular.all('group').getList().then(function (groups) {
+    SpiffRestangular.all('group').getList().then(function (groups) {
       $scope.availableGroups = groups;
       _.each(groups, function(group) {
         if (_.find(member.groups, function(g) {return g.id == group.id;})) {

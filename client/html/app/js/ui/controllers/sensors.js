@@ -3,12 +3,12 @@ angular.module('spiff.sensors', [
   'restangular'
 ])
 
-.controller('SensorListCtrl', function($scope, Restangular) {
-  $scope.sensors = Restangular.all('sensor').getList().$object;
+.controller('SensorListCtrl', function($scope, SpiffRestangular) {
+  $scope.sensors = SpiffRestangular.all('sensor').getList().$object;
 })
 
-.controller('SensorCtrl', function($scope, Restangular, $routeParams) {
-  var sensor = Restangular.one('sensor', $routeParams.sensorID);
+.controller('SensorCtrl', function($scope, SpiffRestangular, $routeParams) {
+  var sensor = SpiffRestangular.one('sensor', $routeParams.sensorID);
   $scope.sensor = sensor.get().$object;
 });
 

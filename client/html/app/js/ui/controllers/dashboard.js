@@ -3,7 +3,7 @@ angular.module('spiff.dashboard', [
   'spiff'
 ])
 
-.controller('RegistrationCtrl', function($scope, Restangular, Spiff, $modal) {
+.controller('RegistrationCtrl', function($scope, SpiffRestangular, Spiff, $modal) {
   $scope.$watch('Spiff.currentUser', function(user) {
     if (user && !user.isAnonymous) {
       $location.url('/members/'+user.id);
@@ -14,7 +14,7 @@ angular.module('spiff.dashboard', [
   $scope.d.fields = [];
   $scope.requiredFields = [];
   $scope.optionalFields = [];
-  Restangular.all('field').getList().then(function (fields) {
+  SpiffRestangular.all('field').getList().then(function (fields) {
     _.each(fields, function(field) {
       if (field.required) {
         $scope.requiredFields.push(field);
@@ -33,7 +33,7 @@ angular.module('spiff.dashboard', [
       fields.push({id: field.id, value: field.value});
     })
 
-    Restangular.all('member').post({
+    SpiffRestangular.all('member').post({
       username: $scope.d.username,
       password: $scope.d.password,
       email: $scope.d.email,
@@ -49,11 +49,11 @@ angular.module('spiff.dashboard', [
 })
 
 
-.controller('UnsubscribeCtrl', function($scope, $modalInstance, Restangular, subscription) {
+.controller('UnsubscribeCtrl', function($scope, $modalInstance, SpiffRestangular, subscription) {
   $scope.subscription = subscription;
   $scope.close = $modalInstance.close;
   $scope.unsubscribe = function() {
-    Restangular.one('subscription', subscription.id).remove().then(function () {
+    SpiffRestangular.one('subscription', subscription.id).remove().then(function () {
       $modalInstance.close();
     });
   }
@@ -80,8 +80,8 @@ angular.module('spiff.dashboard', [
   $scope.cancel = function() {$modalInstance.close()};
 })
 
-.controller('DashboardCtrl', function($scope, Restangular, Spiff, $location, $modal) {
-  $scope.$watch('Spiff.currentUser', function(user) {
+.controller('DashboardCtrl', function($scope, SpiffRestangular, Spiff, $location, $modal) {
+  Spiff.$watch('currentUser', function(user) {
     if (user && !user.isAnonymous) {
       $location.url('/members/'+user.id);
     } else if (user && user.isAnonymous) {
@@ -95,7 +95,7 @@ angular.module('spiff.dashboard', [
     $rootScope.$broadcast('loginRequired');
   }
 
-  $scope.$watch('Spiff.currentUser', function(user) {
+  Spiff.$watch('currentUser', function(user) {
     if (user && !user.isAnonymous) {
       $location.url('/');
     }

@@ -1,5 +1,6 @@
 angular.module('spiff.epicenter', [
-  'spiff'
+  'spiff',
+  'spaceapi'
 ])
 
 .controller('LoginCtrl', function($scope, $modalInstance, Spiff) {
@@ -26,7 +27,9 @@ angular.module('spiff.epicenter', [
   }
 })
 
-.controller('EpicenterCtrl', function($scope, $http, Spiff, $modal) {
+.controller('EpicenterCtrl', function($scope, Spiff, $modal, SpaceAPI) {
+  $scope.Spiff = Spiff;
+
   $scope.showLogin = function() {
     $modal.open({
       templateUrl: 'partials/login.html',
@@ -51,7 +54,7 @@ angular.module('spiff.epicenter', [
     $scope.showLogin();
   });
 
-  $http.get('/status.json').then(function (api) {
-    $scope.spaceAPI = api.data;
+  SpaceAPI.ready(function(api) {
+    $scope.spaceAPI = api;
   });
 });

@@ -1,13 +1,14 @@
 angular.module('spiff.donate', [
   'spiff',
-  'restangular'
+  'restangular',
+  'spaceapi'
 ])
 
-.controller('AddDonationSubscriptionCtrl', function($scope, Restangular, Spiff, $modalInstance, plan) {
+.controller('AddDonationSubscriptionCtrl', function($scope, SpiffRestangular, Spiff, $modalInstance, plan) {
   $scope.plan = plan;
   $scope.cancel = $modalInstance.close;
   $scope.save = function() {
-    Restangular.all('subscription').post({
+    SpiffRestangular.all('subscription').post({
       plan: '/v1/subscriptionplan/'+plan.id+'/',
       user: '/v1/user/'+Spiff.currentUser.userid+'/',
     }).then(function() {
@@ -16,11 +17,11 @@ angular.module('spiff.donate', [
   }
 })
 
-.controller('DonateCtrl', function($scope, Restangular, Spiff, $http, $modal) {
-  $scope.plans = Restangular.all('donationplan').getList().$object;
+.controller('DonateCtrl', function($scope, SpiffRestangular, SpaceAPI, Spiff, $modal) {
+  $scope.plans = SpiffRestangular.all('donationplan').getList().$object;
 
-  $http.get('/status.json').then(function (api) {
-    $scope.spaceAPI = api.data;
+  SpaceAPI.ready(function(api) {
+    $scope.spaceAPI = api;
   });
 
   $scope.startSubscription = function(plan) {
