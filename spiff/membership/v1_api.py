@@ -13,6 +13,8 @@ from spiff.api import SpiffAuthorization
 import json
 from spiff.subscription import v1_api as subscription
 from spiff import funcLog
+import jwt
+from django.conf import settings
 
 class FieldValueAuthorization(SpiffAuthorization):
   def conditions(self):
@@ -270,8 +272,12 @@ class MemberResource(ModelResource):
     if user:
       if user.is_active:
         funcLog().info("Successful login for %s", username)
-        login(request, user)
-        return self.create_response(request, {'success': True})
+        token = {}
+        token['id'] = user.id
+        return self.create_response(request, {
+          'success': True,
+          'token': jwt.encode(token, settings.SECRET_KEY)
+        })
       else:
         funcLog().warning("Good login, but %s is disabled.", username)
         raise ImmediateHttpResponse(response=HttpForbidden())

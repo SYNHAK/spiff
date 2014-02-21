@@ -1,4 +1,16 @@
 import models
+import jwt
+from django.conf import settings
+
+class JWTAuthMiddleware(object):
+  def process_request(self, request):
+    if 'HTTP_AUTHORIZATION' in request.META:
+      token = request.META['HTTP_AUTHORIZATION'].split()
+      if token[0] == 'Bearer':
+        decoded = jwt.decode(token[1], settings.SECRET_KEY)
+        request.user = models.AuthenticatedUser.objects.get(pk=decoded['id'])
+    else:
+      request.user = models.get_anonymous_user()
 
 class AnonymousUserMiddleware(object):
   def process_request(self, request):

@@ -87,7 +87,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 's)v()z^q-&amp;p*#b%e9w05)r+vodsx35@1q*@hhqpexa^y97#r^z'
+#SECRET_KEY = 's)v()z^q-&amp;p*#b%e9w05)r+vodsx35@1q*@hhqpexa^y97#r^z'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -100,7 +100,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'spiff.membership.middleware.JWTAuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'spiff.membership.middleware.AnonymousUserMiddleware',
