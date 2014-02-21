@@ -102,8 +102,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'spiff.membership.middleware.AnonymousUserMiddleware',
-    'spiff.middleware.XhrMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'spiff.sensors',
     'spiff.payment',
     'django_nose',
+    'corsheaders',
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

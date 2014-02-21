@@ -23,3 +23,4 @@ wsgiref==0.1.2
 xrd==0.1
 mimeparse==0.1.3
 django-nose==1.2
+django-cors-headers
