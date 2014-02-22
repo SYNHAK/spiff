@@ -81,6 +81,10 @@ Spiff.factory('SpiffRestangular', function(SpiffConfig, Restangular) {
       if (operation == 'getList') {
         newResponse = response.objects;
         newResponse.meta = response.meta;
+        newResponse.meta.pages = [];
+        for(var i = 0;i<newResponse.meta.total_count/newResponse.meta.limit;i++) {
+          newResponse.meta.pages.push(i);
+        }
       } else {
         newResponse = response;
       }
