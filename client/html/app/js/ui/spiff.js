@@ -150,7 +150,8 @@ Spiff.provider('Spiff', function() {
     scope.checkPermission = function(perm) {
       var member = SpiffRestangular.one('member', 'self');
       var ret = $q.defer();
-      $http.get(member.getRestangularUrl()+'/has_permission/'+perm).success(function() {
+      var authHeader = 'Bearer '+SpiffConfig.getAuthToken();
+      $http.get(member.getRestangularUrl()+'/has_permission/'+perm+'/', {'headers': {'Authorization': authHeader}}).success(function() {
         ret.resolve(true);
       }).error(function() {
         ret.resolve(false);
