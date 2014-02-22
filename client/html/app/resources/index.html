@@ -12,5 +12,10 @@
         </a>
       </li>
     </ul>
+    <div class="pagination">
+      <ul>
+        <li ng-repeat="page in resources.meta.pages"><a href="#/resources" ng-click="gotoPage(page)">{{page}}</a></li>
+      </ul>
+    </div>
   </div>
 </div>

@@ -4,8 +4,18 @@ angular.module('spiff.resources', [
 ])
 
 .controller('ResourceListCtrl', function($scope, SpiffRestangular, $state) {
-  $scope.resources = SpiffRestangular.all('resource').getList().$object;
+  $scope.resources = [];
   $scope.$state = $state;
+
+  $scope.gotoPage = function(pagenum) {
+    var count = 20;
+    var offset = pagenum * count;
+    SpiffRestangular.all('resource').getList({'limit': count, 'offset': offset}).then(function(resources) {
+      $scope.resources = resources;
+    });
+  };
+
+  $scope.gotoPage(0);
 })
 
 .controller('ResourceMetadataEditCtrl', function($scope, $modalInstance, SpiffRestangular, resource, currentMetadata) {
