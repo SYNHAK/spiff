@@ -3,13 +3,13 @@
     <a class="brand" ui-sref='dashboard'>{{spaceAPI.space}}</a>
     <ul class="nav">
       <li><a ui-sref="dashboard" >Home</a></li>
-      <li check-permission="'inventory.list_resource'">
+      <li check-permission="'inventory.read_resource'">
         <a ng-if="hasPermission" ui-sref="listResources">Resources</a>
       </li>
-      <li check-permission="'membership.list_member'">
+      <li check-permission="'membership.read_member'">
         <a ng-if="hasPermission" ui-sref="listMembers">Members</a>
       </li>
-      <li check-permission="'sensors.list_sensor'">
+      <li check-permission="'sensors.read_sensor'">
         <a ng-if="hasPermission" ui-sref="listSensors">Sensors</a>
       </li>
       <li>
