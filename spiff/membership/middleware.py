@@ -10,7 +10,8 @@ class JWTAuthMiddleware(object):
         decoded = jwt.decode(token[1], settings.SECRET_KEY)
         request.user = models.AuthenticatedUser.objects.get(pk=decoded['id'])
     else:
-      request.user = models.get_anonymous_user()
+      if not hasattr(request, 'user'):
+        request.user = models.get_anonymous_user()
 
 class AnonymousUserMiddleware(object):
   def process_request(self, request):
