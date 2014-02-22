@@ -7,11 +7,13 @@ class JWTAuthMiddleware(object):
     if 'HTTP_AUTHORIZATION' in request.META:
       token = request.META['HTTP_AUTHORIZATION'].split()
       if token[0] == 'Bearer':
-        decoded = jwt.decode(token[1], settings.SECRET_KEY)
-        request.user = models.AuthenticatedUser.objects.get(pk=decoded['id'])
-    else:
-      if not hasattr(request, 'user'):
-        request.user = models.get_anonymous_user()
+        try:
+          decoded = jwt.decode(token[1], settings.SECRET_KEY)
+          request.user = models.AuthenticatedUser.objects.get(pk=decoded['id'])
+        except jwt.DecodeError:
+          pass
+    if not hasattr(request, 'user'):
+      request.user = models.get_anonymous_user()
 
 class AnonymousUserMiddleware(object):
   def process_request(self, request):
