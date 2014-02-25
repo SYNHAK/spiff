@@ -93,35 +93,23 @@ class MemberAPITest(APITestMixin):
 
   @withUser
   def testLogin(self):
-    response = self.postAPIRaw('/v1/member/login/', {'username': 'test', 'password': 'test'})
-    self.assertEqual(response.status_code, 200)
-    self.assertTrue(response.cookies.has_key('sessionid'))
+    response = self.postAPI('/v1/member/login/', {'username': 'test',
+      'password': 'test'}, status=200)
+    self.assertTrue('token' in response)
 
   @withUser
   def testBadLogin(self):
-    response = self.postAPIRaw('/v1/member/login/', {'username': 'test',
-      'password': 'nottest'})
-    self.assertEqual(response.status_code, 401)
-    self.assertFalse(response.cookies.has_key('sessionid'))
+    response = self.postAPI('/v1/member/login/', {'username': 'test',
+      'password': 'nottest'}, status=401)
+    self.assertIsNone(response)
 
   @withUser
   def testDisabledLogin(self):
     self.user.is_active = False
     self.user.save()
-    response = self.postAPIRaw('/v1/member/login/', {'username': 'test',
-      'password': 'test'})
-    self.assertEqual(response.status_code, 403)
-    self.assertFalse(response.cookies.has_key('sessionid'))
-
-  @withUser
-  def testLogout(self):
-    response = self.postAPIRaw('/v1/member/login/', {'username': 'test', 'password': 'test'})
-    self.assertEqual(response.status_code, 200)
-    self.assertTrue(response.cookies.has_key('sessionid'))
-    session = response.cookies.get('sessionid')
-    response = self.getAPIRaw('/v1/member/logout/')
-    self.assertTrue(response.cookies.has_key('sessionid'))
-    self.assertNotEqual(session, response.cookies.has_key('sessionid'))
+    response = self.postAPI('/v1/member/login/', {'username': 'test',
+      'password': 'test'}, status=403)
+    self.assertIsNone(response)
 
   def testMissingPermission(self):
     response = self.postAPIRaw('/v1/member/self/has_permission/not.a_permission/')

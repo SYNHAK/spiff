@@ -181,9 +181,6 @@ class MemberResource(ModelResource):
       url(r'^(?P<resource_name>%s)/login%s$' %
         (self._meta.resource_name, trailing_slash()),
         self.wrap_view('login'), name='login'),
-      url(r'^(?P<resource_name>%s)/logout%s$' %
-        (self._meta.resource_name, trailing_slash()),
-        self.wrap_view('logout'), name='logout'),
       url(r'^(?P<resource_name>%s)/search%s$' %
         (self._meta.resource_name, trailing_slash()),
         self.wrap_view('search'), name='search'),
@@ -285,10 +282,3 @@ class MemberResource(ModelResource):
       funcLog().warning("Invalid login for %s", username)
       raise ImmediateHttpResponse(response=HttpUnauthorized())
 
-  def logout(self, request, **kwargs):
-    self.method_check(request, allowed=['get'])
-    success = False
-    if request.user and request.user.is_authenticated():
-      logout(request)
-      success = True
-    return self.create_response(request, {'success': success})
