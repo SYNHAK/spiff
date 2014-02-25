@@ -1,156 +1,124 @@
 import requests
+import json
+from tastypie_client import Api
 
-class API(object):
-    def __init__(self, uri, verify=True):
-        self.__uri = uri
-        self.__verify = verify
-        self.__db = {}
-        self.__plurals = {}
+class API(Api):
+  def __init__(self, uri, verify=True):
+    super(API, self).__init__(uri+'v1/')
+    self.__uri = uri
+    self.__token = None
+    self.__verify = verify
 
-    @property
-    def uri(self):
-        return self.__uri
+  def subUri(self, uri):
+    return '/'.join((self.__uri, uri))
 
-    def clearCache(self):
-        self.__db = {}
+  def get(self, uri, **kwargs):
+    headers = {
+      'accept': 'application/json',
+      'content-type': 'application/json'
+    }
+    if self.__token:
+      headers['authorization'] = 'Bearer '+self.__token
+    return requests.get(
+      self.subUri(uri),
+      verify=self.__verify,
+      headers=headers,
+      params=kwargs
+    )
 
-    def get(self, resource):
-        return requests.get("%s/%s"%(self.__uri,resource), verify=self.__verify)
+  def post(self, uri, value):
+    data = json.dumps(value)
+    headers = {
+      'accept': 'application/json',
+      'content-type': 'application/json'
+    }
 
-    def post(self, resource, value):
-        return requests.post("%s/%s"%(self.__uri, resource), data=value, verify=self.__verify)
+    if self.__token:
+      headers['authorization'] = 'Bearer '+self.__token
+    return requests.post(
+      self.subUri(uri),
+      data=data,
+      verify=self.__verify,
+      headers=headers
+    )
 
-    def storeObject(self, obj):
-        if obj.uriType not in self.__db:
-            self.__db[obj.uriType] = {}
-        self.__db[obj.uriType][obj.id] = obj
-        self.__plurals[obj.type] = obj.uriType
+  def login(self, username, password):
+    data={'username': username, 'password': password}
+    ret = self.post('v1/member/login/', data).json()
+    if 'token' in ret:
+      self.__token = ret['token']
+      return True
+    return False
 
-    def _expand(self, data):
-        ret = data
-        if (isinstance(data, dict)):
-          ret = {}
-          for attr in data.iterkeys():
-            ret[attr] = self._expand(data[attr])
-          if '_type' in data:
-            ret = ModelObject.new(self, ret)
-        elif (isinstance(data, list)):
-          ret = []
-          for d in data:
-            ret.append(self._expand(d))
-        elif (isinstance(data, basestring) and data.startswith("#")):
-          ret = ModelObject.new(self, data)
-        return ret
+  @property
+  def uri(self):
+    return self.__uri
 
-    def objects(self, uriType):
-        ret = []
-        data = self.get("%s/.json"%(uriType)).json()
-        return self._expand(data)
+  def getList(self, type, **kwargs):
+    return ObjectList(self, type, kwargs)
 
-    def object(self, uriType, id, refresh=False):
-        id = int(id)
-        if uriType not in self.__db:
-            self.__db[uriType] = {}
-        if id in self.__db[uriType]:
-            if refresh:
-                del self.__db[uriType][id]
-            else:
-                return self.__db[uriType][id]
+  def resources(self, **kwargs):
+    return self.getList('resource', **kwargs)
 
-        res = self.get("%s/%s.json"%(uriType, id)).json()
-        return ModelObject.new(self, res)
+class ObjectList(object):
+  def __init__(self, api, type, filters={}):
+    self.__api = api
+    self.__type = type
+    self.__cache = {}
+    self.__count = 20
+    self.__max = -1
+    self.__filters = filters
 
-    def resolve(self, singularType, id):
-        pluralType = self.__plurals[singularType]
-        return self.object(pluralType, id)
+    self.__loadSlice(0)
 
-    def resources(self):
-        return self.objects("resources")
+  def __len__(self):
+    if self.__max == -1:
+      self.__loadSlice(0)
+    return self.__max
 
-    def members(self):
-        return self.objects("members")
+  def __loadSlice(self, offset, count=None):
+    if count is None:
+      count = self.__count
+    params = {}
+    params.update(self.__filters)
+    params['offset'] = offset
+    params['count'] = count
+    data = self.__api.get('/'.join(('v1', self.__type)), **params).json()
+    self.__max = data['meta']['total_count']
+    for i in range(0, len(data['objects'])):
+      self.__cache[i+offset] = data['objects'][i]
 
-    def sensors(self):
-        return self.objects("sensors")
+  def __getitem__(self, offset):
+    if self.__max >= 0 and offset >= self.__max:
+      raise KeyError
+    if offset not in self.__cache:
+      self.__loadSlice(offset)
+    return self.__cache[offset]
 
-    def sensor(self, id):
-        return self.object("sensors", id)
+  def __iter__(self):
+    return ObjectListIter(self)
 
-    def events(self):
-        return self.objects("events")
+class ObjectListIter(object):
+  def __init__(self, objectList):
+    self.__list = objectList
+    self.__pos = -1
 
-class ModelObject(dict):
-    def __init__(self, api, data):
-        super(dict, self).__init__()
-        assert(data is not None)
-        self.__data = data
-        self.__api = api
-        if isinstance(self.__data, dict):
-            self.__api.storeObject(self)
+  def __iter__(self):
+    return self
 
-    @property
-    def api(self):
-        return self.__api
+  def next(self):
+    self.__pos += 1
+    if self.__pos >= len(self.__list):
+      raise StopIteration
+    return self.__list[self.__pos]
 
-    @property
-    def id(self):
-        return self.resolve()['id']
+class SpiffObject(object):
+  def __init__(self, api, type, data):
+    self.__api = api
+    self.__type = type
+    self.__data = data
 
-    @property
-    def type(self):
-        return self.resolve()['_type']
-
-    @property
-    def uriType(self):
-        return self.resolve()['_plural_type']
-
-    def qrCode(self, size=10):
-        return requests.get("%s%s/%s/qr-%s.png"%(self.__api.uri, 'resources', self.id, size), verify=False).content
-
-    def refresh(self):
-        if isinstance(self.__data, dict):
-            self.__data = self.api.object(self.uriType, self.id, refresh=True).__data
-        else:
-            self.resolve().refresh()
-
-    def resolve(self):
-        if isinstance(self.__data, dict):
-            return self.__data
-        tokens = self.__data.split("#")
-        return self.__api.resolve(tokens[1], tokens[2]).resolve()
-
-    def keys(self):
-        ret = []
-        for k in self.resolve().iterkeys():
-            ret.append(k)
-        return ret
-
-    def __getitem__(self, key):
-        return self.resolve()[key]
-
-    @staticmethod
-    def new(api, data):
-        cls = ModelObject
-        if isinstance(data, dict):
-            if data['_type'] == "resource":
-                cls = Resource
-            elif data['_type'] == "sensor":
-                cls = Sensor
-        return cls(api, data)
-
-class Sensor(ModelObject):
-    def setValue(self, value):
-        ret = self.api.post("sensors/%d.json"%(self.id), {'data': value})
-        self.refresh()
-        return ret
-
-    @property
-    def value(self):
-        return self.resolve()['value']
-
-class Resource(ModelObject):
-    def meta(self, name):
-        for m in self['metadata']:
-            if m['name'] == name:
-                return m
-        return None
+  def update(self, **kwargs):
+    for k,v in kwargs.iteritems():
+      self.__data[k] = v
+    self.__api.post('/'.join(('v1', self.__type)), kwargs)
