@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from spiff import membership, sensors, local, funcLog
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group
 import json
 import functools
 
@@ -84,6 +84,11 @@ class APITestMixin(ClientTestMixin):
     user.last_name = 'McTesterson'
     user.save()
     return user
+
+  def createGroup(self, name):
+    funcLog().info("Creating group %s", name)
+    group = Group.objects.create(name=name)
+    return group
 
   def login(self):
     funcLog().info("Logging in with test user")
