@@ -79,6 +79,10 @@ class RankResource(ModelResource):
   class Meta:
     queryset = models.Rank.objects.all()
     authorization = SpiffAuthorization()
+    filtering = {
+      'group': ALL_WITH_RELATIONS,
+      'monthlyDues': ALL_WITH_RELATIONS
+    }
 
 class GroupResource(ModelResource):
   rank = fields.ToOneField(RankResource, 'rank', full=True)
@@ -86,6 +90,10 @@ class GroupResource(ModelResource):
   class Meta:
     queryset = Group.objects.all()
     authorization = SpiffAuthorization()
+    filtering = {
+      'rank': ALL_WITH_RELATIONS,
+      'name': ALL_WITH_RELATIONS,
+    }
 
 class SelfMemberAuthorization(SpiffAuthorization):
   def check_perm(self, request, model, name):
