@@ -151,6 +151,7 @@ class APITestMixin(ClientTestMixin):
 
   def postAPI(self, endpoint, struct=None, status=201):
     ret = self.postAPIRaw(endpoint, struct)
+    funcLog().debug("Got result %s: %s", ret.status_code, ret.content)
     self.assertEqual(ret.status_code, status)
     if len(ret.content):
       ret = json.loads(ret.content)
