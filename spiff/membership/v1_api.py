@@ -105,8 +105,8 @@ class UserResource(ModelResource):
     queryset = User.objects.all()
     authorization = SelfUserAuthorization()
     filtering = {
-      'first_name': WITH_ALL_RELATIONS,
-      'last_name': WITH_ALL_RELATIONS,
+      'first_name': ALL_WITH_RELATIONS,
+      'last_name': ALL_WITH_RELATIONS,
     }
 
 class MembershipPeriodResource(ModelResource):
