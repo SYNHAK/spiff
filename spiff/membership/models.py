@@ -226,7 +226,7 @@ class MembershipPeriod(models.Model):
     member = models.ForeignKey(Member, related_name='membershipPeriods')
     activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
     activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
-    lineItem = models.ForeignKey(RankLineItem)
+    lineItem = models.ForeignKey(RankLineItem, default=None, null=True, blank=True)
 
 def create_member(sender, instance, created, **kwargs):
   if created:
