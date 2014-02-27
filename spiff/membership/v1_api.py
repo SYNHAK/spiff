@@ -75,6 +75,7 @@ class RankSubscriptionPlanResource(subscription.SubscriptionPlanResource):
 
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
+  monthlyDues = fields.FloatField('monthlyDues')
 
   class Meta:
     queryset = models.Rank.objects.all()
