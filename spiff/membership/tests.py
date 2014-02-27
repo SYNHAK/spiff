@@ -9,6 +9,27 @@ from django.test import TestCase
 from django.contrib.auth.models import User, Group
 import models
 from spiff.api.tests import APITestMixin, withPermission, withLogin, withUser
+import datetime
+
+class MembershipPeriodTest(APITestMixin):
+  def setUp(self):
+    self.setupAPI()
+
+  @withPermission('membership.read_member')
+  @withPermission('auth.read_group')
+  @withPermission('membership.create_membershipperiod')
+  @withPermission('membership.read_rank')
+  def testCreateCurrentPeriod(self):
+    self.createGroup('test')
+    self.postAPI('/v1/membershipperiod/',
+      {
+        'member': '/v1/member/1/',
+        'rank': '/v1/rank/1/',
+        'start': str(datetime.date.today()-datetime.timedelta(days=-7)),
+        'end': str(datetime.date.today()+datetime.timedelta(days=7))
+      }
+    )
+
 
 class AnonymousUserMiddlewareTest(APITestMixin):
   def setUp(self):
