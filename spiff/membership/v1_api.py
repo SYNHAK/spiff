@@ -143,6 +143,7 @@ class MemberResource(ModelResource):
   stripeCards = fields.ListField(attribute='stripeCards', default=[],
       readonly=True)
   userid = fields.IntegerField('user_id', readonly=True)
+  fields = fields.ToManyField('attributes', full=False, null=True)
 
   class Meta:
     queryset = models.Member.objects.all()
