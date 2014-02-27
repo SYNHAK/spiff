@@ -15,6 +15,7 @@ from spiff.subscription import v1_api as subscription
 from spiff import funcLog
 import jwt
 from django.conf import settings
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
 class FieldValueAuthorization(SpiffAuthorization):
   def conditions(self):
@@ -135,7 +136,9 @@ class MemberResource(ModelResource):
     queryset = models.Member.objects.all()
     authorization = SelfMemberAuthorization()
     filtering = {
-      'groups': ('in',)
+      'groups': ALL_WITH_RELATIONS,
+      'firstName': ALL_WITH_RELATIONS,
+      'lastName': ALL_WITH_RELATIONS,
     }
 
   def obj_create(self, bundle, **kwargs):
