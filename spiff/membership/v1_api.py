@@ -119,7 +119,7 @@ class UserResource(ModelResource):
     }
 
 class MembershipPeriodResource(ModelResource):
-  group = fields.ToOneField(GroupResource, 'rank__group', full=True)
+  rank = fields.ToOneField(RankResource, 'rank', full=True)
   member = fields.ToOneField('spiff.membership.v1_api.MemberResource',
   'member')
   start = fields.DateTimeField('activeFromDate')
