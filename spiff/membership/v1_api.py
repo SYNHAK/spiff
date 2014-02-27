@@ -158,6 +158,7 @@ class MemberResource(ModelResource):
     data = bundle.data
     firstName = ""
     lastName = ""
+    funcLog().debug("Creating user from %r", data)
     if 'firstName' in data:
       firstName = data['firstName']
     if 'lastName' in data:
