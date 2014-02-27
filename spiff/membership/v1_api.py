@@ -104,6 +104,10 @@ class UserResource(ModelResource):
   class Meta:
     queryset = User.objects.all()
     authorization = SelfUserAuthorization()
+    filtering = {
+      'first_name': WITH_ALL_RELATIONS,
+      'last_name': WITH_ALL_RELATIONS,
+    }
 
 class MembershipPeriodResource(ModelResource):
   group = fields.ToOneField(GroupResource, 'rank__group', full=True)
