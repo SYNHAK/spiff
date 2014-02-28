@@ -9,6 +9,8 @@ from django.conf import settings
 import spiff.payment.models
 from spiff.subscription.models import SubscriptionPlan
 from spiff import funcLog
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 stripe.api_key = settings.STRIPE_KEY
 
@@ -227,6 +229,15 @@ class MembershipPeriod(models.Model):
     activeFromDate = models.DateTimeField(default=datetime.datetime.utcnow())
     activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
     lineItem = models.ForeignKey(RankLineItem, default=None, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+      overlapping = MembershipPeriod.objects.filter(
+        Q(activeFromDate__lte=self.activeFromDate, activeToDate__gte=self.activeToDate) | 
+        Q(activeFromDate__lte=self.activeToDate, activeToDate__gte=self.activeFromDate)
+      ).filter(rank=self.rank, member=self.member)
+      if overlapping.exists():
+        raise ValidationError("Cannot have overlapping membership periods")
+      return super(MembershipPeriod, self).save(*args, **kwargs)
 
 def create_member(sender, instance, created, **kwargs):
   if created:
