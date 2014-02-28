@@ -187,13 +187,14 @@ class MemberResource(ModelResource):
     )
     u.set_password(data['password'])
     u.save()
-    for f in data['fields']:
-      field = models.Field.objects.get(id=f['id'])
-      models.FieldValue.objects.create(
-        field = field,
-        value = f['value'],
-        member = u.member
-      )
+    if 'fields' in data:
+      for f in data['fields']:
+        field = models.Field.objects.get(id=f['id'])
+        models.FieldValue.objects.create(
+          field = field,
+          value = f['value'],
+          member = u.member
+        )
     bundle.obj = u.member
     return bundle
 
