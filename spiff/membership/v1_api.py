@@ -316,3 +316,15 @@ class MemberResource(ModelResource):
       funcLog().warning("Invalid login for %s", username)
       raise ImmediateHttpResponse(response=HttpUnauthorized())
 
+class RankLineItemResource(ModelResource):
+  rank = fields.ToOneField(RankResource, 'rank')
+  member = fields.ToOneField(MemberResource, 'member')
+  activeFromDate = fields.DateField('activeFromDate')
+  activeToDate = fields.DateField('activeToDate')
+  invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')
+  quantity = fields.IntegerField('quantity')
+
+  class Meta:
+    queryset = models.RankLineItem.objects.all()
+    always_return_data = True
+    authorization = SpiffAuthorization()
