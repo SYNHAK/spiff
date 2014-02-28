@@ -144,7 +144,7 @@ class API(object):
     return ObjectList(self, type, kwargs)
 
   def create(self, type, **kwargs):
-    return self.post('v1/%s/'%(type), **kwargs)
+    return SpiffObject(self, self.post('v1/%s/'%(type), **kwargs))
 
 class ObjectList(object):
   def __init__(self, api, type, filters={}):
