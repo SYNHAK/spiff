@@ -153,7 +153,12 @@ class ObjectList(object):
     self.__cache = {}
     self.__count = 20
     self.__max = -1
-    self.__filters = filters
+    self.__filters = {}
+    for name, value in filters.iteritems():
+      if isinstance(value, SpiffObject):
+        self.__filters[name] = value.id
+      else:
+        self.__filters[name] = value
 
     self.__loadSlice(0)
 
