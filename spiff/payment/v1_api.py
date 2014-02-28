@@ -71,18 +71,21 @@ class LineItemResource(ModelResource):
   class Meta:
     queryset = models.LineItem.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
 
 class InvoiceResource(ModelResource):
-  user = fields.ToOneField('spiff.membership.v1_api.MemberResource', 'user__member', null=True, full=True)
-  unpaidBalance = fields.FloatField('unpaidBalance')
-  paidBalance = fields.FloatField('paidBalance')
-  total = fields.FloatField('total')
+  user = fields.ToOneField('spiff.membership.v1_api.UserResource', attribute='user',
+      null=True, full=False)
+  unpaidBalance = fields.FloatField('unpaidBalance', readonly=True)
+  paidBalance = fields.FloatField('paidBalance', readonly=True)
+  total = fields.FloatField('total', readonly=True)
   items = fields.ToManyField(LineItemResource, 'items', null=True, full=True);
   payments = fields.ToManyField(PaymentResource, 'payments', null=True, full=True);
 
   class Meta:
     queryset = models.Invoice.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
     filtering = {
         'user': 'exact'
     }
