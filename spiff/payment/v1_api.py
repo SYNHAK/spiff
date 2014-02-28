@@ -25,40 +25,42 @@ class PaymentResource(ModelResource):
   def obj_create(self, bundle, **kwargs):
     bundle = self.full_hydrate(bundle)
     m2m = self.hydrate_m2m(bundle)
-    print 'data', bundle.data
     invoice = m2m.obj.invoice
-    stripe.api_key = settings.STRIPE_KEY
-    cardData = {}
-    stripeData = bundle.data['stripe']
-    cardData['number'] = stripeData['card']
-    cardData['exp_month'] = stripeData['exp_month']
-    cardData['exp_year'] = stripeData['exp_year']
-    cardData['cvc'] = stripeData['cvc']
-    balance = float(bundle.data['value'])
-    if balance > invoice.unpaidBalance:
-      raise ImmediateHttpResponse(response=self.error_response("You can't pay more than $%s!"%(invoice.unpaidBalance)))
-    charge = stripe.Charge.create(
-      amount = int(balance*100),
-      currency = 'usd',
-      card = cardData,
-      description = 'Payment from %s for invoice %s'%(bundle.request.user.member.fullName, invoice.id)
-    )
-    payment = models.Payment.objects.create(
-      user = bundle.request.user,
-      value = balance,
-      status = models.Payment.STATUS_PAID,
-      transactionID = charge.id,
-      method = models.Payment.METHOD_STRIPE,
-      invoice = invoice
-    )
-    if notification:
-      notification.send(
-        [bundle.request.user],
-        'payment_received',
-        {'user': bundle.request.user, 'payment': payment}
+    if bundle.data['method'] == models.Payment.METHOD_STRIPE:
+      stripe.api_key = settings.STRIPE_KEY
+      cardData = {}
+      stripeData = bundle.data['stripe']
+      cardData['number'] = stripeData['card']
+      cardData['exp_month'] = stripeData['exp_month']
+      cardData['exp_year'] = stripeData['exp_year']
+      cardData['cvc'] = stripeData['cvc']
+      balance = float(bundle.data['value'])
+      if balance > invoice.unpaidBalance:
+        raise ImmediateHttpResponse(response=self.error_response("You can't pay more than $%s!"%(invoice.unpaidBalance)))
+      charge = stripe.Charge.create(
+        amount = int(balance*100),
+        currency = 'usd',
+        card = cardData,
+        description = 'Payment from %s for invoice %s'%(bundle.request.user.member.fullName, invoice.id)
       )
-    bundle.obj = payment
-    return bundle
+      payment = models.Payment.objects.create(
+        user = bundle.request.user,
+        value = balance,
+        status = models.Payment.STATUS_PAID,
+        transactionID = charge.id,
+        method = models.Payment.METHOD_STRIPE,
+        invoice = invoice
+      )
+      if notification:
+        notification.send(
+          [bundle.request.user],
+          'payment_received',
+          {'user': bundle.request.user, 'payment': payment}
+        )
+      bundle.obj = payment
+      return bundle
+    else:
+      return super(PaymentResource, self).obj_create(bundle, **kwargs)
 
 class LineItemResource(ModelResource):
   name = fields.CharField(attribute='name')
