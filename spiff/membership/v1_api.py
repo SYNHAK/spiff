@@ -45,6 +45,7 @@ class FieldResource(ModelResource):
   class Meta:
     queryset = models.Field.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
 
 class FieldValueResource(ModelResource):
   field = fields.ToOneField(FieldResource, 'field', full=True)
@@ -55,6 +56,7 @@ class FieldValueResource(ModelResource):
   class Meta:
     queryset = models.FieldValue.objects.all()
     authorization = FieldValueAuthorization()
+    always_return_data = True
 
 class RankPlanAuthorization(SpiffAuthorization):
   def conditions(self):
@@ -72,6 +74,7 @@ class RankSubscriptionPlanResource(subscription.SubscriptionPlanResource):
   class Meta:
     queryset = models.RankSubscriptionPlan.objects.all()
     authorization = RankPlanAuthorization()
+    always_return_data = True
 
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
@@ -80,6 +83,7 @@ class RankResource(ModelResource):
   class Meta:
     queryset = models.Rank.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
     filtering = {
       'group': ALL_WITH_RELATIONS,
       'monthlyDues': ALL_WITH_RELATIONS
@@ -91,6 +95,7 @@ class GroupResource(ModelResource):
   class Meta:
     queryset = Group.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
     filtering = {
       'rank': ALL_WITH_RELATIONS,
       'name': ALL_WITH_RELATIONS,
@@ -113,6 +118,7 @@ class UserResource(ModelResource):
   class Meta:
     queryset = User.objects.all()
     authorization = SelfUserAuthorization()
+    always_return_data = True
     filtering = {
       'first_name': ALL_WITH_RELATIONS,
       'last_name': ALL_WITH_RELATIONS,
@@ -128,6 +134,13 @@ class MembershipPeriodResource(ModelResource):
   class Meta:
     queryset = models.MembershipPeriod.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
+    filtering = {
+      'rank': ALL_WITH_RELATIONS,
+      'member': ALL_WITH_RELATIONS,
+      'start': ALL_WITH_RELATIONS,
+      'end': ALL_WITH_RELATIONS
+    }
 
 class MemberResource(ModelResource):
   username = fields.CharField(attribute='user__username')
@@ -149,6 +162,7 @@ class MemberResource(ModelResource):
   class Meta:
     queryset = models.Member.objects.all()
     authorization = SelfMemberAuthorization()
+    always_return_data = True
     filtering = {
       'groups': ALL_WITH_RELATIONS,
       'firstName': ALL_WITH_RELATIONS,
