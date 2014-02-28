@@ -129,7 +129,7 @@ class LineItem(models.Model):
         return self.unitPrice * self.quantity
 
     def __unicode__(self):
-        return "%d %s @%d ea, %s"%(self.unitPrice, self.name, self.quantity, self.invoice)
+        return "%d %s @%d ea, %s"%(self.quantity, self.name, self.unitPrice, self.invoice)
 
 class LineDiscountItem(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='discounts')
