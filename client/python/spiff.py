@@ -55,65 +55,70 @@ class API(object):
   def subUri(self, uri):
     return '/'.join((self.__uri, uri))
 
-  def getRaw(self, uri, **kwargs):
+  def getRequestHeaders(self):
     headers = {
       'accept': 'application/json',
       'content-type': 'application/json'
     }
+
     if self.__token:
       headers['authorization'] = 'Bearer '+self.__token
+    return headers
+
+  def getRaw(self, uri, **kwargs):
     log.debug("Requesting via GET %s: %r", uri, kwargs)
     if uri[0] == '/':
       uri = uri[1:]
     return requests.get(
       self.subUri(uri),
       verify=self.__verify,
-      headers=headers,
+      headers=self.getRequestHeaders(),
       params=kwargs
     )
 
-  def get(self, uri, status=200, **kwargs):
-    req = self.getRaw(uri, **kwargs)
-    if req.status_code != status:
-      if len(req.content):
-        errorMsg = req.json()
-        if 'traceback' in errorMsg:
-          raise ServerError(errorMsg['traceback'])
-        else:
-          raise ServerError(errorMsg['error'])
-      else:
-        req.raise_for_status()
-    return req.json()
-
   def postRaw(self, uri, value):
     data = SpiffObjectEncoder(self, indent=2).encode(value)
-    headers = {
-      'accept': 'application/json',
-      'content-type': 'application/json'
-    }
-
-    if self.__token:
-      headers['authorization'] = 'Bearer '+self.__token
     log.debug("Requesting via POST %s: %s", uri, data)
     return requests.post(
       self.subUri(uri),
       data=data,
       verify=self.__verify,
-      headers=headers
+      headers=self.getRequestHeaders()
     )
 
-  def post(self, uri, status=200, **kwargs):
-    req = self.postRaw(uri, kwargs)
-    if req.status_code != status:
-      if len(req.content):
-        errorMsg = req.json()
+  def get(self, uri, status=200, **kwargs):
+    return self.processResponse(self.getRaw(uri, **kwargs), status)
+
+  def post(self, uri, status=201, **kwargs):
+    return self.processResponse(self.postRaw(uri, kwargs), status)
+
+  def patch(self, uri, status=200, **kwargs):
+    return self.processResponse(self.patchRaw(uri, kwargs), status)
+
+  def patchRaw(self, uri, value):
+    data = SpiffObjectEncoder(self, indent=2).encode(value)
+    log.debug("Requesting via PATCH %s: %s", uri, data)
+    return requests.patch(
+      self.subUri(uri),
+      data=data,
+      verify=self.__verify,
+      headers=self.getRequestHeaders()
+    )
+
+  def processResponse(self, response, status):
+    if response.status_code != status:
+      if len(response.content):
+        try:
+          errorMsg = response.json()
+        except ValueError:
+          raise ServerError(response.content)
         if 'traceback' in errorMsg:
           raise ServerError(errorMsg['traceback'])
         else:
-          raise ServerError(errorMsg['error'])
+          raise ServerError(str(errorMsg['error']))
       else:
-        req.raise_for_status()
-    return req.json()
+        response.raise_for_status()
+    return response.json()
 
   def login(self, username, password):
     ret = self.post('v1/member/login/', username=username, password=password)
