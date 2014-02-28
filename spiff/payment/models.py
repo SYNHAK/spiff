@@ -6,6 +6,7 @@ import stripe
 from spiff import funcLog
 
 from spiff.notification_loader import notification
+notification = None
 from spiff.api.plugins import find_api_classes
 
 class InvoiceManager(models.Manager):
