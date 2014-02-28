@@ -1,6 +1,7 @@
 from tastypie.resources import ModelResource
 from tastypie.exceptions import ImmediateHttpResponse
 from spiff.notification_loader import notification
+notification = None
 import stripe
 import models
 from django.conf import settings
