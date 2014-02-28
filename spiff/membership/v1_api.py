@@ -143,6 +143,7 @@ class MembershipPeriodResource(ModelResource):
     }
 
 class MemberResource(ModelResource):
+  user = fields.ToOneField(UserResource, 'user', full=False)
   username = fields.CharField(attribute='user__username')
   firstName = fields.CharField(attribute='user__first_name', null=True)
   lastName = fields.CharField(attribute='user__last_name')
