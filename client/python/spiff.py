@@ -190,7 +190,7 @@ class ObjectList(object):
         ret.append(self[i])
       return ret
     if self.__max >= 0 and offset >= self.__max:
-      raise KeyError
+      raise KeyError(offset)
     if offset not in self.__cache:
       self.__loadSlice(offset)
     return self.__cache[offset]
