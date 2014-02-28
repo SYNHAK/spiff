@@ -121,7 +121,8 @@ class API(object):
     return response.json()
 
   def login(self, username, password):
-    ret = self.post('v1/member/login/', username=username, password=password)
+    ret = self.post('v1/member/login/', username=username, password=password,
+        status=200)
     if 'token' in ret:
       self.__token = ret['token']
       return True
