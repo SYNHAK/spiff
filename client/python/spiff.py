@@ -225,6 +225,7 @@ class SpiffObject(object):
   def __init__(self, api, data, type=None):
     self.__api = api
     self.__data = data
+    self.__saveData = {}
     assert(isinstance(self.__data, dict))
     if type is None:
       self.__type = self.__data['resource_uri'].split('/')[1]
@@ -235,10 +236,16 @@ class SpiffObject(object):
   def type(self):
     return self.__type
 
-  def update(self, **kwargs):
-    for k,v in kwargs.iteritems():
-      self.__data[k] = v
-    self.__api.post('/'.join(('v1', self.__type)), kwargs)
+  def save(self):
+    if len(self.__saveData):
+      self.__api.patch(self.resource_uri, **self.__saveData)
+      for k,v in self.__saveData.iteritems():
+        self.__data[k] = v
+      self.__saveData = {}
+
+  def refresh(self):
+    self.__saveData = {}
+    self.__data = self.__api.get(self.resource_uri)
 
   def __repr__(self):
     return "SpiffObject(%r, %r, %r)"%(self.__api, self.__data,
@@ -251,8 +258,15 @@ class SpiffObject(object):
     return "%s(%r)"%(self.__type,
         SpiffObjectEncoder(self.__api, indent=4).encode(self.__data))
 
-  def __getattr__(self, name):
-    return self.__data[name]
+  def __getattr__(self, key):
+    if key in self.__saveData:
+      return self.__saveData[key]
+    return self.__data[key]
 
   def __getitem__(self, key):
+    if key in self.__saveData:
+      return self.__saveData[key]
     return self.__data[key]
+
+  def __setitem__(self, key, value):
+    self.__saveData[key] = value
