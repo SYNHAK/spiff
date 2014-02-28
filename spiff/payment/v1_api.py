@@ -10,6 +10,8 @@ from spiff.api import SpiffAuthorization
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')
   value = fields.FloatField('value')
+  user = fields.ToOneField('spiff.membership.v1_api.UserResource', 'user')
+  method = fields.IntegerField('method')
 
   class Meta:
     queryset = models.Payment.objects.all()
