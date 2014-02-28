@@ -6,12 +6,15 @@ import datetime
 log = logging.getLogger('spiff')
 
 class ServerError(Exception):
-  def __init__(self, trace):
+  def __init__(self, message):
     super(ServerError, self).__init__()
-    self.__trace = trace
+    self.__msg = message
 
   def __str__(self):
-    return self.__trace
+    return self.__msg
+
+  def __repr__(self):
+    return "ServerError(%r)"%(self.__msg)
 
 class SpiffObjectEncoder(json.JSONEncoder):
   def __init__(self, api, *args, **kwargs):
