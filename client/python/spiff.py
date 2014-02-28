@@ -29,7 +29,7 @@ class SpiffObjectEncoder(json.JSONEncoder):
     if isinstance(obj, ObjectList):
       l = []
       for o in obj:
-        l.append(o)
+        l.append(o.resource_uri)
       return self.default(l)
     try:
       iterable = iter(obj)
