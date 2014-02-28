@@ -176,10 +176,11 @@ class Payment(models.Model):
     def save(self, *args, **kwargs):
         if not self.id and not self.created:
             self.created = datetime.datetime.utcnow().replace(tzinfo=utc)
-            notification.send(
-              [self.user],
-              "payment_received",
-              {'user': self.user, 'payment': self})
+            if notification:
+              notification.send(
+                [self.user],
+                "payment_received",
+                {'user': self.user, 'payment': self})
         super(Payment, self).save(*args, **kwargs)
         if self.invoice.unpaidBalance == 0:
             self.invoice.open = False
