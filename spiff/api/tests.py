@@ -5,6 +5,14 @@ from django.contrib.auth.models import User, Permission, Group
 import json
 import functools
 
+def withAdmin(func):
+  @functools.wraps(func)
+  def wrapper(self, *args, **kwargs):
+    self.user.is_superuser = True
+    self.user.save()
+    return func(self, *args, **kwargs)
+  return wrapper
+
 def withoutPermission(perm):
   def wrapIt(func):
     @functools.wraps(func)
