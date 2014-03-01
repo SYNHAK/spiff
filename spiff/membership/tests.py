@@ -8,12 +8,70 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
 import models
-from spiff.api.tests import APITestMixin, withPermission, withLogin, withUser
+from spiff.api.tests import APITestMixin, withPermission, withLogin, withUser, withAdmin
 import datetime
+from spiff.subscription.models import SubscriptionPeriod, Subscription
+from spiff.subscription import api as subscriptionAPI
+import calendar
 
 class MembershipPeriodTest(APITestMixin):
   def setUp(self):
     self.setupAPI()
+
+  @withPermission('membership.read_member')
+  @withPermission('auth.read_group')
+  @withPermission('membership.create_membershipperiod')
+  @withPermission('membership.read_rank')
+  @withPermission('payment.create_invoice')
+  @withPermission('payment.create_payment')
+  @withPermission('subscription.read_subscriptionplan')
+  @withAdmin
+  def testSubscribeAndPayDues(self):
+    rank = self.createGroup('test').rank
+    rank.monthlyDues = 15
+    rank.save()
+
+    period = SubscriptionPeriod.objects.create(
+      name = 'Monthly',
+      dayOfMonth=1
+    )
+
+    plan = models.RankSubscriptionPlan.objects.create(
+      rank = rank,
+      member = self.user.member,
+      period = period
+    )
+
+    self.postAPI('/v1/subscription/',
+      {
+        'user': '/v1/user/1/',
+        'plan': '/v1/subscriptionplan/1/',
+      }
+    )
+
+    self.assertEqual(len(self.user.invoices.all()), 0)
+    subscriptionAPI.processSubscriptions()
+    self.assertEqual(len(self.user.invoices.all()), 1)
+
+    self.postAPI('/v1/payment/',
+      {
+        'invoice': '/v1/invoice/1/',
+        'value': 15,
+        'method': 0,
+        'user': '/v1/user/1/'
+      }
+    )
+
+    self.assertTrue(self.user.groups.filter(name='test').exists())
+
+    today = datetime.date.today()
+    monthStart = datetime.date(year=today.year, month=today.month, day=1)
+    monthEnd = datetime.date(year=today.year, month=today.month,
+        day=calendar.monthrange(today.year, today.month)[1])
+
+    membershipPeriod = self.user.member.membershipPeriods.all()[0]
+    self.assertEqual(membershipPeriod.activeFromDate.date(), monthStart)
+    self.assertEqual(membershipPeriod.activeToDate.date(), monthEnd)
 
   @withPermission('membership.read_member')
   @withPermission('auth.read_group')
