@@ -13,10 +13,47 @@ import datetime
 from spiff.subscription.models import SubscriptionPeriod, Subscription
 from spiff.subscription import api as subscriptionAPI
 import calendar
+from spiff.payment.models import Invoice, Payment
 
 class MembershipPeriodTest(APITestMixin):
   def setUp(self):
     self.setupAPI()
+
+  @withAdmin
+  def addOldDues(self):
+    rank = self.createGroup('test').rank
+    rank.monthlyDues = 15
+    rank.save()
+
+    self.postAPI('/v1/invoice/',
+      {
+        'user': self.user,
+        'dueDate': datetime.date.today()
+      }
+    )
+
+    self.postAPI('/v1/ranklineitem/',
+      {
+        'invoice': '/v1/invoice/1/',
+        'rank': '/v1/rank/1/',
+        'member': '/v1/member/1/',
+        'activeFromDate': datetime.date.today(),
+        'activeToDate': datetime.date.today(),
+        'quantity': 1
+      }
+    )
+    self.postAPI('/v1/payment/',
+      {
+        'invoice': '/v1/invoice/1/',
+        'value': 15,
+        'method': 0,
+        'user': '/v1/user/1/'
+      }
+    )
+    membershipPeriod = self.user.member.membershipPeriods.all()[0]
+    self.assertEqual(membershipPeriod.activeFromDate.date(),
+        datetime.date.today())
+    self.assertEqual(membershipPeriod.activeToDate.date(), datetime.date.today())
 
   @withPermission('membership.read_member')
   @withPermission('auth.read_group')
