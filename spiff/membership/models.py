@@ -217,10 +217,8 @@ class RankLineItem(spiff.payment.models.LineItem):
             self.rank.group)
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            if self.unitPrice == 0:
-              self.unitPrice = self.rank.monthlyDues
-            self.name = "%s membership dues for %s, %s to %s"%(self.rank, self.member, self.activeFromDate, self.activeToDate)
+        self.unitPrice = self.rank.monthlyDues
+        self.name = "%s membership dues for %s, %s to %s"%(self.rank, self.member, self.activeFromDate, self.activeToDate)
         super(RankLineItem, self).save(*args, **kwargs)
 
 class MembershipPeriod(models.Model):
