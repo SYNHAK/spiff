@@ -6,6 +6,44 @@ import urlparse
 
 log = logging.getLogger('spiff')
 
+class Backend(object):
+  def get(self, uri, verify, headers, params):
+    raise NotImplemented
+
+  def post(self, uri, verify, headers, data):
+    raise NotImplemented
+
+  def patch(self, uri, verify, headers, data):
+    raise NotImplemented
+
+  def processResponse(self, response, status):
+    raise NotImplemented
+
+class RequestsBackend(Backend):
+  def get(self, uri, verify, headers, params):
+    return requests.get(uri, verify=verify, headers=headers, params=params)
+
+  def post(self, uri, verify, headers, data):
+    return requests.post(uri, data=data, verify=verify, headers=headers)
+
+  def patch(self, uri, verify, headers, data):
+    return requests.patch(uri, data=data, verify=verify, headers=headers)
+
+  def processResponse(self, response, status):
+    if response.status_code != status:
+      if len(response.content):
+        try:
+          errorMsg = response.json()
+        except ValueError:
+          raise ServerError(response.content)
+        if 'traceback' in errorMsg:
+          raise ServerError(errorMsg['traceback'])
+        else:
+          raise ServerError(str(errorMsg['error']))
+      else:
+        response.raise_for_status()
+    return response.json()
+
 class ServerError(Exception):
   def __init__(self, message):
     super(ServerError, self).__init__()
@@ -41,11 +79,12 @@ class SpiffObjectEncoder(json.JSONEncoder):
     return super(SpiffObjectEncoder, self).default(obj)
 
 class API(object):
-  def __init__(self, uri, verify=True):
+  def __init__(self, uri, verify=True, backend=RequestsBackend()):
     super(API, self).__init__()
     self.__uri = urlparse.urlparse(uri)
     self.__token = None
     self.__verify = verify
+    self.__backend = backend
 
   def __repr__(self):
     return "API(%r)"%(self.__uri)
@@ -73,27 +112,6 @@ class API(object):
       headers['authorization'] = 'Bearer '+self.__token
     return headers
 
-  def getRaw(self, uri, **kwargs):
-    uri = self.subUri(uri)
-    log.debug("Requesting via GET %s: %r", uri, kwargs)
-    return requests.get(
-      uri,
-      verify=self.__verify,
-      headers=self.getRequestHeaders(),
-      params=kwargs
-    )
-
-  def postRaw(self, uri, value):
-    data = SpiffObjectEncoder(self, indent=2).encode(value)
-    uri = self.subUri(uri)
-    log.debug("Requesting via POST %s: %s", uri, data)
-    return requests.post(
-      uri,
-      data=data,
-      verify=self.__verify,
-      headers=self.getRequestHeaders()
-    )
-
   def get(self, uri, status=200, **kwargs):
     return self.processResponse(self.getRaw(uri, **kwargs), status)
 
@@ -103,31 +121,28 @@ class API(object):
   def patch(self, uri, status=202, **kwargs):
     return self.processResponse(self.patchRaw(uri, kwargs), status)
 
+  def getRaw(self, uri, **kwargs):
+    uri = self.subUri(uri)
+    log.debug("Requesting via GET %s: %r", uri, kwargs)
+    return self.__backend.get(uri, self.__verify,
+        self.getRequestHeaders(), kwargs)
+
+  def postRaw(self, uri, value):
+    data = SpiffObjectEncoder(self, indent=2).encode(value)
+    uri = self.subUri(uri)
+    log.debug("Requesting via POST %s: %s", uri, data)
+    return self.__backend.post(uri, self.__verify,
+        self.getRequestHeaders(), data)
+
   def patchRaw(self, uri, value):
     data = SpiffObjectEncoder(self, indent=2).encode(value)
     uri = self.subUri(uri)
     log.debug("Requesting via PATCH %s: %s", uri, data)
-    return requests.patch(
-      uri,
-      data=data,
-      verify=self.__verify,
-      headers=self.getRequestHeaders()
-    )
+    return self.__backend.patch(uri, self.__verify, self.getRequestHeaders(),
+        data)
 
   def processResponse(self, response, status):
-    if response.status_code != status:
-      if len(response.content):
-        try:
-          errorMsg = response.json()
-        except ValueError:
-          raise ServerError(response.content)
-        if 'traceback' in errorMsg:
-          raise ServerError(errorMsg['traceback'])
-        else:
-          raise ServerError(str(errorMsg['error']))
-      else:
-        response.raise_for_status()
-    return response.json()
+    return self.__backend.processResponse(response, status)
 
   def login(self, username, password):
     ret = self.post('v1/member/login/', username=username, password=password,
