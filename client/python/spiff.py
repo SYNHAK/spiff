@@ -270,3 +270,9 @@ class SpiffObject(object):
 
   def __setitem__(self, key, value):
     self.__saveData[key] = value
+
+  def __setattr__(self, key, value):
+    if key.startswith("_"):
+      super(SpiffObject, self).__setattr__(key, value)
+    else:
+      self.__saveData[key] = value
