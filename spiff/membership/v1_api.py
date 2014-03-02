@@ -328,3 +328,11 @@ class RankLineItemResource(ModelResource):
     queryset = models.RankLineItem.objects.all()
     always_return_data = True
     authorization = SpiffAuthorization()
+    filtering = {
+      'rank': ALL_WITH_RELATIONS,
+      'member': ALL_WITH_RELATIONS,
+      'activeFromDate': ALL_WITH_RELATIONS,
+      'activeToDate': ALL_WITH_RELATIONS,
+      'invoice': ALL_WITH_RELATIONS,
+      'quantity': ALL_WITH_RELATIONS
+    }
