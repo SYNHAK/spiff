@@ -32,7 +32,7 @@ class Member(models.Model):
   @property
   def stripeCards(self):
     customer = self.stripeCustomer()
-    if 'cards' in customer:
+    if customer.get('cards'):
       return customer.cards.data
     return []
 
