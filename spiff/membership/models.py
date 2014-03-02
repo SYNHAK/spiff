@@ -71,7 +71,7 @@ class Member(models.Model):
       self.stripeID = customer.id
       self.save()
       return self.stripeCustomer()
-    if 'deleted' in customer:
+    if customer.get('deleted') == True:
       self.stripeID = ""
       self.save()
       return self.stripeCustomer()
