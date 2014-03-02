@@ -237,6 +237,10 @@ class MembershipPeriod(models.Model):
         raise ValidationError("Cannot have overlapping membership periods")
       return super(MembershipPeriod, self).save(*args, **kwargs)
 
+    def __unicode__(self):
+      return "%s, %s: %s to %s"%(self.member, self.rank, self.activeFromDate,
+          self.activeToDate)
+
 def create_member(sender, instance, created, **kwargs):
   if created:
     Member.objects.get_or_create(user=instance)
