@@ -238,7 +238,7 @@ class SpiffObject(object):
 
   def save(self):
     if len(self.__saveData):
-      self.__api.patch(self.resource_uri, **self.__saveData)
+      self.__api.patch(self.resource_uri[1:], **self.__saveData)
       for k,v in self.__saveData.iteritems():
         self.__data[k] = v
       self.__saveData = {}
