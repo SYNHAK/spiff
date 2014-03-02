@@ -92,7 +92,7 @@ class API(object):
   def post(self, uri, status=201, **kwargs):
     return self.processResponse(self.postRaw(uri, kwargs), status)
 
-  def patch(self, uri, status=200, **kwargs):
+  def patch(self, uri, status=202, **kwargs):
     return self.processResponse(self.patchRaw(uri, kwargs), status)
 
   def patchRaw(self, uri, value):
