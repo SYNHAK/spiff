@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 import datetime
+import urlparse
 
 log = logging.getLogger('spiff')
 
@@ -42,7 +43,7 @@ class SpiffObjectEncoder(json.JSONEncoder):
 class API(object):
   def __init__(self, uri, verify=True):
     super(API, self).__init__()
-    self.__uri = uri
+    self.__uri = urlparse.urlparse(uri)
     self.__token = None
     self.__verify = verify
 
@@ -53,7 +54,14 @@ class API(object):
     return repr(self)
 
   def subUri(self, uri):
-    return '/'.join((self.__uri, uri))
+    if not uri.endswith('/'):
+      uri += '/'
+    if uri.startswith(self.__uri.path):
+      return urlparse.urlunparse((self.__uri.scheme, self.__uri.netloc, uri, None,
+        None, None))
+    else:
+      return urlparse.urljoin(self.__uri.geturl(), uri)
+    raise ValueError
 
   def getRequestHeaders(self):
     headers = {
@@ -66,11 +74,10 @@ class API(object):
     return headers
 
   def getRaw(self, uri, **kwargs):
+    uri = self.subUri(uri)
     log.debug("Requesting via GET %s: %r", uri, kwargs)
-    if uri[0] == '/':
-      uri = uri[1:]
     return requests.get(
-      self.subUri(uri),
+      uri,
       verify=self.__verify,
       headers=self.getRequestHeaders(),
       params=kwargs
@@ -78,9 +85,10 @@ class API(object):
 
   def postRaw(self, uri, value):
     data = SpiffObjectEncoder(self, indent=2).encode(value)
+    uri = self.subUri(uri)
     log.debug("Requesting via POST %s: %s", uri, data)
     return requests.post(
-      self.subUri(uri),
+      uri,
       data=data,
       verify=self.__verify,
       headers=self.getRequestHeaders()
@@ -97,9 +105,10 @@ class API(object):
 
   def patchRaw(self, uri, value):
     data = SpiffObjectEncoder(self, indent=2).encode(value)
+    uri = self.subUri(uri)
     log.debug("Requesting via PATCH %s: %s", uri, data)
     return requests.patch(
-      self.subUri(uri),
+      uri,
       data=data,
       verify=self.__verify,
       headers=self.getRequestHeaders()
@@ -238,7 +247,7 @@ class SpiffObject(object):
 
   def save(self):
     if len(self.__saveData):
-      self.__api.patch(self.resource_uri[1:], **self.__saveData)
+      self.__api.patch(self.resource_uri, **self.__saveData)
       for k,v in self.__saveData.iteritems():
         self.__data[k] = v
       self.__saveData = {}
