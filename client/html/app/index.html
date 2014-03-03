@@ -21,6 +21,7 @@
 
   <script src="lib/md5-service.js"></script>
   <script src="lib/ui/spiff.js"></script>
+  <script src="lib/ui/messages.js"></script>
   <script src="lib/ui/spaceapi.js"></script>
   <script src="lib/ui/controllers/epicenter.js"></script>
   <script src="lib/ui/controllers/dashboard.js"></script>
@@ -36,6 +37,14 @@
 </head>
 <body>
 <div ng-include="'partials/epicenter.html'"></div>
+<div class="container" ng-controller="MessagesCtrl">
+  <div ng-repeat="message in messages.messages" class="row">
+    <div class="span12">
+      <div class="alert alert-info">{{message.text}}</div>
+    </div>
+  </div>
+</div>
+</div>
 <div class="container" id="canvas" ui-view>
 </div>
 <div class="container" id="footer">
