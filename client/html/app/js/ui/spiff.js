@@ -61,8 +61,8 @@ Spiff.factory('SpiffRestangular', function(SpiffConfig, Restangular) {
     RestangularConfigurer.addElementTransformer('member', true, function(member) {
       if (member.addRestangularMethod) {
         member.addRestangularMethod('login', 'post', 'login');
-        member.addRestangularMethod('logout', 'get', 'logout');
         member.addRestangularMethod('search', 'get', 'search');
+        member.addRestangularMethod('requestPasswordReset', 'post', 'requestPasswordReset');
       }
       return member;
     });

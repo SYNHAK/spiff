@@ -27,11 +27,13 @@
         <ul class="dropdown-menu">
           <li ng-if="Spiff.currentUser.isAnonymous"><a ng-click="showLogin()">Login</a></li>
           <li ng-if="Spiff.currentUser.isAnonymous"><a ui-sref="register">Register</a></li>
-          <li ng-if="Spiff.currentUser.isAnonymous"><a href="#">Reset Password</a></li>
+          <li ng-if="Spiff.currentUser.isAnonymous"><a
+            ng-click="showPasswordReset()">Reset Password</a></li>
           <li ng-if="!Spiff.currentUser.isAnonymous"><a
             ui-sref="member.view({memberID: Spiff.currentUser.id})">View Profile</a></li>
           <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#" ng-click="logout()">Logout</a></li>
-          <li ng-if="!Spiff.currentUser.isAnonymous"><a href="#">Change Password</a></li>
+          <li ng-if="!Spiff.currentUser.isAnonymous"><a
+            ng-click="changePassword()">Change Password</a></li>
         </ul>
       </li>
     </ul>
