@@ -216,6 +216,8 @@ WELCOME_MESSAGE = """
 Spiff is a tool for managing hackerspaces.
 """
 
+WEBUI_URL = "http://localhost/"
+
 try:
   from local_settings import *
 except ImportError:
