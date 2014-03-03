@@ -40,20 +40,10 @@ Spiff.factory('SpiffRestangular', function(SpiffConfig, Restangular) {
     RestangularConfigurer.setErrorInterceptor(function(response) {
       var $injector = angular.element('body').injector();
       if (response.status == 401) {
-        $injector.get('$rootScope').$broadcast('loginRequired');
+        $injector.get('$rootScope').$broadcast('loginRequired', response);
       } else {
         console.log(response);
-        $injector.get('$modal').open({
-          templateUrl: 'error.html',
-          controller: function($scope, $modalInstance) {
-            $scope.status = response.status;
-            $scope.message = response.data.error_message;
-            $scope.traceback = response.data.traceback;
-            $scope.close = function() {
-              $modalInstance.close();
-            }
-          }
-        });
+        $injector.get('$rootScope').$broadcast('error', response);
       }
       return true;
     });
