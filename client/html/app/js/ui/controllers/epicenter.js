@@ -34,7 +34,6 @@ angular.module('spiff.epicenter', [
       if (user.status >= 300 || user.status < 200) {
         if (user.status == 401) {
           $scope.error = "Incorrect username or password";
-          $('#loginModal #error-msg').text("Incorrect username or password");
         }
       } else {
         $scope.error = null;
