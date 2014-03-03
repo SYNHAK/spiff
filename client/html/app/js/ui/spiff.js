@@ -124,6 +124,9 @@ Spiff.provider('Spiff', function() {
           password: password
         }).then(function(data) {
           scope.$broadcast('loginSuccess', data.token);
+          if (data.passwordReset) {
+            scope.$broadcast('passwordResetRequested');
+          }
           SpiffConfig.setAuthToken(data.token);
           scope.refreshUser();
           return data;
