@@ -114,6 +114,6 @@ angular.module('spiff.epicenter', [
   });
 
   SpaceAPI.ready(function(api) {
-    $scope.spaceAPI = api;
+    $scope.spaceAPI = api.data;
   });
 });

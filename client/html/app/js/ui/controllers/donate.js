@@ -21,7 +21,7 @@ angular.module('spiff.donate', [
   $scope.plans = SpiffRestangular.all('donationplan').getList().$object;
 
   SpaceAPI.ready(function(api) {
-    $scope.spaceAPI = api;
+    $scope.spaceAPI = api.data;
   });
 
   $scope.startSubscription = function(plan) {
