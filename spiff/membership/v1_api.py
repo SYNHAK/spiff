@@ -1,4 +1,9 @@
 from django.db.models import Q
+from django.utils.timezone import utc
+import datetime
+from django.contrib.sites.models import get_current_site
+import string
+import random
 from django.conf.urls import url
 from django.contrib.auth.models import Group, User
 from django.contrib.auth import authenticate, login, logout
@@ -16,6 +21,7 @@ from spiff import funcLog
 import jwt
 from django.conf import settings
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from django.core.mail import send_mail
 
 class FieldValueAuthorization(SpiffAuthorization):
   def conditions(self):
@@ -170,6 +176,22 @@ class MemberResource(ModelResource):
       'lastName': ALL_WITH_RELATIONS,
     }
 
+  def obj_update(self, bundle, **kwargs):
+    data = bundle.data
+    if 'currentPassword' in data and 'password' in data:
+      u = bundle.obj.user
+      valid = False
+      if u.check_password(data['currentPassword']):
+        valid = True
+      else:
+        tokens = models.UserResetToken.objects.filter(user=u,
+            token=data['currentPassword'])
+        if tokens.exists():
+          valid = True
+      u.set_password(data['password'])
+      u.save()
+    return bundle
+
   def obj_create(self, bundle, **kwargs):
     data = bundle.data
     firstName = ""
@@ -215,6 +237,9 @@ class MemberResource(ModelResource):
       url(r'^(?P<resource_name>%s)/login%s$' %
         (self._meta.resource_name, trailing_slash()),
         self.wrap_view('login'), name='login'),
+      url(r'^(?P<resource_name>%s)/requestPasswordReset%s$' %
+        (self._meta.resource_name, trailing_slash()),
+        self.wrap_view('requestPasswordReset'), name='requestPasswordReset'),
       url(r'^(?P<resource_name>%s)/search%s$' %
         (self._meta.resource_name, trailing_slash()),
         self.wrap_view('search'), name='search'),
@@ -287,6 +312,40 @@ class MemberResource(ModelResource):
     object_list = {'objects': objects}
     return self.create_response(request, object_list)
 
+  def requestPasswordReset(self, request, **kwargs):
+    self.method_check(request, allowed=['post'])
+    data = self.deserialize(request, request.body,
+        format=request.META.get('CONTENT_TYPE', 'application/json'))
+
+    users = User.objects.filter(Q(username=data['userid']) |
+      Q(email=data['userid']))
+
+    site = get_current_site(request)
+
+    for u in users:
+      token = models.UserResetToken.objects.create(user=u)
+      funcLog().info("Resetting password for %s, mailing %s to %s", u.username,
+          token.token, u.email)
+      message = [
+        random.choice(settings.GREETINGS),
+        '',
+        'This is Spaceman Spiff for %s'%(site.name),
+        '',
+        'Someone from the IP %s has requested that your password be reset.',
+        '',
+        'To reset your password, visit %s and use this temporary password to login:'%(settings.WEBUI_URL),
+        '',
+        '%s'%(token.token),
+        '',
+        'It will expire after 5 minutes. If you did not request to have your password reset, feel free to ignore this message!'
+        '',
+        'Thanks!'
+      ]
+
+      send_mail('Spiff Password Reset', "\n".join(message), settings.DEFAULT_FROM_EMAIL,
+          [u.email])
+    return self.create_response(request, {'success': True})
+
   def login(self, request, **kwargs):
     self.method_check(request, allowed=['post'])
     data = self.deserialize(request, request.body,
@@ -307,12 +366,27 @@ class MemberResource(ModelResource):
         token['id'] = user.id
         return self.create_response(request, {
           'success': True,
-          'token': jwt.encode(token, settings.SECRET_KEY)
+          'token': jwt.encode(token, settings.SECRET_KEY),
+          'passwordReset': False
         })
       else:
         funcLog().warning("Good login, but %s is disabled.", username)
         raise ImmediateHttpResponse(response=HttpForbidden())
     else:
+      tokens = models.UserResetToken.objects.filter(user__username=username, token=password)
+      for t in tokens:
+        if t.created >= datetime.datetime.utcnow().replace(tzinfo=utc)-datetime.timedelta(minutes=5):
+          user = t.user
+          funcLog().info("Successful password reset for %s", user.username)
+          token = {}
+          token['id'] = user.id
+          return self.create_response(request, {
+            'success': True,
+            'token': jwt.encode(token, settings.SECRET_KEY),
+            'passwordReset': True,
+          })
+        else:
+          t.delete()
       funcLog().warning("Invalid login for %s", username)
       raise ImmediateHttpResponse(response=HttpUnauthorized())
 

@@ -1,4 +1,6 @@
 from django.db import models
+import random
+import string
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from openid_provider.models import OpenID
@@ -19,6 +21,17 @@ if not hasattr(settings, 'ANONYMOUS_USER_ID'):
 
 if not hasattr(settings, 'AUTHENTICATED_GROUP_ID'):
   settings.AUTHENTICATED_GROUP_ID = 0
+
+class UserResetToken(models.Model):
+  user = models.ForeignKey(User, related_name='resetTokens')
+  token = models.CharField(max_length=10)
+  created = models.DateTimeField(auto_now_add=True)
+
+  def save(self, *args, **kwargs):
+    if not self.token:
+      self.token = ''.join(random.choice(string.ascii_uppercase +
+        string.digits) for _ in range(10))
+    return super(UserResetToken, self).save(*args, **kwargs)
 
 class Member(models.Model):
   tagline = models.CharField(max_length=255)
