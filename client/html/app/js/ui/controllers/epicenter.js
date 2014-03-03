@@ -46,14 +46,20 @@ angular.module('spiff.epicenter', [
 .controller('EpicenterCtrl', function($scope, Spiff, $modal, SpaceAPI) {
   $scope.Spiff = Spiff;
 
+  var loginIsOpen = false;
+
   $scope.showLogin = function() {
-    console.log("Login is opened.");
-    $modal.open({
-      templateUrl: 'partials/login.html',
-      controller: 'LoginCtrl'
-    }).result.then(function() {
-      console.log("Finished login");
-    });
+    console.log("Login is opened: "+loginIsOpen);
+    if (!loginIsOpen) {
+      loginIsOpen = true;
+      $modal.open({
+        templateUrl: 'partials/login.html',
+        controller: 'LoginCtrl'
+      }).result.then(function() {
+        console.log("Finished login");
+        loginIsOpen = false;
+      });
+    }
   };
 
   $scope.showPasswordReset = function() {
@@ -84,6 +90,10 @@ angular.module('spiff.epicenter', [
   $scope.logout = function() {
     Spiff.logout();
   };
+
+  $scope.$on('showLogin', function() {
+    $scope.showLogin();
+  });
 
   Spiff.$on('loginRequired', function(element, response) {
     $scope.showLogin();

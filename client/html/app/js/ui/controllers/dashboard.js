@@ -90,10 +90,14 @@ angular.module('spiff.dashboard', [
   });
 })
 
-.controller('AnonDashCtrl', function($scope, $rootScope, $scope, Spiff, $location) {
+.controller('AnonDashCtrl', function($scope, $rootScope, $scope, Spiff, SpaceAPI, $location) {
   $scope.showLogin = function() {
-    $rootScope.$broadcast('loginRequired');
+    $rootScope.$broadcast('showLogin');
   }
+
+  SpaceAPI.ready(function(api) {
+    $scope.spaceAPI = api;
+  });
 
   Spiff.$watch('currentUser', function(user) {
     if (user && !user.isAnonymous) {
