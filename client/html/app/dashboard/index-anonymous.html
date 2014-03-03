@@ -4,9 +4,7 @@
     {{spaceAPI['x-spiff-welcome']}}
     <div ng-if="spaceAPI.motd">
       <h2>Message of the Day</h2>
-      <div class="well" ng-if="spaceAPI.motd">
-        {{spaceAPI.motd}}
-      </div>
+      <div class="well"><span ng-bind-html="trustedMOTD()"></html></div>
     </div>
   </div>
   <div class="span3">

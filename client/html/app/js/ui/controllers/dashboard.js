@@ -90,13 +90,16 @@ angular.module('spiff.dashboard', [
   });
 })
 
-.controller('AnonDashCtrl', function($scope, $rootScope, $scope, Spiff, SpaceAPI, $location) {
+.controller('AnonDashCtrl', function($scope, $rootScope, $scope, Spiff, SpaceAPI, $location, $sce) {
   $scope.showLogin = function() {
     $rootScope.$broadcast('showLogin');
   }
 
   SpaceAPI.ready(function(api) {
-    $scope.spaceAPI = api;
+    $scope.spaceAPI = api.data;
+    $scope.trustedMOTD = function() {
+      return $sce.trustAsHtml(api.data.motd);
+    }
   });
 
   Spiff.$watch('currentUser', function(user) {
