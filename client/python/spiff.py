@@ -216,7 +216,7 @@ class ObjectList(object):
     if self.__max >= 0 and offset >= self.__max:
       raise KeyError(offset)
     if offset not in self.__cache:
-      self.__loadSlice(offset)
+      self.__loadSlice(max(0, offset-5), 10)
     return self.__cache[offset]
 
   def __iter__(self):
