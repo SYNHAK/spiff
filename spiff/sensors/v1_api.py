@@ -14,6 +14,7 @@ class SensorResource(ModelResource):
   class Meta:
     queryset = models.Sensor.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
 
 class SensorValueResource(ModelResource):
   sensor = fields.ToOneField(SensorResource, 'sensor')
@@ -23,3 +24,4 @@ class SensorValueResource(ModelResource):
   class Meta:
     queryset = models.SensorValue.objects.all()
     authorization = SpiffAuthorization()
+    always_return_data = True
