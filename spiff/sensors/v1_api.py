@@ -3,6 +3,19 @@ from tastypie.resources import ModelResource
 from spiff.api import SpiffAuthorization
 import models
 from spiff import funcLog
+import json
+
+class SensorUpdateAuthorization(SpiffAuthorization):
+  def operations(self):
+    return super(SensorUpdateAuthorization, self).operations()+(
+      ('update_value_on', 'update_value_on'),
+    )
+
+  def check_perm(self, bundle, model, permName):
+    if 'value' in bundle.data:
+      return super(SensorUpdateAuthorization, self).check_perm(bundle, model,
+          'update_value_on_%s'%(permName))
+    return super(SensorUpdateAuthorization, self).check_perm(bundle, model, permName)
 
 class SensorResource(ModelResource):
   name = fields.CharField('name')
@@ -13,7 +26,7 @@ class SensorResource(ModelResource):
 
   class Meta:
     queryset = models.Sensor.objects.all()
-    authorization = SpiffAuthorization()
+    authorization = SensorUpdateAuthorization()
     always_return_data = True
 
 class SensorValueResource(ModelResource):

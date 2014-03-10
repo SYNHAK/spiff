@@ -25,22 +25,22 @@ class SpiffAuthorization(Authorization):
 
     return model_klass
 
-  def check_perm(self, request, model, permName):
+  def check_perm(self, bundle, model, permName):
     permName = '%s.%s_%s' % (model.__class__._meta.app_label, permName,
         model.__class__._meta.module_name)
-    ret = request.user.has_perm(permName)
-    funcLog().debug("Checking %s for %s: %s", request.user, permName, ret)
+    ret = bundle.request.user.has_perm(permName)
+    funcLog().debug("Checking %s for %s: %s", bundle.request.user, permName, ret)
     return ret
 
   def check_list(self, object_list, bundle, op):
     ret = []
     for obj in object_list:
-      if self.check_perm(bundle.request, obj, op):
+      if self.check_perm(bundle, obj, op):
         ret.append(obj)
     return ret
 
   def check_detail(self, object_list, bundle, op):
-    return self.check_perm(bundle.request, bundle.obj, op)
+    return self.check_perm(bundle, bundle.obj, op)
 
   def read_list(self, object_list, bundle):
     return self.check_list(object_list, bundle, 'read')
@@ -76,11 +76,11 @@ class OwnedObjectAuthorization(SpiffAuthorization):
       ('own', 'owned by self'),
     )+super(OwnedObjectAuthorization, self).conditions()
 
-  def check_perm(self, request, model, name):
+  def check_perm(self, bundle, model, name):
     u = getattr(model, self._attr)
-    funcLog().info("Checking %r for ownership of %r (%r)", request.user, model, u)
+    funcLog().info("Checking %r for ownership of %r (%r)", bundle.request.user, model, u)
     if u.pk == request.user.pk:
-      return super(OwnedObjectAuthorization, self).check_perm(request,
+      return super(OwnedObjectAuthorization, self).check_perm(bundle.request,
           model, '%s_own'%(name))
-    return super(OwnedObjectAuthorization, self).check_perm(request,
+    return super(OwnedObjectAuthorization, self).check_perm(bundle.request,
         model, '%s_others'%(name))

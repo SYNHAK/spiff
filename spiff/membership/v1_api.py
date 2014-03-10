@@ -31,14 +31,14 @@ class FieldValueAuthorization(SpiffAuthorization):
       ('private', 'field is private'),
     ) + super(FieldValueAuthorization, self).conditions()
 
-  def check_perm(self, request, model, permName):
+  def check_perm(self, bundle, model, permName):
     if model.field.public:
-      return super(FieldValueAuthorization, self).check_perm(request, model,
+      return super(FieldValueAuthorization, self).check_perm(bundle, model,
       '%s_public'%(permName))
     if model.field.protected:
-      return super(FieldValueAuthorization, self).check_perm(request, model,
+      return super(FieldValueAuthorization, self).check_perm(bundle, model,
       '%s_protected'%(permName))
-    return super(FieldValueAuthorization, self).check_perm(request, model,
+    return super(FieldValueAuthorization, self).check_perm(bundle, model,
     '%s_private'%(permName))
 
 class FieldResource(ModelResource):
@@ -70,11 +70,11 @@ class RankPlanAuthorization(SpiffAuthorization):
       ('active_membership', 'rank is active membership'),
     )+super(RankPlanAuthorization, self).conditions()
 
-  def check_perm(self, request, model, name):
+  def check_perm(self, bundle, model, name):
     if model.rank.isActiveMembership:
-      return super(RankPlanAuthorization, self).check_perm(request, model,
+      return super(RankPlanAuthorization, self).check_perm(bundle, model,
         '%s_active_membership'%(name))
-    return super(RankPlanAuthorization, self).check_perm(request, model, name)
+    return super(RankPlanAuthorization, self).check_perm(bundle, model, name)
 
 class RankSubscriptionPlanResource(subscription.SubscriptionPlanResource):
   class Meta:
@@ -108,17 +108,17 @@ class GroupResource(ModelResource):
     }
 
 class SelfMemberAuthorization(SpiffAuthorization):
-  def check_perm(self, request, model, name):
-    if request.user.member.pk == model.pk:
+  def check_perm(self, bundle, model, name):
+    if bundle.request.user.member.pk == model.pk:
       return True
-    return super(SelfMemberAuthorization, self).check_perm(request, model, name)
+    return super(SelfMemberAuthorization, self).check_perm(bundle, model, name)
 
 class SelfUserAuthorization(SpiffAuthorization):
-  def check_perm(self, request, model, name):
-    funcLog().info("Checking if %s == %s", request.user, model)
-    if request.user.pk == model.pk:
+  def check_perm(self, bundle, model, name):
+    funcLog().info("Checking if %s == %s", bundle.request.user, model)
+    if bundle.request.user.pk == model.pk:
       return True
-    return super(SelfUserAuthorization, self).check_perm(request, model, name)
+    return super(SelfUserAuthorization, self).check_perm(bundle, model, name)
 
 class UserResource(ModelResource):
   class Meta:
