@@ -12,9 +12,10 @@ class SensorUpdateAuthorization(SpiffAuthorization):
     )
 
   def check_perm(self, bundle, model, permName):
-    if 'value' in bundle.data:
+    if 'value' in bundle.data and permName == 'update':
+      funcLog("updating perm via %s", permName)
       return super(SensorUpdateAuthorization, self).check_perm(bundle, model,
-          'update_value_on_%s'%(permName))
+          'update_value_on')
     return super(SensorUpdateAuthorization, self).check_perm(bundle, model, permName)
 
 class SensorValueField(fields.ApiField):
@@ -30,6 +31,8 @@ class SensorValueField(fields.ApiField):
 
   def dehydrate(self, bundle, for_list=False):
     value = super(SensorValueField, self).dehydrate(bundle, for_list)
+    if value is None:
+      return value
 
     typeField = getattr(bundle.obj, self._typeAttr)
     if typeField == models.SENSOR_TYPE_NUMBER:
