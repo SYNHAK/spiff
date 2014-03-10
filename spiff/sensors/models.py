@@ -6,14 +6,19 @@ import requests
 import subprocess
 import os
 
+SENSOR_TYPE_NUMBER = 0
+SENSOR_TYPE_STRING = 1
+SENSOR_TYPE_BINARY = 2
+SENSOR_TYPE_JSON = 3
+SENSOR_TYPE_TEMPERATURE = 4
 SENSOR_TYPE_BOOLEAN = 5 
 
 SENSOR_TYPES = (
-  (0, 'number'),
-  (1, 'string'),
-  (2, 'binary'),
-  (3, 'json'),
-  (4, 'temp'),
+  (SENSOR_TYPE_NUMBER, 'number'),
+  (SENSOR_TYPE_STRING, 'string'),
+  (SENSOR_TYPE_BINARY, 'binary'),
+  (SENSOR_TYPE_JSON, 'json'),
+  (SENSOR_TYPE_TEMPERATURE, 'temp'),
   (SENSOR_TYPE_BOOLEAN, 'boolean'),
 )
 
