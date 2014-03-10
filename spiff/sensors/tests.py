@@ -8,7 +8,7 @@ class SensorTest(APITestMixin):
     self.sensor = models.Sensor.objects.create(
       name = 'sensor',
       description = 'Test sensor',
-      type = 0,
+      type = models.SENSOR_TYPE_BOOLEAN,
       ttl = 255
     )
 
@@ -18,11 +18,13 @@ class SensorTest(APITestMixin):
     self.patchAPI('/v1/sensor/%s/'%(self.sensor.id), {
       'value': True,
     })
-    self.assertEqual(self.sensor.value(), 'True')
+    sensor = self.getAPI('/v1/sensor/%s/'%(self.sensor.id))
+    self.assertEqual(sensor['value'], True)
     self.patchAPI('/v1/sensor/%s/'%(self.sensor.id), {
       'value': False,
     })
-    self.assertEqual(self.sensor.value(), 'False')
+    sensor = self.getAPI('/v1/sensor/%s/'%(self.sensor.id))
+    self.assertEqual(sensor['value'], False)
 
   def testSensorTTL(self):
     for i in range(0, self.sensor.ttl*2):
