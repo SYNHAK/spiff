@@ -13,16 +13,14 @@ class SensorTest(APITestMixin):
     )
 
   @withPermission('sensors.read_sensor')
-  @withPermission('sensors.create_sensorvalue')
+  @withPermission('sensors.update_value_on_sensor')
   def testSetSensorValue(self):
-    self.postAPI('/v1/sensorvalue/', {
+    self.patchAPI('/v1/sensor/%s/'%(self.sensor.id), {
       'value': True,
-      'sensor': '/v1/sensor/%s/'%(self.sensor.id)
     })
     self.assertEqual(self.sensor.value(), 'True')
-    self.postAPI('/v1/sensorvalue/', {
+    self.patchAPI('/v1/sensor/%s/'%(self.sensor.id), {
       'value': False,
-      'sensor': '/v1/sensor/%s/'%(self.sensor.id)
     })
     self.assertEqual(self.sensor.value(), 'False')
 
