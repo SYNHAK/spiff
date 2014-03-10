@@ -79,8 +79,8 @@ class OwnedObjectAuthorization(SpiffAuthorization):
   def check_perm(self, bundle, model, name):
     u = getattr(model, self._attr)
     funcLog().info("Checking %r for ownership of %r (%r)", bundle.request.user, model, u)
-    if u.pk == request.user.pk:
-      return super(OwnedObjectAuthorization, self).check_perm(bundle.request,
+    if u.pk == bundle.request.user.pk:
+      return super(OwnedObjectAuthorization, self).check_perm(bundle,
           model, '%s_own'%(name))
-    return super(OwnedObjectAuthorization, self).check_perm(bundle.request,
+    return super(OwnedObjectAuthorization, self).check_perm(bundle,
         model, '%s_others'%(name))
