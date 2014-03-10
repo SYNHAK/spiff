@@ -17,12 +17,67 @@ class SensorUpdateAuthorization(SpiffAuthorization):
           'update_value_on_%s'%(permName))
     return super(SensorUpdateAuthorization, self).check_perm(bundle, model, permName)
 
+class SensorValueField(fields.ApiField):
+  dehydrated_type = 'variant'
+  help_text = 'A variable type of data, based on another field which specifies the type'
+
+  def __init__(self, *args, **kwargs):
+    if 'typeAttr' not in kwargs:
+      kwargs['typeAttr'] = 'type'
+    self._typeAttr = kwargs['typeAttr']
+    del kwargs['typeAttr']
+    super(SensorValueField, self).__init__(*args, **kwargs)
+
+  def dehydrate(self, bundle, for_list=False):
+    value = super(SensorValueField, self).dehydrate(bundle, for_list)
+
+    typeField = getattr(bundle.obj, self._typeAttr)
+    if typeField == models.SENSOR_TYPE_NUMBER:
+      return int(value)
+    if typeField == models.SENSOR_TYPE_STRING:
+      return str(value)
+    if typeField == models.SENSOR_TYPE_BINARY:
+      return str(value)
+    if typeField == models.SENSOR_TYPE_JSON:
+      return json.decode(value)
+    if typeField == models.SENSOR_TYPE_TEMPERATURE:
+      return float(value)
+    if typeField == models.SENSOR_TYPE_BOOLEAN:
+      return bool(value)
+
+  def hydrate(self, bundle):
+    value = super(SensorValueField, self).hydrate(bundle)
+
+    typeField = getattr(bundle.obj, self._typeAttr)
+
+    if typeField == models.SENSOR_TYPE_NUMBER:
+      return int(value)
+    if typeField == models.SENSOR_TYPE_STRING:
+      return str(value)
+    if typeField == models.SENSOR_TYPE_BINARY:
+      return value
+    if typeField == models.SENSOR_TYPE_JSON:
+      return json.decode(value)
+    if typeField == models.SENSOR_TYPE_TEMPERATURE:
+      return float(value)
+    if typeField == models.SENSOR_TYPE_BOOLEAN:
+      return bool(value)
+
+
 class SensorResource(ModelResource):
   name = fields.CharField('name')
   description = fields.CharField('description')
   type = fields.IntegerField('type')
   ttl = fields.IntegerField('ttl')
-  value = fields.CharField('value')
+  value = SensorValueField('value', 'type')
+
+  def obj_update(self, bundle, **kwargs):
+    if 'value' in bundle.data:
+      models.SensorValue.objects.create(
+        sensor = bundle.obj,
+        value = bundle.data['value']
+      )
+    return super(SensorResource, self).obj_update(bundle, **kwargs)
 
   class Meta:
     queryset = models.Sensor.objects.all()
