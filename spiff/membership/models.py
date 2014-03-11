@@ -318,6 +318,11 @@ def get_authenticated_user_group():
       )
   else:
     group = AuthenticatedUserGroup.objects.get(id=settings.AUTHENTICATED_GROUP_ID)
+  try:
+    rank = group.rank
+  except Rank.DoesNotExist:
+    group.rank, created = Rank.objects.get_or_create(group=group)
+    group.save()
   return group
 
 def get_anonymous_user():
@@ -349,3 +354,4 @@ def get_anonymous_user():
   return user
 
 post_save.connect(create_member, sender=AnonymousUser)
+post_save.connect(create_rank, sender=AuthenticatedUserGroup)
