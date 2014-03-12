@@ -215,7 +215,7 @@ class ObjectList(object):
     params = {}
     params.update(self.__filters)
     params['offset'] = offset
-    params['count'] = count
+    params['limit'] = count
     data = self.__api.get('/'.join(('v1', self.__type)), **params)
     self.__max = data['meta']['total_count']
     for i in range(0, len(data['objects'])):
