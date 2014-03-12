@@ -16,7 +16,10 @@ class Backend(object):
   def patch(self, uri, verify, headers, data):
     raise NotImplemented
 
-  def processResponse(self, response, status):
+  def delete(self, uri, verify, headers, data):
+    raise NotImplemented
+
+  def processResponse(self, response, status, blankResponse=False):
     raise NotImplemented
 
 class RequestsBackend(Backend):
@@ -29,7 +32,10 @@ class RequestsBackend(Backend):
   def patch(self, uri, verify, headers, data):
     return requests.patch(uri, data=data, verify=verify, headers=headers)
 
-  def processResponse(self, response, status):
+  def delete(self, uri, verify, headers, params):
+    return requests.delete(uri, params=params, verify=verify, headers=headers)
+
+  def processResponse(self, response, status, blankResponse=False):
     if response.status_code != status:
       if len(response.content):
         try:
@@ -42,7 +48,9 @@ class RequestsBackend(Backend):
           raise ServerError(str(errorMsg['error']))
       else:
         response.raise_for_status()
-    return response.json()
+    if not blankResponse:
+      return response.json()
+    return None
 
 class ServerError(Exception):
   def __init__(self, message):
@@ -121,6 +129,16 @@ class API(object):
   def patch(self, uri, status=202, **kwargs):
     return self.processResponse(self.patchRaw(uri, kwargs), status)
 
+  def delete(self, uri, status=204, **kwargs):
+    return self.processResponse(self.deleteRaw(uri, **kwargs), status,
+        blankResponse=True)
+
+  def deleteRaw(self, uri, **kwargs):
+    uri = self.subUri(uri)
+    log.debug("Requesting via DELETE %s: %r", uri, kwargs)
+    return self.__backend.delete(uri, self.__verify,
+        self.getRequestHeaders(), kwargs)
+
   def getRaw(self, uri, **kwargs):
     uri = self.subUri(uri)
     log.debug("Requesting via GET %s: %r", uri, kwargs)
@@ -141,8 +159,8 @@ class API(object):
     return self.__backend.patch(uri, self.__verify, self.getRequestHeaders(),
         data)
 
-  def processResponse(self, response, status):
-    return self.__backend.processResponse(response, status)
+  def processResponse(self, response, status, blankResponse=False):
+    return self.__backend.processResponse(response, status, blankResponse)
 
   def login(self, username, password):
     ret = self.post('v1/member/login/', username=username, password=password,
@@ -266,6 +284,9 @@ class SpiffObject(object):
       for k,v in self.__saveData.iteritems():
         self.__data[k] = v
       self.__saveData = {}
+
+  def delete(self):
+    self.__api.delete(self.resource_uri)
 
   def refresh(self):
     self.__saveData = {}
