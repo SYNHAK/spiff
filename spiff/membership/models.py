@@ -2,7 +2,8 @@ from django.db import models
 import random
 import string
 from django.contrib.auth.models import User, Group
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_syncdb
+from south.signals import post_migrate
 from openid_provider.models import OpenID
 from spiff.membership.utils import monthRange
 import datetime
@@ -355,3 +356,13 @@ def get_anonymous_user():
 
 post_save.connect(create_member, sender=AnonymousUser)
 post_save.connect(create_rank, sender=AuthenticatedUserGroup)
+
+def ensure_auth_objects(*args, **kwargs):
+  try:
+    get_anonymous_user()
+    get_authenticated_user_group()
+  except:
+    pass
+
+post_migrate.connect(ensure_auth_objects)
+post_syncdb.connect(ensure_auth_objects)

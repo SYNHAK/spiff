@@ -147,8 +147,8 @@ class MemberTest(TestCase):
     anonUser = models.get_anonymous_user()
     newUserCount = len(User.objects.all())
     newMemberCount = len(models.Member.objects.all())
-    self.assertNotEqual(userCount, newUserCount)
-    self.assertNotEqual(memberCount, newMemberCount)
+    self.assertEqual(userCount, newUserCount)
+    self.assertEqual(memberCount, newMemberCount)
     self.assertEqual(models.get_anonymous_user().pk, anonUser.pk)
 
   def testRecreateAnonMember(self):
@@ -201,7 +201,7 @@ class MemberSearchAPITest(APITestMixin):
 
     ret = self.search(fullName='esterson')
     self.assertIn('objects', ret)
-    self.assertEqual(len(ret['objects']), 2)
+    self.assertEqual(len(ret['objects']), 3)
 
 class MemberAPITest(APITestMixin):
   def setUp(self):
