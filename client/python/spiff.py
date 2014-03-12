@@ -193,7 +193,7 @@ class ObjectList(object):
     self.__api = api
     self.__type = type
     self.__cache = {}
-    self.__count = 20
+    self.__count = 50
     self.__max = -1
     self.__filters = {}
     for name, value in filters.iteritems():
