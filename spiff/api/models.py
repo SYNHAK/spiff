@@ -44,5 +44,3 @@ def add_resource_permissions(*args, **kwargs):
 # check for all our view permissions after a syncdb
 post_migrate.connect(add_resource_permissions)
 post_syncdb.connect(add_resource_permissions)
-
-
