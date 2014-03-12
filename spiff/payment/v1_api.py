@@ -7,6 +7,7 @@ import models
 from django.conf import settings
 from tastypie import fields
 from spiff.api import SpiffAuthorization
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')
@@ -19,7 +20,10 @@ class PaymentResource(ModelResource):
     authorization = SpiffAuthorization()
     always_return_data = True
     filtering = {
-        'user': 'exact'
+        'user': ALL_WITH_RELATIONS,
+        'value': ALL_WITH_RELATIONS,
+        'method': ALL_WITH_RELATIONS,
+        'invoice': ALL_WITH_RELATIONS,
     }
 
   def obj_create(self, bundle, **kwargs):
@@ -67,10 +71,18 @@ class LineItemResource(ModelResource):
   unitPrice = fields.FloatField('unitPrice')
   quantity = fields.FloatField('quantity')
   totalPrice = fields.FloatField('totalPrice')
+  invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource',
+      attribute='invoice', full=False)
 
   class Meta:
     queryset = models.LineItem.objects.all()
     authorization = SpiffAuthorization()
+    filtering = {
+      'name': ALL_WITH_RELATIONS,
+      'unitPrice': ALL_WITH_RELATIONS,
+      'quantity': ALL_WITH_RELATIONS,
+      'invoice': ALL_WITH_RELATIONS
+    }
     always_return_data = True
 
 class InvoiceResource(ModelResource):
@@ -87,5 +99,5 @@ class InvoiceResource(ModelResource):
     authorization = SpiffAuthorization()
     always_return_data = True
     filtering = {
-        'user': 'exact'
+        'user': ALL_WITH_RELATIONS
     }
