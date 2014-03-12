@@ -95,7 +95,7 @@ class API(object):
     self.__backend = backend
 
   def __repr__(self):
-    return "API(%r)"%(self.__uri)
+    return "API(%r)"%(self.__uri.geturl())
 
   def __str__(self):
     return repr(self)
