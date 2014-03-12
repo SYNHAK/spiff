@@ -234,8 +234,19 @@ class ObjectList(object):
     if self.__max >= 0 and offset >= self.__max:
       raise KeyError(offset)
     if offset not in self.__cache:
-      self.__loadSlice(max(0, offset-5), 10)
+      spanStart, spanEnd = self.__nearestNeighbors(offset)
+      self.__loadSlice(max(offset-self.__count/2, spanStart+1), min(self.__count, spanEnd-spanStart))
     return self.__cache[offset]
+
+  def __nearestNeighbors(self, offset):
+    start = 0
+    end = self.__max
+    for i in self.__cache.keys():
+      if i <= offset and i >= start:
+        start = i
+      if i >= offset and i<= end:
+        end = i
+    return start, end
 
   def __iter__(self):
     return ObjectListIter(self)
