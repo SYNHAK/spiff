@@ -1,7 +1,7 @@
 Django==1.6
 Jinja2==2.6
 Markdown==2.2.1
-PIL==1.1.7
+PIL
 Pygments==1.6rc1
 South==0.8.3
 Sphinx==1.1.3
