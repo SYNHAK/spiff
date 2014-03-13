@@ -5,7 +5,7 @@ from django.contrib.sites.models import get_current_site
 import string
 import random
 from django.conf.urls import url
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group, User, Permission
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from tastypie import fields
@@ -95,8 +95,24 @@ class RankResource(ModelResource):
       'monthlyDues': ALL_WITH_RELATIONS
     }
 
+class PermissionResource(ModelResource):
+  name = fields.CharField('name')
+  app = fields.CharField('content_type__app_label')
+  codename = fields.CharField('codename')
+
+  class Meta:
+    queryset = Permission.objects.all()
+    authorization = SpiffAuthorization()
+    always_return_data = True
+    filtering = {
+      'name': ALL_WITH_RELATIONS,
+      'app': ALL_WITH_RELATIONS,
+      'codename': ALL_WITH_RELATIONS
+    }
+
 class GroupResource(ModelResource):
   rank = fields.ToOneField(RankResource, 'rank', full=True)
+  permissions = fields.ToManyField(PermissionResource, 'permissions', full=False)
 
   class Meta:
     queryset = Group.objects.all()
@@ -105,6 +121,7 @@ class GroupResource(ModelResource):
     filtering = {
       'rank': ALL_WITH_RELATIONS,
       'name': ALL_WITH_RELATIONS,
+      'permissions': ALL_WITH_RELATIONS
     }
 
 class SelfMemberAuthorization(SpiffAuthorization):
@@ -121,6 +138,9 @@ class SelfUserAuthorization(SpiffAuthorization):
     return super(SelfUserAuthorization, self).check_perm(bundle, model, name)
 
 class UserResource(ModelResource):
+  permissions = fields.ToManyField(PermissionResource, 'user_permissions',
+      full=False)
+
   class Meta:
     queryset = User.objects.all()
     authorization = SelfUserAuthorization()
@@ -128,6 +148,7 @@ class UserResource(ModelResource):
     filtering = {
       'first_name': ALL_WITH_RELATIONS,
       'last_name': ALL_WITH_RELATIONS,
+      'permissions': ALL_WITH_RELATIONS
     }
 
 class MembershipPeriodResource(ModelResource):
