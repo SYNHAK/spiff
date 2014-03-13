@@ -96,15 +96,17 @@ class RankResource(ModelResource):
     }
 
 class PermissionResource(ModelResource):
-  name = fields.CharField('name')
-  app = fields.CharField('content_type__app_label')
-  codename = fields.CharField('codename')
+  name = fields.CharField('name', readonly=True)
+  app = fields.CharField('content_type__app_label', readonly=True)
+  codename = fields.CharField('codename', readonly=True)
+  id = fields.IntegerField('id', readonly=True)
 
   class Meta:
     queryset = Permission.objects.all()
     authorization = SpiffAuthorization()
     always_return_data = True
     filtering = {
+      'id': ALL_WITH_RELATIONS,
       'name': ALL_WITH_RELATIONS,
       'app': ALL_WITH_RELATIONS,
       'codename': ALL_WITH_RELATIONS
