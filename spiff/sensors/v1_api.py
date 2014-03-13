@@ -42,7 +42,7 @@ class SensorValueField(fields.ApiField):
     if typeField == models.SENSOR_TYPE_BINARY:
       return str(value)
     if typeField == models.SENSOR_TYPE_JSON:
-      return json.decode(value)
+      return json.loads(value)
     if typeField == models.SENSOR_TYPE_TEMPERATURE:
       return float(value)
     if typeField == models.SENSOR_TYPE_BOOLEAN:
@@ -60,7 +60,7 @@ class SensorValueField(fields.ApiField):
     if typeField == models.SENSOR_TYPE_BINARY:
       return value
     if typeField == models.SENSOR_TYPE_JSON:
-      return json.decode(value)
+      return json.loads(value)
     if typeField == models.SENSOR_TYPE_TEMPERATURE:
       return float(value)
     if typeField == models.SENSOR_TYPE_BOOLEAN:
