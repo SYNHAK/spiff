@@ -289,6 +289,10 @@ class SpiffObject(object):
   def type(self):
     return self.__type
 
+  @property
+  def attributes(self):
+    return self.__data.keys()
+
   def save(self):
     if len(self.__saveData):
       self.__api.patch(self.resource_uri, **self.__saveData)
