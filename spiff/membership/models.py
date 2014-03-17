@@ -201,6 +201,7 @@ class RankSubscriptionPlan(SubscriptionPlan):
       startOfMonth, endOfMonth = monthRange(processDate)
 
       funcLog().info("Processing subscription of %s dues for %s, billing to %s", self.rank, self.member, planOwner)
+      endOfMonth += datetime.timedelta(days=1)
 
       return [RankLineItem(
         rank = self.rank,
