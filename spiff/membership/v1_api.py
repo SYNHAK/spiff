@@ -160,7 +160,7 @@ class MembershipPeriodResource(ModelResource):
   start = fields.DateTimeField('activeFromDate')
   end = fields.DateTimeField('activeToDate')
   contiguousPeriods = fields.ToManyField('spiff.membership.v1_api.MembershipPeriodResource', 'contiguousPeriods', null=True)
-  contiguousDates = fields.ListField('contiguousDates')
+  contiguousDates = fields.ListField('contiguousDates', null=True)
 
   class Meta:
     queryset = models.MembershipPeriod.objects.all()
