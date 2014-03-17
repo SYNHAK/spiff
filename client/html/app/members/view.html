@@ -26,12 +26,10 @@
     <h2>Membership</h2>
     <table class="table table-striped">
       <tr>
-        <th>Rank</th>
         <th>Start</th>
         <th>End</th>
       </tr>
       <tr ng-repeat="period in periods">
-        <td>{{period.group.name}}</td>
         <td>{{period.start|date}}</td>
         <td>{{period.end|date}}</td>
       </tr>

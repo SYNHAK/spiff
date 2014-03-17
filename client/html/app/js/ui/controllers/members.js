@@ -170,9 +170,9 @@ angular.module('spiff.members', [
 
 .controller('MemberViewCtrl', function($scope, SpiffRestangular, $stateParams) {
   var member = SpiffRestangular.one('member', $stateParams.memberID);
-  var periods = SpiffRestangular.all('membershipperiod', {'user': $stateParams.memberID});
   member.get().then(function (member) {
     $scope.member = member;
+    $scope.periods = member.membershipRanges;
     SpiffRestangular.all('group').getList().then(function (groups) {
       $scope.availableGroups = groups;
       _.each(groups, function(group) {
@@ -181,10 +181,6 @@ angular.module('spiff.members', [
         } else {
           group.active = false;
         }
-      });
-      periods.getList().then(function(periods) {
-        $scope.periods = periods;
-        console.log(periods);
       });
     });
   });
