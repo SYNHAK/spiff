@@ -189,7 +189,7 @@ class MemberResource(ModelResource):
   stripeCards = fields.ListField(attribute='stripeCards', default=[],
       readonly=True)
   userid = fields.IntegerField('user_id', readonly=True)
-  membershipRanges = fields.ListField('membershipRanges')
+  membershipRanges = fields.ListField('membershipRanges', null=True)
   fields = fields.ToManyField('spiff.membership.v1_api.FieldValueResource', 'attributes', full=False, null=True)
 
   class Meta:
