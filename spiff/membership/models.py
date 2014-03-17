@@ -270,7 +270,7 @@ class MembershipPeriod(models.Model):
       seen = []
       overlapQueue = [self]
       cursor = connection.cursor()
-      row = cursor.execute("\
+      cursor.execute("\
         SELECT MIN(a.activeFromDate), MAX(b.activeToDate) \
         FROM membership_membershipperiod AS a \
         LEFT JOIN membership_membershipperiod AS b \
@@ -281,7 +281,8 @@ class MembershipPeriod(models.Model):
           WHERE a.member_id = %s AND \
           a.activeFromDate <= %s AND \
           b.activeToDate >= %s", [self.member.id, self.activeFromDate,
-            self.activeToDate]).fetchone()
+            self.activeToDate])
+      row = cursor.fetchone()
       return (row[0], row[1])
 
     @property
