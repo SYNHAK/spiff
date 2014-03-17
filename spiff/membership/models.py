@@ -205,7 +205,7 @@ class RankSubscriptionPlan(SubscriptionPlan):
       for range in targetMember.membershipRanges:
         if range['start'] <= startOfMonth and range['end'] >= endOfMonth:
           return []
-        if RankLineItem.filter(rank=self.rank, member=targetMember,
+        if RankLineItem.objects.filter(rank=self.rank, member=targetMember,
             activeFromDate=startOfMonth, activeToDate=endOfMonth).exists():
           return []
 
