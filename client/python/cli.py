@@ -4,8 +4,13 @@ from getpass import getpass
 import sys
 import logging
 import json
+import os
 
-api = spiff.API(sys.argv[1], verify=False)
+if 'SPIFF_API' in os.environ:
+  uri = os.environ['SPIFF_API']
+else:
+  uri = sys.argv[1]
+api = spiff.API(uri, verify=False)
 api.login(raw_input("Username: "), getpass())
 
 cmd = sys.argv[2]
