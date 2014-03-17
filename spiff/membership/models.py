@@ -278,12 +278,14 @@ class MembershipPeriod(models.Model):
           ( a.activeToDate >= b.activeFromDate OR \
           a.activeFromDate <= b.activeToDate) AND \
           a.member_id = b.member_id \
-          WHERE a.member_id = %s"%(self.member.id)).fetchone()
+          WHERE a.member_id = %s AND \
+          a.activeFromDate <= %s AND \
+          b.activeToDate >= %s", [self.member.id, self.activeFromDate,
+            self.activeToDate]).fetchone()
       return (row[0], row[1])
 
     @property
     def siblings(self):
-      return self.overlapping
       return self.overlapping.filter(Q(activeFromDate=self.activeToDate) | Q(activeToDate=self.activeFromDate))
 
     @property
