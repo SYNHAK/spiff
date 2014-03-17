@@ -132,13 +132,6 @@ class Member(models.Model):
         ret.append(thisRange)
     return ret
 
-  @property
-  def membershipExpiration(self):
-    period = self.lastMembershipPeriod
-    if period is None:
-      return None
-    return period.activeToDate
-
   def activeMember(self):
     if not self.user.is_active:
       return False
