@@ -6,6 +6,7 @@ install:
   - pip install -r pip-requirements
   - pip install coverage
 script:
+  - echo "SECRET_KEY='foo'" > spiff/local_settings.py
   - coverage erase
   - coverage run ./manage.py test --processes=2
   - coverage report -m --include=\* --omit=\*/migrations/\*,settings.py,local_settings.py,manage.py,bulkops.py
