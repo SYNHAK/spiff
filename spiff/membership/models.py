@@ -297,11 +297,6 @@ class MembershipPeriod(models.Model):
         Q(activeToDate__gte=self.activeFromDate, activeToDate__lte=self.activeToDate)
       ).filter(rank=self.rank, member=self.member).exclude(pk=self.pk)
 
-    def save(self, *args, **kwargs):
-      if self.overlapping.exclude(Q(activeFromDate=self.activeToDate) | Q(activeToDate=self.activeFromDate)):
-        raise ValidationError("Cannot have overlapping membership periods")
-      return super(MembershipPeriod, self).save(*args, **kwargs)
-
     def __unicode__(self):
       return "%s, %s: %s to %s"%(self.member, self.rank, self.activeFromDate,
           self.activeToDate)
