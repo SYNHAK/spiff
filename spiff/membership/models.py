@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, connection
 import random
 import string
 from django.contrib.auth.models import User, Group
@@ -123,6 +123,16 @@ class Member(models.Model):
     return periods[0]
 
   @property
+  def membershipRanges(self):
+    ret = []
+    for p in self.membershipPeriods.all():
+      dates = p.contiguousDates
+      thisRange = ({'start': dates[0], 'end': dates[1], 'rank_id': p.rank.id})
+      if thisRange not in ret:
+        ret.append(thisRange)
+    return ret
+
+  @property
   def membershipExpiration(self):
     period = self.lastMembershipPeriod
     if period is None:
@@ -242,12 +252,60 @@ class MembershipPeriod(models.Model):
     activeToDate = models.DateTimeField(default=datetime.datetime.utcnow())
     lineItem = models.ForeignKey(RankLineItem, default=None, null=True, blank=True)
 
+    class Meta:
+      index_together = [
+        ['activeFromDate', 'activeToDate']
+      ]
+
+
+    @property
+    def contiguousPeriods(self):
+      dates = self.contiguousDates
+      range = MembershipPeriod.objects.filter(
+        rank = self.rank,
+        member = self.member,
+        activeFromDate__gte=dates[0],
+        activeToDate__lte=dates[1]
+      )
+      funcLog().debug("Found %s!", range)
+      return range
+
+    @property
+    def contiguousDates(self):
+      start = self
+      end = self
+      seen = []
+      overlapQueue = [self]
+      funcLog().debug("Looking up periods for %s, %s", start.activeFromDate, end.activeToDate)
+      cursor = connection.cursor()
+      ids = cursor.execute("\
+        SELECT MIN(a.activeFromDate) AS start, MAX(b.activeToDate) as end\
+        FROM membership_membershipperiod AS a \
+        LEFT JOIN membership_membershipperiod AS b \
+        ON \
+          ( a.activeToDate >= b.activeFromDate OR \
+          a.activeFromDate <= b.activeToDate) AND \
+          a.member_id = b.member_id AND \
+          a.member_id = %s \
+        ORDER BY \
+          a.activeFromDate, b.activeToDate"%(self.member.id)).fetchone()
+      funcLog().debug("Start: %s end: %s", ids[0], ids[1])
+      return (ids[0], ids[1])
+
+    @property
+    def siblings(self):
+      return self.overlapping
+      return self.overlapping.filter(Q(activeFromDate=self.activeToDate) | Q(activeToDate=self.activeFromDate))
+
+    @property
+    def overlapping(self):
+      return MembershipPeriod.objects.filter(
+        Q(activeFromDate__gte=self.activeFromDate, activeFromDate__lte=self.activeToDate) | 
+        Q(activeToDate__gte=self.activeFromDate, activeToDate__lte=self.activeToDate)
+      ).filter(rank=self.rank, member=self.member).exclude(pk=self.pk)
+
     def save(self, *args, **kwargs):
-      overlapping = MembershipPeriod.objects.filter(
-        Q(activeFromDate__lte=self.activeFromDate, activeToDate__gte=self.activeToDate) | 
-        Q(activeFromDate__lte=self.activeToDate, activeToDate__gte=self.activeFromDate)
-      ).filter(rank=self.rank, member=self.member)
-      if overlapping.exists():
+      if self.overlapping.exclude(Q(activeFromDate=self.activeToDate) | Q(activeToDate=self.activeFromDate)):
         raise ValidationError("Cannot have overlapping membership periods")
       return super(MembershipPeriod, self).save(*args, **kwargs)
 

@@ -159,6 +159,8 @@ class MembershipPeriodResource(ModelResource):
   'member')
   start = fields.DateTimeField('activeFromDate')
   end = fields.DateTimeField('activeToDate')
+  contiguousPeriods = fields.ToManyField('spiff.membership.v1_api.MembershipPeriodResource', 'contiguousPeriods', null=True)
+  contiguousDates = fields.ListField('contiguousDates')
 
   class Meta:
     queryset = models.MembershipPeriod.objects.all()
@@ -187,6 +189,7 @@ class MemberResource(ModelResource):
   stripeCards = fields.ListField(attribute='stripeCards', default=[],
       readonly=True)
   userid = fields.IntegerField('user_id', readonly=True)
+  membershipRanges = fields.ListField('membershipRanges')
   fields = fields.ToManyField('spiff.membership.v1_api.FieldValueResource', 'attributes', full=False, null=True)
 
   class Meta:
