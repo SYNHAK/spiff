@@ -157,8 +157,8 @@ class MembershipPeriodResource(ModelResource):
   rank = fields.ToOneField(RankResource, 'rank', full=True)
   member = fields.ToOneField('spiff.membership.v1_api.MemberResource',
   'member')
-  start = fields.DateTimeField('activeFromDate')
-  end = fields.DateTimeField('activeToDate')
+  activeFromDate = fields.DateTimeField('activeFromDate')
+  activeToDate = fields.DateTimeField('activeToDate')
   contiguousPeriods = fields.ToManyField('spiff.membership.v1_api.MembershipPeriodResource', 'contiguousPeriods', null=True)
   contiguousDates = fields.ListField('contiguousDates', null=True)
 
@@ -169,8 +169,8 @@ class MembershipPeriodResource(ModelResource):
     filtering = {
       'rank': ALL_WITH_RELATIONS,
       'member': ALL_WITH_RELATIONS,
-      'start': ALL_WITH_RELATIONS,
-      'end': ALL_WITH_RELATIONS
+      'activeFromDate': ALL_WITH_RELATIONS,
+      'activeToDate': ALL_WITH_RELATIONS
     }
 
 class MemberResource(ModelResource):
