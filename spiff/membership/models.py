@@ -269,21 +269,17 @@ class MembershipPeriod(models.Model):
       end = self
       seen = []
       overlapQueue = [self]
-      funcLog().debug("Looking up periods for %s, %s", start.activeFromDate, end.activeToDate)
       cursor = connection.cursor()
-      ids = cursor.execute("\
-        SELECT MIN(a.activeFromDate) AS start, MAX(b.activeToDate) as end\
+      row = cursor.execute("\
+        SELECT MIN(a.activeFromDate), MAX(b.activeToDate) \
         FROM membership_membershipperiod AS a \
         LEFT JOIN membership_membershipperiod AS b \
         ON \
           ( a.activeToDate >= b.activeFromDate OR \
           a.activeFromDate <= b.activeToDate) AND \
-          a.member_id = b.member_id AND \
-          a.member_id = %s \
-        ORDER BY \
-          a.activeFromDate, b.activeToDate"%(self.member.id)).fetchone()
-      funcLog().debug("Start: %s end: %s", ids[0], ids[1])
-      return (ids[0], ids[1])
+          a.member_id = b.member_id \
+          WHERE a.member_id = %s"%(self.member.id)).fetchone()
+      return (row[0], row[1])
 
     @property
     def siblings(self):
