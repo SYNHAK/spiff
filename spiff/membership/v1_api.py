@@ -178,6 +178,8 @@ class MemberResource(ModelResource):
   username = fields.CharField(attribute='user__username')
   firstName = fields.CharField(attribute='user__first_name', null=True)
   lastName = fields.CharField(attribute='user__last_name')
+  activeMember = fields.BooleanField(attribute='activeMember',
+      readonly=True)
   isAnonymous = fields.BooleanField(attribute='isAnonymous')
   email = fields.CharField(attribute='user__email')
   groups = fields.ToManyField(GroupResource, 'user__groups', null=True,

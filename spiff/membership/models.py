@@ -135,8 +135,7 @@ class Member(models.Model):
   def activeMember(self):
     if not self.user.is_active:
       return False
-    groups = self.user.groups.filter(rank__isActiveMembership=True)
-    return len(groups) > 0
+    return self.user.groups.filter(rank__isActiveMembership=True).exists()
 
   def __unicode__(self):
     if self.hidden:
