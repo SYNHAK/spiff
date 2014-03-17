@@ -90,6 +90,9 @@ class MembershipPeriodTest(APITestMixin):
     subscriptionAPI.processSubscriptions()
     self.assertEqual(len(self.user.invoices.all()), 1)
 
+    subscriptionAPI.processSubscriptions()
+    self.assertEqual(len(self.user.invoices.all()), 1)
+
     self.postAPI('/v1/payment/',
       {
         'invoice': '/v1/invoice/1/',
@@ -105,25 +108,14 @@ class MembershipPeriodTest(APITestMixin):
     monthStart = datetime.date(year=today.year, month=today.month, day=1)
     monthEnd = datetime.date(year=today.year, month=today.month,
         day=calendar.monthrange(today.year, today.month)[1])
+    monthEnd += datetime.timedelta(days=1)
 
     membershipPeriod = self.user.member.membershipPeriods.all()[0]
     self.assertEqual(membershipPeriod.activeFromDate.date(), monthStart)
     self.assertEqual(membershipPeriod.activeToDate.date(), monthEnd)
 
-  @withPermission('membership.read_member')
-  @withPermission('auth.read_group')
-  @withPermission('membership.create_membershipperiod')
-  @withPermission('membership.read_rank')
-  def testCreateCurrentPeriod(self):
-    self.createGroup('test')
-    self.postAPI('/v1/membershipperiod/',
-      {
-        'member': '/v1/member/1/',
-        'rank': '/v1/rank/1/',
-        'start': str(datetime.date.today()-datetime.timedelta(days=-7)),
-        'end': str(datetime.date.today()+datetime.timedelta(days=7))
-      }
-    )
+    subscriptionAPI.processSubscriptions()
+    self.assertEqual(len(self.user.invoices.all()), 1)
 
 
 class AnonymousUserMiddlewareTest(APITestMixin):
