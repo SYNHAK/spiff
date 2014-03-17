@@ -202,6 +202,13 @@ class RankSubscriptionPlan(SubscriptionPlan):
       funcLog().info("Processing subscription of %s dues for %s, billing to %s", self.rank, self.member, planOwner)
       endOfMonth += datetime.timedelta(days=1)
 
+      for range in targetMember.membershipRanges:
+        if range['start'] <= startOfMonth and range['end'] >= endOfMonth:
+          return []
+        if RankLineItem.filter(rank=self.rank, member=targetMember,
+            activeFromDate=startOfMonth, activeToDate=endOfMonth).exists():
+          return []
+
       return [RankLineItem(
         rank = self.rank,
         member = targetMember,
