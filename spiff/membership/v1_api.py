@@ -85,6 +85,7 @@ class RankSubscriptionPlanResource(subscription.SubscriptionPlanResource):
 class RankResource(ModelResource):
   group = fields.ToOneField('spiff.membership.v1_api.GroupResource', 'group')
   monthlyDues = fields.FloatField('monthlyDues')
+  isActiveMembership = fields.BooleanField('isActiveMembership')
 
   class Meta:
     queryset = models.Rank.objects.all()
@@ -92,7 +93,8 @@ class RankResource(ModelResource):
     always_return_data = True
     filtering = {
       'group': ALL_WITH_RELATIONS,
-      'monthlyDues': ALL_WITH_RELATIONS
+      'monthlyDues': ALL_WITH_RELATIONS,
+      'isActiveMembership': ALL_WITH_RELATIONS
     }
 
 class PermissionResource(ModelResource):
