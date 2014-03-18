@@ -158,7 +158,7 @@ class CreditManager(models.Manager):
           totalUsedCredit['value__sum'] = 0
         if totalCredit['value__sum'] is None:
           totalCredit['value__sum'] = 0
-        return totalCredit['value__sum'] + totalUsedCredit['value__sum']
+        return totalCredit['value__sum'] - totalUsedCredit['value__sum']
 
 class Credit(models.Model):
     objects = CreditManager()
