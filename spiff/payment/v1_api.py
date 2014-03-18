@@ -6,8 +6,25 @@ import stripe
 import models
 from django.conf import settings
 from tastypie import fields
-from spiff.api import SpiffAuthorization
+from spiff.api import SpiffAuthorization, OwnedObjectAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
+
+class CreditResource(ModelResource):
+  user = fields.ToOneField('spiff.membership.v1_api.UserResource', 'user')
+  value = fields.FloatField('value')
+  description = fields.CharField('description')
+  created = fields.DateTimeField('created')
+
+  class Meta:
+    queryset = models.Credit.objects.all()
+    authorization = OwnedObjectAuthorization('user')
+    always_return_data = True
+    filtering = {
+      'user': ALL_WITH_RELATIONS,
+      'value': ALL_WITH_RELATIONS,
+      'description': ALL_WITH_RELATIONS,
+      'created': ALL_WITH_RELATIONS
+    }
 
 class PaymentResource(ModelResource):
   invoice = fields.ToOneField('spiff.payment.v1_api.InvoiceResource', 'invoice')

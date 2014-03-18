@@ -193,6 +193,7 @@ class MemberResource(ModelResource):
       readonly=True)
   userid = fields.IntegerField('user_id', readonly=True)
   membershipRanges = fields.ListField('membershipRanges', null=True)
+  availableCredit = fields.FloatField('availableCredit')
   fields = fields.ToManyField('spiff.membership.v1_api.FieldValueResource', 'attributes', full=False, null=True)
 
   class Meta:

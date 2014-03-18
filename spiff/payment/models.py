@@ -146,6 +146,28 @@ class LineDiscountItem(models.Model):
         return originalPrice * self.percent
       return self.flatRate
 
+class CreditManager(models.Manager):
+    def forUser(self, user):
+        return self.filter(user=user)
+
+    def userTotal(self, user):
+        totalCredit = self.forUser(user).aggregate(models.Sum('value'))
+        totalUsedCredit = Payment.objects.filter(user=user,
+            method=Payment.METHOD_CREDIT).aggregate(models.Sum('value'))
+        if totalUsedCredit['value__sum'] is None:
+          totalUsedCredit['value__sum'] = 0
+        if totalCredit['value__sum'] is None:
+          totalCredit['value__sum'] = 0
+        return totalCredit['value__sum'] + totalUsedCredit['value__sum']
+
+class Credit(models.Model):
+    objects = CreditManager()
+
+    user = models.ForeignKey(User, related_name='credits')
+    value = models.FloatField()
+    created = models.DateTimeField(auto_now_add=True)
+    description = models.TextField()
+
 class Payment(models.Model):
     METHOD_CASH = 0
     METHOD_CHECK = 1

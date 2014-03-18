@@ -44,6 +44,10 @@ class Member(models.Model):
   hidden = models.BooleanField(default=False)
 
   @property
+  def availableCredit(self):
+    return spiff.payment.models.Credit.objects.userTotal(self)
+
+  @property
   def stripeCards(self):
     customer = self.stripeCustomer()
     if customer.get('cards'):
