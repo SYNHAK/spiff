@@ -3,12 +3,15 @@ angular.module('spiff.dashboard', [
   'spiff'
 ])
 
-.controller('RegistrationCtrl', function($scope, SpiffRestangular, Spiff, $modal) {
+.controller('DashboardRegistrationCtrl', function($scope, $location) {
   $scope.$watch('Spiff.currentUser', function(user) {
     if (user && !user.isAnonymous) {
       $location.url('/members/'+user.id);
     }
   });
+})
+
+.controller('RegistrationCtrl', function($scope, SpiffRestangular, Spiff, $modal) {
 
   $scope.d = {};
   $scope.d.fields = [];
@@ -41,9 +44,7 @@ angular.module('spiff.dashboard', [
       lastName: $scope.d.last_name,
       fields: fields
     }).then(function (u) {
-      Spiff.login($scope.d.username, $scope.d.password).then(function (u) {
-        $location.url('/');
-      });
+      Spiff.login($scope.d.username, $scope.d.password);
     });
   }
 })

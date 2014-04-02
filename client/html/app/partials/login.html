@@ -19,7 +19,10 @@
           <input type="password" id="password" ng-model="d.password">
         </div>
       </div>
-      <div class="alert alert-error" ng-if="error">{{error}}</div>
+      <div ng-if="error">
+        <div class="alert alert-error">{{error}}</div>
+          <a ng-click="showPasswordReset()">Need to reset your password?</a></li>
+      </div>
   </div>
   <div class="modal-footer">
     <button type="submit" class="btn btn-primary">Login</button>

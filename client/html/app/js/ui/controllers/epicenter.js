@@ -13,18 +13,29 @@ angular.module('spiff.epicenter', [
   }
 })
 
-.controller('ResetPassCtrl', function($scope, $modalInstance, SpiffRestangular, Messages) {
+.controller('ResetPassCtrl', function($scope, Spiff, $modalInstance, SpiffRestangular, Messages) {
   $scope.d = {};
+  $scope.state = 0;
 
   $scope.requestReset = function() {
-    SpiffRestangular.all('member').requestPasswordReset({'userid': $scope.d.userid}).then(function() {
-      Messages.info("Password reset requested. Check your email.");
-      $modalInstance.close();
-    });
+    if ($scope.state == 0) {
+      SpiffRestangular.all('member').requestPasswordReset({'userid': $scope.d.userid}).then(function() {
+        $scope.state++;
+      });
+    } else if ($scope.state == 1) {
+      Spiff.login($scope.d.userid, $scope.d.code).then(function(user) {
+        $scope.state++;
+      });
+    } else if ($scope.state == 2) {
+      SpiffRestangular.one('member', Spiff.currentUser.id).patch({'currentPassword': $scope.d.code, 'password': $scope.d.newPass}).then(function() {
+        Messages.info("Password updated.");
+        $modalInstance.close();
+      });
+    }
   };
 })
 
-.controller('LoginCtrl', function($scope, $modalInstance, Spiff) {
+.controller('LoginCtrl', function($scope, $modalInstance, Spiff, resetFunc) {
   $scope.d = {};
 
   $scope.login = function() {
@@ -40,6 +51,10 @@ angular.module('spiff.epicenter', [
         $modalInstance.close()
       }
     });
+    $scope.showPasswordReset = function() {
+      $modalInstance.close();
+      resetFunc();
+    };
   };
 })
 
@@ -54,7 +69,8 @@ angular.module('spiff.epicenter', [
       loginIsOpen = true;
       $modal.open({
         templateUrl: 'partials/login.html',
-        controller: 'LoginCtrl'
+        controller: 'LoginCtrl',
+        resolve: {resetFunc: function() {return $scope.showPasswordReset;}}
       }).result.then(function() {
         console.log("Finished login");
         loginIsOpen = false;
