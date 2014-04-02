@@ -28,6 +28,10 @@
     "angular-md5": "",
     "angular-ui-bootstrap-bower": "0.8.0",
     "angular-ui-router": "0.2.8-bowratic-tedium",
-    "restangular": ""
+    "restangular": "",
+    "angular-markdown-directive": ""
+  },
+  "resolutions": {
+    "angular": "~1.2.12"
   }
 }
