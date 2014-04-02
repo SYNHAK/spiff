@@ -11,7 +11,7 @@ var spiffApp = angular.module('spiffApp', [
   'spiff.sensors',
   'spiff.payment',
   'ngRoute',
-  'ui-gravatar',
+  'ui.gravatar',
   'md5',
   'ui.bootstrap.modal',
   'ui.router',

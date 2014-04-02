@@ -24,7 +24,7 @@
     "underscore": "~1.5.2",
     "angular": "~1.2.6",
     "angular-route": "~1.2.6",
-    "angularjs-gravatar": "",
+    "angular-gravatar": "",
     "angular-md5": "",
     "angular-ui-bootstrap-bower": "0.8.0",
     "angular-ui-router": "0.2.8-bowratic-tedium",
