@@ -15,6 +15,7 @@ var spiffApp = angular.module('spiffApp', [
   'md5',
   'ui.bootstrap.modal',
   'ui.router',
+  'btford.markdown',
   'template/modal/window.html',
   'template/modal/backdrop.html'
 ]);
