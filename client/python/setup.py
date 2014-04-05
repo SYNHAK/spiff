@@ -7,6 +7,6 @@ setup(name='Spiff',
     author='Torrie Fischer',
     author_email='tdfischer@hackerbots.net',
     url='http://github.com/synhak/spiff',
-    py_modules=['spiff'],
+    packages=['spiff'],
     requires=['requests'],
 )
