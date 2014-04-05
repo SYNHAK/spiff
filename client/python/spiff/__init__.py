@@ -1,8 +1,10 @@
-import requests
+from . import errors
+from . import backends
 import json
 import logging
 import datetime
 import urlparse
+import os
 
 try:
   import spaceapi
@@ -10,66 +12,6 @@ except ImportError:
   spaceapi = None
 
 log = logging.getLogger('spiff')
-
-class Backend(object):
-  def get(self, uri, verify, headers, params):
-    raise NotImplemented
-
-  def post(self, uri, verify, headers, data):
-    raise NotImplemented
-
-  def patch(self, uri, verify, headers, data):
-    raise NotImplemented
-
-  def delete(self, uri, verify, headers, data):
-    raise NotImplemented
-
-  def processResponse(self, response, status, blankResponse=False):
-    raise NotImplemented
-
-class RequestsBackend(Backend):
-  def get(self, uri, verify, headers, params):
-    return requests.get(uri, verify=verify, headers=headers, params=params)
-
-  def post(self, uri, verify, headers, data):
-    return requests.post(uri, data=data, verify=verify, headers=headers)
-
-  def patch(self, uri, verify, headers, data):
-    return requests.patch(uri, data=data, verify=verify, headers=headers)
-
-  def delete(self, uri, verify, headers, params):
-    return requests.delete(uri, params=params, verify=verify, headers=headers)
-
-  def processResponse(self, response, status, blankResponse=False):
-    if response.status_code != status:
-      if len(response.content):
-        try:
-          errorMsg = response.json()
-        except ValueError:
-          raise ServerError(response.content)
-        if 'traceback' in errorMsg:
-          raise ServerError(errorMsg['traceback'])
-        else:
-          raise ServerError(str(errorMsg['error']))
-      else:
-        response.raise_for_status()
-    if not blankResponse:
-      try:
-        return response.json()
-      except ValueError:
-        raise ServerError(response.content)
-    return None
-
-class ServerError(Exception):
-  def __init__(self, message):
-    super(ServerError, self).__init__()
-    self.__msg = message
-
-  def __str__(self):
-    return self.__msg
-
-  def __repr__(self):
-    return "ServerError(%r)"%(self.__msg)
 
 class SpiffObjectEncoder(json.JSONEncoder):
   def __init__(self, api, *args, **kwargs):
@@ -95,21 +37,29 @@ class SpiffObjectEncoder(json.JSONEncoder):
     return super(SpiffObjectEncoder, self).default(obj)
 
 class API(object):
-  def __init__(self, uri, verify=True, backend=RequestsBackend()):
+  def __init__(self, uri, verify=True, backend=None):
+    if backend is None:
+        backend = backends.defaultBackend()
     super(API, self).__init__()
     self.__uri = urlparse.urlparse(uri)
     self.__token = None
     self.__verify = verify
     self.__backend = backend
+    self._schema = []
+    self._typeSchema = {}
 
   @classmethod
   def getDefaultAPI(cls, fallback=None, verify=False):
+    if 'SPIFF_URL' in os.environ:
+        return cls(os.environ['SPIFF_URL'], verify)
     if spaceapi:
-      browser = spaceapi.Browser()
-      default = browser.defaultAPI(fallback, verify)
-      return cls(default.raw['x-spiff-url'])
-    else:
-      return cls(fallback)
+        browser = spaceapi.Browser()
+        default = browser.defaultAPI(fallback, verify)
+        try:
+            return cls(default.raw['x-spiff-url'])
+        except Exception:
+            pass
+    return cls(fallback)
 
   def __repr__(self):
     return "API(%r)"%(self.__uri.geturl())
@@ -191,19 +141,32 @@ class API(object):
   def uri(self):
     return self.__uri
 
+  def schema(self, type=None):
+    if type is None:
+      if len(self._schema) == 0:
+        self._schema = self.get('v1/')
+      return self._schema
+    else:
+      if type not in self._typeSchema:
+        self._typeSchema[type] = self.get(self.schema()[type]['schema'])
+      return self._typeSchema[type]
+
+  def endpoint(self, type):
+    return self.schema()[type]['list_endpoint']
+
   def getOne(self, type, id=None):
     if id is None:
       if isinstance(type, SpiffObject):
         return SpiffObject(self, self.get(type.resource_uri))
       else:
-        return SpiffObject(self, self.get(type))
-    return SpiffObject(self, self.get('%s/%s'%(type, id)))
+        return SpiffObject(self, self.get(self.endpoint(type)))
+    return SpiffObject(self, self.get('%s%s'%(self.endpoint(type), id)))
 
   def getList(self, type, **kwargs):
     return ObjectList(self, type, kwargs)
 
   def create(self, type, **kwargs):
-    return SpiffObject(self, self.post('v1/%s/'%(type), **kwargs))
+    return SpiffObject(self, self.post('%s'%(self.endpoint(type)), **kwargs))
 
 class ObjectList(object):
   def __init__(self, api, type, filters={}):
