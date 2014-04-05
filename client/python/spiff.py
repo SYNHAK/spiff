@@ -4,6 +4,11 @@ import logging
 import datetime
 import urlparse
 
+try:
+  import spaceapi
+except ImportError:
+  spaceapi = None
+
 log = logging.getLogger('spiff')
 
 class Backend(object):
@@ -96,6 +101,15 @@ class API(object):
     self.__token = None
     self.__verify = verify
     self.__backend = backend
+
+  @classmethod
+  def getDefaultAPI(cls, fallback=None, verify=False):
+    if spaceapi:
+      browser = spaceapi.Browser()
+      default = browser.defaultAPI(fallback, verify)
+      return cls(default.raw['x-spiff-url'])
+    else:
+      return cls(fallback)
 
   def __repr__(self):
     return "API(%r)"%(self.__uri.geturl())
