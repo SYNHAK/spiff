@@ -26,6 +26,8 @@ def api_from_argv(argv=None, parser=None):
 def api_from_args(args):
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
     try:
         api = API.getDefaultAPI(args.uri, args.verify)
     except spaceapi.DiscoveryError:
