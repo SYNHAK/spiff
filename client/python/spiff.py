@@ -49,7 +49,10 @@ class RequestsBackend(Backend):
       else:
         response.raise_for_status()
     if not blankResponse:
-      return response.json()
+      try:
+        return response.json()
+      except ValueError:
+        raise ServerError(response.content)
     return None
 
 class ServerError(Exception):
