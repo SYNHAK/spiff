@@ -23,11 +23,13 @@ class CertificationModel(QtCore.QAbstractListModel):
     self.endResetModel()
 
   def rowCount(self, parent):
+    return 0
     if self._resource is not None:
       return len(self._resource['certifications'])
     return 0
 
   def data(self, idx, role):
+    return None
     if self._resource is not None:
       if role == QtCore.Qt.DisplayRole:
         cert = self._resource['certifications'][idx.row()]
@@ -64,19 +66,18 @@ class ResourceModel(QtCore.QAbstractListModel):
 
   def refresh(self):
     self.beginResetModel()
-    self._api.clearCache()
-    self._cache = self._api.resources()
+    self._resources = self._api.getList('resource')
     self.endResetModel()
 
   def rowCount(self, parent):
-    return len(self._cache)
+    return len(self._resources)
 
   def data(self, idx, role):
     if role == QtCore.Qt.DisplayRole:
-      return "%s: %s"%(self._cache[idx.row()].id,
-          self._cache[idx.row()]['name'])
+      return "%s: %s"%(self._resources[idx.row()].id,
+          self._resources[idx.row()]['name'])
     if role == self.ResourceRole:
-      return self._cache[idx.row()]
+      return self._resources[idx.row()]
 
 class SpiffResourcePage(Page):
   def __init__(self, printer, ui):
