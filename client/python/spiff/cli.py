@@ -16,6 +16,11 @@ def add_argument_group(parser):
         help="Do not ask for a login")
     return group
 
+def argparser():
+    parser = argparse.ArgumentParser()
+    add_argument_group(parser)
+    return parser
+
 def api_from_argv(argv=None, parser=None):
     if parser is None:
         parser = argparse.ArgumentParser()
