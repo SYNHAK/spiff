@@ -81,11 +81,13 @@ angular.module('spiff.dashboard', [
   $scope.cancel = function() {$modalInstance.close()};
 })
 
-.controller('DashboardCtrl', function($scope, SpiffRestangular, Spiff, $location, $modal) {
-  Spiff.$watch('currentUser', function(user) {
+.controller('DashboardCtrl', function($scope, SpiffRestangular, $location, $modal) {
+  console.log('dash');
+  $scope.$watch('Spiff.currentUser', function(user) {
+    console.log(user);
     if (user && !user.isAnonymous) {
       $location.url('/members/'+user.id);
-    } else if (user && user.isAnonymous) {
+    } else if (!user || (user && user.isAnonymous)) {
       $location.url('/welcome');
     }
   });

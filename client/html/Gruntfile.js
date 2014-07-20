@@ -8,7 +8,7 @@ module.exports = function(grunt) {
       deps: {
         files: [{
           expand: true,
-          cwd: 'dist/lib',
+          cwd: 'app/lib',
           src: '**/*.js',
           dest: 'app/lib'
         }]
@@ -25,7 +25,7 @@ module.exports = function(grunt) {
     bower: {
       install: {
         options: {
-          targetDir: "dist/lib",
+          targetDir: "app/lib",
         }
       }
     },

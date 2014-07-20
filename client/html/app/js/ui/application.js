@@ -93,10 +93,19 @@ spiffApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider
       templateUrl: 'donate/index.html',
       controller: 'DonateCtrl',
     })
+    .state('donate.plans', {
+      url: '',
+      templateUrl: 'donate/plans.html',
+    })
+    .state('donate.register', {
+      url: '/register/:planID',
+      templateUrl: 'donate/register.html',
+      controller: 'DonationRegistrationCtrl'
+    })
     .state('register', {
       url: '/register',
       templateUrl: 'register.html',
-      controller: 'RegistrationCtrl'
+      controller: 'DashboardRegistrationCtrl'
     });
 });
 

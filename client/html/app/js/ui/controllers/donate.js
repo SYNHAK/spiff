@@ -17,7 +17,20 @@ angular.module('spiff.donate', [
   }
 })
 
-.controller('DonateCtrl', function($scope, SpiffRestangular, SpaceAPI, Spiff, $modal) {
+.controller('DonationRegistrationCtrl', function($scope, $modal, SpiffRestangular, $stateParams) {
+  var plan = SpiffRestangular.one('donationplan', $stateParams.planID);
+  $scope.$watch('Spiff.currentUser', function(user) {
+    if (user && !user.isAnonymous) {
+      $modal.open({
+        templateUrl: 'donate/modal/add.html',
+        controller: 'AddDonationSubscriptionCtrl',
+        resolve: {plan: function() {return plan}}
+      });
+    }
+  });
+})
+
+.controller('DonateCtrl', function($scope, SpiffRestangular, SpaceAPI, Spiff, $modal, $location) {
   $scope.plans = SpiffRestangular.all('donationplan').getList().$object;
 
   SpaceAPI.ready(function(api) {
@@ -26,16 +39,7 @@ angular.module('spiff.donate', [
 
   $scope.startSubscription = function(plan) {
     if (Spiff.currentUser.isAnonymous) {
-      $modal.open({
-        templateUrl: 'donate/modal/login-needed.html',
-        controller: function($location, $scope, $modalInstance) {
-          $scope.cancel = $modalInstance.close;
-          $scope.start = function() {
-            $modalInstance.close();
-            $location.url('/register');
-          }
-        }
-      });
+      $location.url('/donate/register/'+plan.id);
     } else {
       $modal.open({
         templateUrl: 'donate/modal/add.html',
