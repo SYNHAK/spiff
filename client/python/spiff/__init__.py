@@ -51,15 +51,15 @@ class API(object):
   @classmethod
   def getDefaultAPI(cls, fallback=None, verify=False):
     if 'SPIFF_URL' in os.environ:
-        return cls(os.environ['SPIFF_URL'], verify)
+        return cls(os.environ['SPIFF_URL'], verify=verify)
     if spaceapi:
         browser = spaceapi.Browser()
-        default = browser.defaultAPI(fallback, verify)
+        default = browser.defaultAPI(fallback, verify=verify)
         try:
-            return cls(default.raw['x-spiff-url'])
+            return cls(default.raw['x-spiff-url'], verify=verify)
         except Exception:
             pass
-    return cls(fallback)
+    return cls(fallback, verify=verify)
 
   def __repr__(self):
     return "API(%r)"%(self.__uri.geturl())
