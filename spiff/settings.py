@@ -213,7 +213,13 @@ GREETINGS = (
 )
 
 WELCOME_MESSAGE = """
-Spiff is a tool for managing hackerspaces.
+Spiff is a tool for managing hackerspaces. It provides nice things like:
+
+  * Member registration
+  * Donation and membership subscriptions
+  * Tracking inventory and other resources
+  * Flexibility for your space
+
 """
 
 WEBUI_URL = "http://localhost/"
